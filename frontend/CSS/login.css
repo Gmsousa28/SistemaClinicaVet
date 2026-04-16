@@ -1,0 +1,34 @@
+/* login.css - Apenas regras para o conteúdo desta página! */
+
+/* Esta classe garante que apenas o formulário fica centrado, sem estragar o header/footer */
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    width: 100%;
+}
+
+/* Criar um efeito de cartão para o formulário */
+form {
+    background-color: #2ea89e;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 450px;
+    color: white; /* Muda o texto para branco para contrastar com o fundo verde */
+}
+
+.titulo-login {
+    color: white;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    font-size: 2rem;
+}
+
+/* Ajustes no Bootstrap para não ficar com texto escuro em fundo escuro */
+form label {
+    font-weight: 600;
+}

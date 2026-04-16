@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Férias - MiACaoMiGo</title>
+
+  <link rel="stylesheet" href="../../CSS/PaginaSite.css">
+  <link rel="stylesheet" href="../../CSS/css_rececao/rececionista.css">
+  <link rel="stylesheet" href="../../CSS/css_admin/admin_dash.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body class="com-sidebar">
+
+  <section class="sidebar">
+    <a href="../../Pag_principal.html" class="logo">
+      <img src="../../img/Logo_vet.png" alt="Logo">
+    </a>
+    <hr>
+    <nav class="menu">
+      <a href="admin_dashboard.html"><i class="fa fa-home"></i> Dashboard</a>
+      <a href="perfil_admin.html"><i class="fa fa-user"></i> Perfil</a>
+      <a href="clientes_admin.html"><i class="fa fa-users"></i> Clientes</a>
+      <a href="funcionarios_admin.html"><i class="fa fa-user-tie"></i> Funcionários</a>
+      <a href="faturacao_admin.html"><i class="fa fa-file-invoice-dollar"></i> Faturação</a>
+      <a href="ferias_admin.html" class="active"><i class="fa fa-calendar-days"></i> Férias</a>
+      <a href="marcacoes_admin.html"><i class="fa fa-calendar-check"></i> Marcações</a>
+      <a href="resgates_admin.html"><i class="fa fa-paw"></i> Resgates</a>
+      <hr>
+      <a href="../../Pag_principal.html"><i class="fa fa-sign-out-alt"></i> Sair</a>
+    </nav>
+  </section>
+
+  <header class="header-admin">
+    <h1>Férias</h1>
+    <p>Gestão de períodos de descanso da equipa</p>
+  </header>
+
+  <main class="dashboard-main">
+    <h2 class="titulo-seccao">Pedidos de Férias</h2>
+    <div class="tabela-container">
+      <table class="tabela-consultas">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Cargo</th>
+            <th>Data Início</th>
+            <th>Data Fim</th>
+            <th>Estado</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaFerias">
+          </tbody>
+      </table>
+    </div>
+  </main>
+
+<div id="modalEdicao" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(44, 62, 80, 0.8); z-index: 1000; justify-content: center; align-items: center;">
+
+    <div class="cartao-formulario" style="max-width: 600px; width: 100%; padding: 2.5rem; position: relative; max-height: 90vh; overflow-y: auto; background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+
+      <button class="fechar-modal" onclick="fecharModalEdicao()" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.5rem; color: #7f8c8d; cursor: pointer; transition: color 0.2s;">&times;</button>
+
+      <h2 id="tituloEdicao" style="color: var(--cor-base-escura, #2c3e50); margin-bottom: 2rem; text-align: center;">Gerir Período de Férias</h2>
+
+      <form onsubmit="event.preventDefault(); salvarEdicao();">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 1.5rem;">
+          
+          <div class="grupo-input" style="grid-column: 1 / -1;">
+            <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">Funcionário:</label>
+            <input type="text" id="editNome" class="input-premium" readonly required>
+          </div>
+
+          <div class="grupo-input" style="grid-column: 1 / -1;">
+            <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">Estado do Pedido:</label>
+            <select id="editEstadoFerias" class="input-premium" required>
+              <option value="Pendente">Pendente</option>
+              <option value="Aprovado">Aprovado</option>
+              <option value="Rejeitado">Rejeitado</option>
+            </select>
+          </div>
+          
+          <div class="grupo-input">
+            <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">Início:</label>
+            <input type="date" id="editDataInicio" class="input-premium" required>
+          </div>
+          <div class="grupo-input">
+            <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">Fim:</label>
+            <input type="date" id="editDataFim" class="input-premium" required>
+          </div>
+
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 15px; border-top: 1px solid #eee; padding-top: 2rem; margin-top: 1rem;">
+          <button type="button" onclick="fecharModalEdicao()" class="btn-cancelar" style="padding: 12px 30px; border-radius: 25px; font-weight: bold;">Cancelar</button>
+          <button type="submit" class="btn-salvar" style="padding: 12px 30px; border-radius: 25px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+            <i class="fa fa-calendar-check"></i> Atualizar Pedido
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <footer>
+    <p style="color: white; font-size: 0.9rem; text-align: center; padding: 20px 0;">
+      Área Reservada - Clínica Miacãomigo © 2026
+    </p>
+  </footer>
+
+  <script src="../../../JS/admin_testes.js"></script>
+</body>
+</html>

@@ -1,0 +1,498 @@
+/* --- Estilos Específicos do Dashboard (Rececionista) --- */
+
+.dashboard-main {
+    max-width: 1200px; /* Um pouco mais largo para caber tabelas */
+    text-align: left; /* Alinhamento à esquerda para facilitar a leitura de dados */
+}
+
+/* --- Cartões de Ação Rápida --- */
+.dashboard-acoes {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+
+.card-acao {
+    flex: 1;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #333;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    border: 3px solid transparent;
+}
+
+.card-acao h3 {
+    color: #2ea89c; /* O teu verde-água principal */
+    margin-bottom: 10px;
+}
+
+.card-acao:hover {
+    transform: translateY(-5px);
+    border-color: #2ea89c;
+}
+
+/* --- Tabela de Consultas --- */
+.titulo-seccao {
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+.tabela-container {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    overflow-x: auto; /* Permite scroll horizontal em ecrãs pequenos */
+}
+
+.tabela-consultas {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.tabela-consultas th, .tabela-consultas td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.tabela-consultas th {
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    font-weight: bold;
+}
+
+.tabela-consultas tr:hover {
+    background-color: #f1f8f7; /* Efeito hover ligeiramente esverdeado na linha da tabela */
+}
+
+/* --- Badges (Estados) e Botões Pequenos --- */
+.badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: white;
+}
+
+.badge.pendente { background-color: #f39c12; } /* Cor-de-laranja para pendente */
+.badge.concluido { background-color: #2ea89c; } /* Verde para concluído/em espera */
+
+.btn-pequeno {
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-pequeno:hover {
+    background-color: #2ea89c;
+}
+
+.btn-sair {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-sair:hover {
+    background-color: #c0392b;
+}
+
+
+
+
+
+
+
+
+/* --- ENTRADAS Grelha de Veterinários --- */
+.grid-veterinarios {
+    display: flex;
+    flex-direction: row; /* Força o alinhamento horizontal */
+    justify-content: flex-start; /* Alinha os cartões à esquerda */
+    gap: 30px;
+    margin-top: 1.5rem;
+    flex-wrap: wrap; /* se tiver muitos passam para a linha de baixo */
+}
+
+.cartao-vet {
+    flex: 1 1 280px; 
+    max-width: 380px; /* Garante que o cartão não fica maior que 280px */
+
+    background-color: #ffffff; /* Fundo do cartão azul-acinzentado */
+    border-radius: 12px;
+    border: 1px solid #455a64;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+}
+
+.foto-vet {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%; /* Faz a imagem ficar redonda */
+    object-fit: cover;
+    margin-bottom: 1rem;
+    border: 3px solid #000000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.cartao-vet h3 {
+    color: #000000;
+    margin-bottom: 5px;
+}
+
+.especialidade {
+    color: #000000;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+
+
+/* --- Botões de Ponto --- */
+.acoes-ponto {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-top: auto; /* Empurra os botões para o fundo do cartão */
+}
+
+.btn-ponto {
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.1s;
+    width: 100%;
+}
+
+.btn-ponto:active:not(:disabled) {
+    transform: scale(0.98); /* Efeito de clique */
+}
+
+.btn-ponto.atraso {
+    background-color: #d08a1a; /* Laranja */
+    color: white;
+}
+
+.btn-ponto.atraso:hover:not(:disabled) {
+    background-color: #d08a1a;
+}
+
+.btn-ponto.falta {
+    background-color: #e74c3c; /* Vermelho */
+    color: white;
+}
+
+.btn-ponto.falta:hover:not(:disabled) {
+    background-color: #c0392b;
+}
+
+/* Estilo para botões desativados (quando já entrou ou já saiu) */
+.btn-ponto:disabled {
+    background-color: #bdc3c7;
+    color: #7f8c8d;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+
+
+
+/* --- Página de Resgates --- */
+
+/* 1. A tua barra principal (mantive as tuas regras e adicionei apenas o flex-wrap para segurança) */
+.barra-acoes-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    background-color: white;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    flex-wrap: wrap; /* Garante que nada esmaga se o ecrã for pequeno */
+    gap: 15px;
+}
+
+/* 2. O teu título (agora com tamanho reduzido) */
+.barra-acoes-topo .titulo-seccao {
+    margin-bottom: 0;
+    color: #2c3e50;
+    font-size: 1.5rem; /* Reduz o tamanho do texto. Podes alterar para 1.2rem se quiseres ainda menor */
+}
+
+/* 3. Grupo dos botões para permitirem quebra de linha em ecrãs pequenos */
+.barra-acoes-topo > div {
+    flex-wrap: wrap;
+}
+
+/* 4. Os 3 botões (agora mais pequenos e elegantes) */
+.barra-acoes-topo > div > button {
+    width: 190px; /* Largura mais pequena (antes sugeri 240px) */
+    height: 40px; /* Altura mais pequena */
+    font-size: 0.9rem; /* Letra do botão ligeiramente mais pequena */
+    justify-content: center;
+    white-space: nowrap;
+}
+
+
+
+
+/* GRELHA PRINCIPAL */
+.grid-resgates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    justify-content: center; /* MAGIA 1: Centra os cartões no meio do ecrã */
+}
+
+/* CARTÃO */
+.cartao-animal {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 320px; 
+    transition: transform 0.3s ease;
+    text-align: center; /* MAGIA 2: Centra o texto e os botões dentro do cartão */
+}
+
+.cartao-animal:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.12);
+}
+
+.foto-animal {
+    width: 100%;
+    height: 200px;
+    object-fit: cover; 
+    border-bottom: 3px solid var(--cor-principal, #2ea89c);
+}
+
+.info-animal {
+    padding: 1.5rem;
+    flex-grow: 1; 
+}
+
+.info-animal h3 {
+    color: #2c3e50;
+    margin-bottom: 5px;
+    font-size: 1.4rem;
+}
+
+.especie {
+    font-weight: bold;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.data-resgate {
+    color: #95a5a6;
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+}
+
+/* AÇÕES DO FUNDO */
+.acoes-animal {
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #eee;
+    /* Adicionamos isto para garantir que o menu dropdown e botão ficam ao centro */
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    gap: 10px;
+}
+
+.acoes-animal > div {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    gap: 8px;
+}
+
+
+
+
+/* --- Modal dos resgates Resgates --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Fundo escuro semi-transparente */
+    display: none; /* Começa escondido */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Garante que fica por cima de tudo no site */
+}
+
+.modal-content {
+    background-color: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px; /* Não deixa o formulário ficar demasiado largo num PC */
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    /* Se o ecrã for muito pequeno, permite fazer scroll dentro da caixa */
+    max-height: 90vh; 
+    overflow-y: auto; 
+}
+
+
+/* Reutiliza o estilo dos inputs que já tens para manter o visual */
+.formulario-marcacao { display: flex; flex-direction: column; gap: 15px; }
+.grupo-input { display: flex; flex-direction: column; width: 100%; }
+.grupo-input label { font-weight: bold; margin-bottom: 5px; font-size: 0.95rem;}
+.grupo-input input, .grupo-input select { padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; width: 100%; box-sizing: border-box;}
+.grupo-input input:focus, .grupo-input select:focus { outline: none; border-color: #2ea89c; }
+.grid-inputs-duplos { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+
+
+/* --- Barra de Pesquisa de Clientes --- */
+.barra-pesquisa {
+    display: flex;
+    gap: 15px;
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.barra-pesquisa input {
+    flex: 1; /* Faz a caixa de texto ocupar o máximo de espaço possível */
+    padding: 12px 15px;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    transition: border-color 0.3s;
+    font-family: inherit;
+}
+
+.barra-pesquisa input:focus {
+    outline: none;
+    border-color: #2ea89c; /* Fica com o teu verde-água ao clicar */
+}
+
+.btn-pesquisar {
+    background-color: #2c3e50; /* Azul escuro da tua paleta */
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.btn-pesquisar:hover {
+    background-color: #1a252f;
+    transform: translateY(-2px);
+}
+
+
+
+
+/* BOTÃO FORMALIZAR ADOÇÃO (Laranja) */
+.btn-adocao {
+    background-color: #f39c12;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease; /* Animação suave */
+}
+
+.btn-adocao:hover {
+    background-color: #e67e22; /* Fica um laranja um pouco mais escuro */
+    transform: translateY(-3px); /* Levanta um bocadinho, como o btn-salvar */
+    box-shadow: 0 6px 15px rgba(243, 156, 18, 0.3); /* Sombra laranja de destaque */
+}
+
+/* Botão de Arquivos de adoções */
+.btn-arquivo_adocao {
+    background-color: #a9b2bb65;
+    color: #2c3e50;
+    border: 1px solid #dcdde1;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-arquivo_adocao:hover {
+    background-color: #e2e6ea; /* Fica um cinza um pouco mais escuro */
+    transform: translateY(-3px); /* Levanta o botão */
+    box-shadow: 0 6px 15px rgba(44, 62, 80, 0.15); /* Adiciona uma sombra subtil */
+    border-color: #cbd3da; /* Escurece a borda ligeiramente */
+}
+
+
+
+
+/* --- Mini Cartões dos Animais do modal da ficha do cliente --- */
+.mini-cartao-animal {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: #f8f9fa; /* Fundo cinza muito claro */
+    padding: 10px 15px;
+    border-radius: 8px;
+    border-left: 4px solid #2ea89c; /* Destaque verde lateral */
+}
+
+.mini-cartao-animal img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* Foto redonda */
+    object-fit: cover;
+}
+
+.mini-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.mini-info strong {
+    color: #2c3e50;
+    font-size: 1.05rem;
+}
+
+.mini-info span {
+    color: #7f8c8d;
+    font-size: 0.85rem;
+}

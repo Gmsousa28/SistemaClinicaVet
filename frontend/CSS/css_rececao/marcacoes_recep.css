@@ -1,0 +1,314 @@
+/* --- Correções de Fundo (Para não ficar tudo verde!) --- */
+.cartao-formulario {
+    background-color: #ffffff; /* Fundo limpo e moderno! */
+    border-radius: 12px;
+    padding: 2.5rem 3rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Sombra mais subtil */
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* --- Barra de Progresso (Passos) --- */
+.barra-passos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding: 0 2rem;
+}
+
+.passo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: #95a5a6; /* Cor cinza inativo */
+    position: relative;
+    z-index: 2;
+}
+
+.passo.ativo {
+    color: var(--cor-principal); /* Verde se estiver ativo */
+}
+
+.circulo-passo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f1f2f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+}
+
+.passo.ativo .circulo-passo {
+    background-color: var(--cor-principal);
+    color: white;
+    box-shadow: 0 0 0 5px rgba(46, 168, 156, 0.2); /* Efeito brilho */
+}
+
+.passo span {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.linha-passo {
+    flex-grow: 1;
+    height: 3px;
+    background-color: #f1f2f6;
+    margin: 0 15px;
+    transform: translateY(-15px); /* Sobe a linha para ficar no meio do círculo */
+    z-index: 1;
+}
+
+/* --- Grelha de Animais (Em vez do Select Antigo) --- */
+/* --- Grelha de Animais (Atualizada para centrar sempre) --- */
+.grid-animais-selecao {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* A magia que centra os cartões! */
+    gap: 20px;
+    max-width: 800px; /* Aumentei um bocadinho para caberem os 3 lado a lado se houver ecrã */
+    margin: 0 auto;
+}
+/* Controla a largura de cada cartão */
+.cartao-animal-radio {
+    flex: 1 1 200px; /* Permite crescer e encolher com base em 200px */
+    max-width: 260px; /* O travão para não ficarem muito largos */
+}
+
+/* Esconde a bolinha feia do rádio */
+.esconder-radio {
+    display: none; 
+}
+
+/* O cartão do animal */
+.conteudo-cartao-animal {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border: 2px solid #ecf0f1;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: #fcfcfc;
+}
+
+.avatar-animal {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+}
+
+/* Cores diferentes para Cão/Gato/Etc */
+.avatar-animal.cao { background-color: #e3f2fd; color: #3498db; }
+.avatar-animal.gato { background-color: #fdf2e9; color: #e67e22; }
+.avatar-animal.outro { background-color: #f5eeff; color: #9b59b6; }
+
+.info-animal {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-animal strong { color: var(--cor-base-escura); font-size: 1.1rem; }
+.info-animal span { color: #7f8c8d; font-size: 0.85rem; }
+
+/* O efeito mágico quando clicas no animal! */
+.cartao-animal-radio input:checked + .conteudo-cartao-animal {
+    border-color: var(--cor-principal);
+    background-color: rgba(46, 168, 156, 0.05); /* Fundo verdinho muito claro */
+}
+
+/* --- Novos Botões de Rodapé --- */
+.btn-secundario {
+    background-color: #f1f2f6;
+    color: #7f8c8d;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-primario {
+    background-color: var(--cor-principal);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* =======================================================
+   BOTÃO HISTÓRICO DE MARCAÇÕES
+   ======================================================= */
+.btn-historico {
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    border: 1px solid #dcdde1;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    width: 240px; /* Adapta este tamanho se precisares */
+    height: 45px;
+    white-space: nowrap;
+}
+
+.btn-historico:hover {
+    background-color: #e2e6ea;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(44, 62, 80, 0.15);
+}
+
+
+
+
+/* --- Grelha Genérica para Serviços e Médicos --- */
+.grid-opcoes-selecao {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Adaptam-se ao espaço do ecrã */
+    gap: 15px;
+}
+
+.cartao-opcao-radio { cursor: pointer; }
+
+/* O estilo do cartão (quadradinho) */
+.conteudo-cartao-opcao {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px 10px;
+    border: 2px solid #ecf0f1;
+    border-radius: 10px;
+    background-color: #fcfcfc;
+    transition: all 0.2s ease;
+    text-align: center;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.icon-opcao {
+    font-size: 2.2rem;
+    color: #bdc3c7;
+    transition: color 0.2s;
+}
+
+.conteudo-cartao-opcao span {
+    font-weight: bold;
+    color: var(--cor-base-escura);
+}
+
+/* Efeito Mágico de Seleção */
+.cartao-opcao-radio input:checked + .conteudo-cartao-opcao {
+    border-color: var(--cor-principal);
+    background-color: rgba(46, 168, 156, 0.05); /* Fundo verdinho claro */
+}
+.cartao-opcao-radio input:checked + .conteudo-cartao-opcao .icon-opcao {
+    color: var(--cor-principal);
+}
+
+/* Avatar redondinho específico para médicos */
+.avatar-medico {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: -5px;
+}
+
+
+/* --- PASSO 3: Grelha de Data e Hora --- */
+.grid-data-hora {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr; /* A zona das horas fica um pouco mais larga */
+    gap: 40px;
+    margin-bottom: 2rem;
+    align-items: start;
+}
+
+/* O seletor de calendário */
+.input-data-premium {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+    border: 2px solid #ecf0f1;
+    border-radius: 10px;
+    color: var(--cor-base-escura);
+    font-family: inherit;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.3s;
+    cursor: pointer;
+}
+
+.input-data-premium:focus {
+    border-color: var(--cor-principal);
+}
+
+/* Os "botões" com as horas */
+.grid-slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: 12px;
+}
+
+.slot-hora {
+    background-color: #fcfcfc;
+    border: 2px solid #ecf0f1;
+    border-radius: 8px;
+    padding: 12px 5px;
+    text-align: center;
+    font-weight: bold;
+    color: var(--cor-base-escura);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.slot-hora:hover {
+    border-color: #bdc3c7;
+    background-color: #f1f2f6;
+}
+
+/* A magia de quando clicas numa hora */
+.slot-hora.selecionado {
+    background-color: var(--cor-principal);
+    border-color: var(--cor-principal);
+    color: white;
+    box-shadow: 0 4px 10px rgba(46, 168, 156, 0.3);
+}
+
+.mensagem-espera-data {
+    color: #7f8c8d; 
+    font-style: italic; 
+    font-size: 0.95rem;
+    grid-column: 1 / -1; /* Ocupa a largura toda */
+}
+
+/* Responsivo para telemóveis/tablets (passa a ficar um em baixo do outro) */
+@media (max-width: 768px) {
+    .grid-data-hora {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}

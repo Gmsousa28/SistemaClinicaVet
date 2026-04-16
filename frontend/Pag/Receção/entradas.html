@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt">
+    <head> 
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Registo de Ponto - Clínica Miacãomigo</title>
+        
+        <link rel="stylesheet" href="../../CSS/PaginaSite.css">
+        <link rel="stylesheet" href="../../CSS/css_rececao/rececionista.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+    </head>
+
+    <body class ="com-sidebar">
+        <header>
+            <div class="header-texto">
+                <h1> Assiduidade </h1> 
+                <p>Controlo de assiduidade da equipa médica</p>
+            </div>
+                
+            <nav class="header-botoes">
+                <a href="../Receção/rececionista.html" class="button">Voltar ao Dashboard</a>
+            </nav>
+        </header>
+            
+        <!-- MENU LATERAL -->
+        <section class="sidebar">
+
+            <a href="../../frontend/Pag_principal.html" class="logo">
+                <img src="../../img/Logo_vet.png" alt="Logótipo Clínica Miacãomigo">
+            </a>
+
+            <hr>
+            <nav class="menu">
+                <a href="rececionista.html"><i class="fa fa-home"></i> Dashboard</a>
+                <a href="perfil_funcionario.html"><i class="fa fa-user"></i> Perfil</a>
+                <a href="entradas.html"  class="active"><i class="fa-regular fa-clock"></i> Entradas </a>
+                <a href="marcacoes_recep.html"><i class="fa fa-calendar"></i> Marcações </a>
+                <a href="faturacao_recep.html"><i class="fa fa-file-invoice"></i> Faturação </a>
+                <a href="clientes_recep.html"><i class="fa fa-users"></i> Clientes </a>
+                <a href="resg_ado.html"><i class="fa fa-paw"></i> Resgates e Adoções </a>
+                
+                
+                <hr>
+                <a href="../../Pag_principal.html"><i class="fa fa-sign-out"></i> Sair</a>
+            </nav>
+            
+        </section>
+
+
+        <main class="dashboard-main">
+            <section class="barra-acoes-topo" style="margin-bottom: 2rem;">
+                <h2 class="titulo-seccao" style="margin-bottom: 1rem;">Faltas e Atrasos</h2>
+                <div style="background-color: #e0f2f1; border-left: 4px solid #2ea89c; padding: 12px 16px; border-radius: 4px; color: #2c3e50; font-size: 0.95rem;">
+                    <strong><i class="fa fa-info-circle" style="color: #2ea89c;"></i> Regra de Registo:</strong> É considerado atraso passados 10 minutos da hora de entrada, e falta acima de 2h de atraso.
+                </div>
+            </section>
+            
+            <div class="grid-veterinarios">
+            
+            <div class="cartao-vet">
+                <img src="https://cdn-icons-png.flaticon.com/512/387/387561.png" alt="Foto Dr. Rui" class="foto-vet">
+                <h3>Dr. Rui Silva</h3>
+                <p class="especialidade">Cirurgia Geral</p>
+                
+                <div class="acoes-ponto">
+                    <button class="btn-ponto falta" onclick="abrirModalRegisto('Dr. Rui Silva', 'Falta')">Registar Falta</button>
+                    <button class="btn-ponto atraso" onclick="abrirModalRegisto('Dr. Rui Silva', 'Atraso')">Registar Atraso</button>
+                </div>
+            </div>
+
+            <div class="cartao-vet">
+                <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" alt="Foto Dra. Ana" class="foto-vet">
+                <h3>Dra. Ana Costa</h3>
+                <p class="especialidade">Animais Exóticos</p>
+                
+                <div class="acoes-ponto">
+                    <button class="btn-ponto falta" onclick="abrirModalRegisto('Dra. Ana Costa', 'Falta')">Registar Falta</button>
+                    <button class="btn-ponto atraso" onclick="abrirModalRegisto('Dra. Ana Costa', 'Atraso')">Registar Atraso</button>
+                </div>
+            </div>
+            
+            <div class="cartao-vet">
+                <img src="https://cdn-icons-png.flaticon.com/512/387/387561.png" alt="Foto Dr. Rui" class="foto-vet">
+                <h3>Dr. Rui Silva</h3>
+                <p class="especialidade">Cirurgia Geral</p>
+                
+                <div class="acoes-ponto">
+                    <button class="btn-ponto falta" onclick="abrirModalRegisto('Dr. Rui Silva', 'Falta')">Registar Falta</button>
+                    <button class="btn-ponto atraso" onclick="abrirModalRegisto('Dr. Rui Silva', 'Atraso')">Registar Atraso</button>
+                </div>
+            </div>
+
+            
+            <div class="cartao-vet">
+                <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" alt="Foto Dra. Ana" class="foto-vet">
+                <h3>Dra. Ana Costa</h3>
+                <p class="especialidade">Animais Exóticos</p>
+                
+                <div class="acoes-ponto">
+                    <button class="btn-ponto falta" onclick="abrirModalRegisto('Dra. Ana Costa', 'Falta')">Registar Falta</button>
+                    <button class="btn-ponto atraso" onclick="abrirModalRegisto('Dra. Ana Costa', 'Atraso')">Registar Atraso</button>
+                </div>
+            </div>
+
+            
+            <div class="cartao-vet">
+                <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" alt="Foto Dra. Ana" class="foto-vet">
+                <h3>Dra. Ana Costa</h3>
+                <p class="especialidade">Animais Exóticos</p>
+                
+                <div class="acoes-ponto">
+                    <button class="btn-ponto falta" onclick="abrirModalRegisto('Dra. Ana Costa', 'Falta')">Registar Falta</button>
+                    <button class="btn-ponto atraso" onclick="abrirModalRegisto('Dra. Ana Costa', 'Atraso')">Registar Atraso</button>
+                </div>
+            </div>
+
+            
+            <div class="cartao-vet">
+                <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" alt="Foto Dra. Ana" class="foto-vet">
+                <h3>Dra. Ana Costa</h3>
+                <p class="especialidade">Animais Exóticos</p>
+                
+                <div class="acoes-ponto">
+                    <button class="btn-ponto falta" onclick="abrirModalRegisto('Dra. Ana Costa', 'Falta')">Registar Falta</button>
+                    <button class="btn-ponto atraso" onclick="abrirModalRegisto('Dra. Ana Costa', 'Atraso')">Registar Atraso</button>
+                </div>
+            </div>
+
+            <div class="cartao-vet">
+                <img src="https://cdn-icons-png.flaticon.com/512/387/387561.png" alt="Foto Dr. João" class="foto-vet">
+                <h3>Dr. João Mendes</h3>
+                <p class="especialidade">Clínica Geral</p>
+                
+                <div class="acoes-ponto">
+                    <button class="btn-ponto falta" onclick="abrirModalRegisto('Dr. João Mendes', 'Falta')">Registar Falta </button>
+                    <button class="btn-ponto atraso" onclick="abrirModalRegisto('Dr. João Mendes', 'Atraso')">Registar Atraso</button>
+                </div>
+            </div>
+                
+            <div class="cartao-vet">
+                <img src="https://cdn-icons-png.flaticon.com/512/387/387561.png" alt="Foto Dr. João" class="foto-vet">
+                <h3>Dr. João Mendes</h3>
+                <p class="especialidade">Clínica Geral</p>
+                
+                <div class="acoes-ponto">
+                    <button class="btn-ponto falta" onclick="abrirModalRegisto('Dr. João Mendes', 'Falta')">Registar Falta </button>
+                    <button class="btn-ponto atraso" onclick="abrirModalRegisto('Dr. João Mendes', 'Atraso')">Registar Atraso</button>
+                </div>
+            </div>
+        </main>
+
+        <div id="modal-registo-ponto" class="modal-overlay">
+            <div class="modal-content" style="max-width: 500px;">
+                <h2 class="titulo-seccao" style="margin-bottom: 1.5rem; color: #2c3e50;">Registo de Assiduidade</h2>
+
+                <form class="formulario-marcacao">
+                    
+                    <div class="grupo-input">
+                        <label for="registo_vet_nome">Membro da Equipa:</label>
+                        <input type="text" id="registo_vet_nome" readonly style="background-color: #f8f9fa; color: #7f8c8d;">
+                    </div>
+
+                    <div class="grid-inputs-duplos">
+                        <div class="grupo-input">
+                            <label for="registo_tipo">Tipo de Registo:</label>
+                            <input type="text" id="registo_tipo" readonly style="background-color: #f8f9fa; color: #7f8c8d; font-weight: bold;">
+                        </div>
+                        
+                        <div class="grupo-input">
+                            <label for="registo_data">Data da Ocorrência:</label>
+                            <input type="date" id="registo_data" required>
+                        </div>
+                    </div>
+
+                    <div class="grupo-input">
+                        <label for="registo_obs">Observações (Opcional):</label>
+                        <input type="text" id="registo_obs" placeholder="Ex: Trânsito, Consulta médica, etc.">
+                    </div>
+
+                    <div class="acoes-formulario" style="margin-top: 2rem;">
+                        <button type="button" class="btn-cancelar" onclick="fecharModalRegisto()">Cancelar</button>
+                        <button type="button" class="btn-salvar">Guardar Registo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <footer>
+            <p style="color: white; font-size: 0.9rem;">Área Reservada - Clínica Miacãomigo © 2026</p>
+        </footer>
+
+        <script src="../../../JS/rececao.js"> </script>
+    </body>
+</html>

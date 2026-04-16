@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marcações - MiACaoMiGo</title>
+  
+  <link rel="stylesheet" href="../../CSS/PaginaSite.css">
+  <link rel="stylesheet" href="../../CSS/css_rececao/rececionista.css">
+  <link rel="stylesheet" href="../../CSS/css_admin/admin_dash.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body class="com-sidebar">
+
+  <section class="sidebar">
+    <a href="../../Pag_principal.html" class="logo">
+      <img src="../../img/Logo_vet.png" alt="Logo">
+    </a>
+    <hr>
+    <nav class="menu">
+      <a href="admin_dashboard.html"><i class="fa fa-home"></i> Dashboard</a>
+      <a href="perfil_admin.html"><i class="fa fa-user"></i> Perfil</a>
+      <a href="clientes_admin.html"><i class="fa fa-users"></i> Clientes</a>
+      <a href="funcionarios_admin.html"><i class="fa fa-user-tie"></i> Funcionários</a>
+      <a href="faturacao_admin.html"><i class="fa fa-file-invoice-dollar"></i> Faturação</a>
+      <a href="ferias_admin.html"><i class="fa fa-calendar-days"></i> Férias</a>
+      <a href="marcacoes_admin.html" class="active">
+        <i class="fa fa-calendar-check"></i> Marcações
+      </a>
+      <a href="resgates_admin.html"><i class="fa fa-paw"></i> Resgates</a>
+      <hr>
+      <a href="../../Pag_principal.html"><i class="fa fa-sign-out-alt"></i> Sair</a>
+    </nav>
+  </section>
+
+  <header class="header-admin">
+    <h1>Marcações</h1>
+    <p>Gestão de agenda clínica e consultas</p>
+  </header>
+
+  <main class="dashboard-main">
+    <h2 class="titulo-seccao">Lista de Marcações</h2>
+    <div class="tabela-container">
+      <table class="tabela-consultas">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Animal</th>
+            <th>Data</th>
+            <th>Hora</th>
+            <th>Tipo</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaMarcacoes">
+          </tbody>
+      </table>
+    </div>
+  </main>
+
+<div id="modalEdicao" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(44, 62, 80, 0.85); z-index: 1000; justify-content: center; align-items: center;">
+
+    <div class="cartao-formulario" style="max-width: 650px; width: 100%; padding: 2.5rem; position: relative; max-height: 90vh; overflow-y: auto; background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+
+      <button class="fechar-modal" onclick="document.getElementById('modalEdicao').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.5rem; color: #7f8c8d; cursor: pointer;">&times;</button>
+
+      <h2 id="tituloEdicao" style="color: var(--cor-base-escura, #2c3e50); margin-bottom: 2rem; text-align: center;">Editar Marcação</h2>
+
+      <form onsubmit="event.preventDefault(); salvarEdicao();">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 1.5rem;">
+          
+          <div class="grupo-input" style="grid-column: 1 / -1;">
+            <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">Animal / Paciente:</label>
+            <input type="text" id="editNome" class="input-premium" readonly style="background-color: #e2e8f0; color: #7f8c8d; cursor: not-allowed; border: 1px solid #cbd5e1; width: 100%; padding: 12px 15px; border-radius: 8px; box-sizing: border-box;" required>
+          </div>
+
+          <div class="grupo-input" style="grid-column: 1 / -1;">
+            <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">Tipo de Serviço:</label>
+            <select id="editTipoMarcacao" class="input-premium" onchange="calcularHoraFim()" required style="width: 100%; padding: 12px 15px; border: 1px solid #ecf0f1; border-radius: 8px; background-color: #fff; outline: none; box-sizing: border-box;">
+              <option value="Vacinação">Vacinação (30 min)</option>
+              <option value="Consulta Geral">Consulta Geral (1h)</option>
+              <option value="Banho e Tosquia">Banho e Tosquia (1h)</option>
+            </select>
+          </div>
+
+          <div class="grupo-input">
+            <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">Data da Marcação:</label>
+            <input type="date" id="editDataMarcacao" class="input-premium" style="width: 100%; padding: 12px 15px; border: 1px solid #ecf0f1; border-radius: 8px; box-sizing: border-box;" required>
+          </div>
+          
+
+          <div class="grupo-input">
+            <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">Hora Início:</label>
+            <input type="time" id="editHoraMarcacao" class="input-premium" onchange="calcularHoraFim()" style="width: 100%; padding: 12px 15px; border: 1px solid #ecf0f1; border-radius: 8px; box-sizing: border-box;" required>
+          </div>
+
+          <div class="grupo-input">
+            <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-principal, #2ea89c);">Hora Fim (Calculada):</label>
+            <input type="time" id="editHoraFim" class="input-premium" readonly style="background-color: #f0fdf4; color: #166534; cursor: not-allowed; border: 1px solid #bbf7d0; width: 100%; padding: 12px 15px; border-radius: 8px; box-sizing: border-box; font-weight: bold;">
+          </div>
+
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 15px; border-top: 1px solid #eee; padding-top: 2rem; margin-top: 1rem;">
+          <button type="button" onclick="document.getElementById('modalEdicao').style.display='none'" class="btn-cancelar" style="padding: 12px 30px; border-radius: 25px; font-weight: bold; border: 1px solid #ccc; background: transparent; cursor: pointer;">Cancelar</button>
+          <button type="submit" class="btn-salvar" style="padding: 12px 30px; border-radius: 25px; font-weight: bold; display: flex; align-items: center; gap: 8px; background-color: var(--cor-principal, #2ea89c); color: white; border: none; cursor: pointer;">
+            <i class="fa fa-save"></i> Guardar Alterações
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <footer>
+    <p style="color: white; font-size: 0.9rem; text-align: center; padding: 20px 0;">
+      Área Reservada - Clínica Miacãomigo © 2026
+    </p>
+  </footer>
+
+  <script src="../../../JS/admin_testes.js"></script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Consultas</title>
+
+        <link rel="stylesheet" href="../../CSS/PaginaSite.css">
+        <link rel="stylesheet" href="../../CSS/css_cliente/cliente.css">
+        <link rel="stylesheet" href="../../CSS/css_cliente/header_cliente.css">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    </head>
+
+    
+
+    <body class="com-sidebar">
+
+        <section class="top-header">
+            <h1>Painel de Consultas</h1>
+        </section>
+
+        <section class="sidebar">
+            <a href="#" class="logo">
+                <img src="../../img/Logo_vet.png">
+            </a>
+
+            <hr>
+
+            <nav class="menu">
+                <a href="dashboard_cliente.html"><i class="fa-solid fa-home"></i> Dashboard</a>
+                <a href="perfil_cliente.html"><i class="fa-solid fa-user"></i> Perfil</a>
+                <a href="consultas_cliente.html" class="active"><i class="fa-solid fa-calendar"></i> Consultas</a>
+                <a href="historico_cliente.html"><i class="fa-solid fa-clock"></i> Histórico</a>
+                <a href="#"><i class="fa-solid fa-gear"></i> Definições</a>
+
+                <hr>
+
+                <a href="#"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>
+            </nav>
+        </section>
+
+        <!-- CONTEÚDO -->
+        <section class="dashboard">
+
+            <!-- HEADER -->
+            <h2>Consultas 📅</h2>
+
+            <!-- BOTÃO -->
+            <button class="nova-consulta">
+                <i class="fa-solid fa-plus"></i> Marcar Consulta
+            </button>
+
+            <!-- FILTROS -->
+            <section class="filtros">
+                <button class="ativo">Todas</button>
+                <button>Futuras</button>
+                <button>Passadas</button>
+            </section>
+
+            <!-- LISTA -->
+            <section class="lista-consultas">
+
+                <section class="consulta">
+                   <div class="info">
+                        <p class="nome">🐾 Rex</p>
+                        <p>📅 25 Março - 14:30</p>
+                        <p>💉 Vacinação</p>
+                    </div>
+                    <div class="acoes">
+                        <button class="btn btn-detalhes">Ver</button>
+                        <button class="btn btn-editar">Remarcar</button>
+                        <button class="btn btn-cancelar">Cancelar</button>
+                    </div>
+                </section>
+
+                <section class="consulta">
+                    <div class="info">
+                         <p class="nome">🐱 Mimi</p>
+                        <p>📅 20 Março - 10:00</p>
+                        <p>🩺 Check-up</p>
+                    </div>
+                    <div class="acoes">
+                        <button class="btn btn-detalhes">Ver</button>
+                        <button class="btn btn-editar">Remarcar</button>
+                        <button class="btn btn-cancelar">Cancelar</button>
+                    </div>
+                </section>
+
+            </section>
+
+        </section>
+
+    </body>
+</html>

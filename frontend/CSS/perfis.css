@@ -1,0 +1,232 @@
+/*ESTRUTURA GERAL DA PÁGINA E GRELHA*/
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 30px;
+    align-items: start;
+    max-width: 1200px;
+}
+
+.coluna-direita {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+}
+
+/* 2. LADO ESQUERDO: CARTÃO DO PERFIL*/
+
+.perfil {
+    background: white;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.foto {
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.foto img {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 6px solid #2ea89c;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.user { 
+    color: #888; 
+    margin-bottom: 20px; 
+}
+
+.editar, .guardar {
+    background: #2ea89c;
+    color: white;
+    border: none;
+    padding: 10px 26px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.editar:hover, .guardar:hover { 
+    background: #249186; 
+    transform: translateY(-2px); 
+}
+
+/* 3. DADOS DA CONTA (Caixa, Título e Formulário)*/
+
+.conta {
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    border: 1px solid #eaeaea;
+    width: 100%;
+}
+
+.titulo-conta {
+    color: #2ea89c;
+    font-size: 24px;
+    margin-bottom: 25px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.campo { 
+    display: flex; 
+    flex-direction: column; 
+    text-align: left; 
+}
+
+.campo label { 
+    font-size: 13px; 
+    color: #555; 
+    margin-bottom: 8px; 
+    font-weight: 600; 
+}
+
+.input-icon { 
+    position: relative; 
+    display: flex; 
+    align-items: center; 
+}
+
+.input-icon i { 
+    position: absolute; 
+    left: 15px; 
+    color: #2ea89c; 
+    z-index: 2; 
+}
+
+.input-icon input {
+    width: 100%;
+    padding: 12px 12px 12px 42px; 
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    background: #f9f9f9;
+    color: #333;
+    outline: none;
+    transition: 0.3s; 
+}
+
+.input-icon input:focus { 
+    border-color: #2ea89c; 
+    background: #fff; 
+}
+
+/* ========================================================================== */
+/* 4. OS MEUS PATUDOS (Caixa, Título e Animais)                               */
+/* ========================================================================== */
+
+.meus-animais {
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    border: 1px solid #eaeaea;
+    width: 100%;
+}
+
+.meus-animais h3 {
+    color: #2ea89c;
+    font-size: 24px;
+    margin-bottom: 25px;
+}
+
+.animais-lista {
+    display: flex;
+    gap: 40px; 
+    flex-wrap: wrap; 
+    justify-content: flex-start;
+}
+
+.animal-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.animal-card img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #2ea89c;
+    margin-bottom: 10px;
+}
+
+.animal-card p { font-weight: 700; color: #333; margin: 0; }
+.animal-card small { color: #777; font-size: 13px; }
+
+/* Botão "Adicionar Animal" */
+.animal-card.adicionar { cursor: pointer; }
+.animal-card.adicionar p { color: #888; font-weight: normal; }
+
+.circulo-add {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px dashed #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    background: #fdfdfd;
+    transition: 0.3s;
+}
+
+.circulo-add i { font-size: 24px; color: #ccc; transition: 0.3s; }
+
+.animal-card.adicionar:hover .circulo-add { 
+    border-color: #2ea89c; 
+    background: #f0faf9; 
+}
+
+.animal-card.adicionar:hover .circulo-add i { 
+    color: #2ea89c; 
+    transform: scale(1.1); 
+}
+
+/* ========================================================================== */
+/* 5. AVISOS (Caixa, Título e Textos)                                         */
+/* ========================================================================== */
+
+.avisos {
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    border: 1px solid #eaeaea;
+    width: 100%;
+}
+
+.avisos h3 {
+    color: #2ea89c;
+    font-size: 24px;
+    margin-bottom: 25px;
+}
+
+.avisos p {
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+    color: #444;
+}
+
+.avisos p:last-child { 
+    border-bottom: none; 
+    padding-bottom: 0; 
+}

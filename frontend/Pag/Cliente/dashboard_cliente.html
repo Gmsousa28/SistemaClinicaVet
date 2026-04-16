@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard Cliente</title>
+
+        <link rel="stylesheet" href="../../CSS/PaginaSite.css">
+        <link rel="stylesheet" href="../../CSS/perfis.css"> 
+         <link rel="stylesheet" href="../../CSS/css_cliente/cliente.css">
+        <link rel="stylesheet" href="../../CSS/css_cliente/header_cliente.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    </head>
+
+
+    <section class="top-header">
+        <h1>Painel do Dashboard</h1>
+    </section>
+
+
+    <body class="com-sidebar">
+        <section class="sidebar">
+
+            <a href="../../frontend/Pag_principal.html" class="logo">
+                <img src="../../img/Logo_vet.png" alt="Logótipo Clínica Miacãomigo">
+            </a>
+
+            <hr>
+            <nav class="menu">
+                <a href="dashboard_cliente.html" class="active"><i class="fa fa-home"></i> Dashboard</a>
+                <a href="perfil_cliente.html"><i class="fa fa-user"></i> Perfil</a>
+                <a href="consultas_cliente.html"><i class="fa-regular fa-clock"></i> Consultas </a>
+                <a href="historico_cliente.html"><i class="fa fa-calendar"></i> Histórico </a>
+                <a href="resg_ado.html"><i class="fa fa-paw"></i> Definições </a>
+                <hr>
+                <a href="#"><i class="fa fa-sign-out"></i> Sair</a>
+            </nav>
+
+        </section>
+
+        <section class="dashboard">
+
+            <!-- HEADER -->
+            <h2 class="titulo-dashboard">
+                Bem-vindo, João 👋
+            </h2>
+
+            <!-- CARDS -->
+            <section class="cards">
+
+                <section class="card">
+                    <i class="fa fa-calendar"></i>
+                    <h4>Próxima Consulta</h4>
+                    <p>25 Março - 14:30</p>
+                </section>
+
+                <section class="card">
+                    <i class="fa fa-paw"></i>
+                    <h4>Meus Animais</h4>
+                    <p>3 registados</p>
+                </section>
+
+                <section class="card">
+                    <i class="fa fa-syringe"></i>
+                    <h4>Vacinas Pendentes</h4>
+                    <p>2 pendentes</p>
+                </section>
+
+                <section class="card">
+                    <i class="fa fa-file"></i>
+                    <h4>Histórico</h4>
+                    <p>12 consultas</p>
+                </section>
+
+        </section>
+
+            <!-- GRID PRINCIPAL -->
+            <section class="dashboard-grid">
+
+                <!-- CONSULTAS -->
+                <section class="bloco consultas">
+                    <h3>Próximas Consultas</h3>
+
+                    <div class="item">
+                        <p><strong>🐾 Rex</strong></p>
+                        <p>📅 25 Março - 14:30</p>
+                        <p>💉 Vacinação</p>
+                    </div>
+                                <hr>
+
+                    <div class="item">
+                        <p><strong>🐱 Mimi</strong></p>
+                        <p>📅 28 Março - 10:00</p>
+                        <p>🩺 Check-up</p>
+                    </div>
+                            <hr>
+                </section>
+
+                <!-- ANIMAIS -->
+                <section class="bloco animais">
+                    <h3>Meus Animais</h3>
+
+                    <section class="item">
+                        <p><strong>Rex</strong></p>
+                        <p>Cão • 3 anos</p>
+                    </section>
+                                <hr>
+                    <section class="item">
+                        <p><strong>Mimi</strong></p>
+                        <p>Gato • 2 anos</p>
+                    </section>
+                                <hr>
+                </section>
+
+            </section>
+
+            <!-- AVISOS -->
+            <section class="bloco avisos">
+                <h3>Avisos</h3>
+
+                <p>📅 Consulta amanhã às 14:30</p>
+                <p>💉 Vacina pendente do Rex</p>
+                <p>⚠️ Atualizar dados do perfil</p>
+
+            </section>
+
+        </section>
+    </body>
+</html>

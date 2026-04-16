@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt">
+    <head> 
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Gestão de Resgates - Clínica Miacãomigo</title>
+        
+        <link rel="stylesheet" href="../../CSS/PaginaSite.css">
+        <link rel="stylesheet" href="../../CSS/css_rececao/rececionista.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        
+    </head>
+
+    <body class="com-sidebar">
+        <header>
+            
+            <div class="header-texto">
+                <h1>Gestão de Resgates</h1> 
+                <p>Registo e triagem de animais para adoção</p>
+            </div>
+                
+            <nav class="header-botoes">
+                <a href="../Receção/rececionista.html" class="button">Voltar ao Dashboard</a>
+            </nav>
+        </header>
+        
+        <!-- MENU LATERAL -->
+        <section class="sidebar">
+
+            <a href="../../frontend/Pag_principal.html" class="logo">
+                <img src="../../img/Logo_vet.png" alt="Logótipo Clínica Miacãomigo">
+            </a>
+
+            <hr>
+            <nav class="menu">
+                <a href="rececionista.html"><i class="fa fa-home"></i> Dashboard</a>
+                <a href="perfil_funcionario.html"><i class="fa fa-user"></i> Perfil</a>
+                <a href="entradas.html"><i class="fa-regular fa-clock"></i> Entradas </a>
+                <a href="marcacoes_recep.html"><i class="fa fa-calendar"></i> Marcações </a>
+                <a href="faturacao_recep.html"><i class="fa fa-file-invoice"></i> Faturação </a>
+                <a href="clientes_recep.html"><i class="fa fa-users"></i> Clientes </a>
+                <a href="resg_ado.html" class="active"><i class="fa fa-paw"></i> Resgates e Adoções </a>
+                <hr>
+                <a href="../../Pag_principal.html"><i class="fa fa-sign-out"></i> Sair</a>
+            </nav>
+            
+        </section>
+
+        <main class="dashboard-main">
+
+            <section class="barra-acoes-topo" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 class="titulo-seccao">Animais Resgatados ao Nosso Cuidado</h2>
+                
+                <div style="display: flex; gap: 15px;">
+                    
+                    <button class="btn-arquivo_adocao" onclick="abrirModalHistoricoAdocoes()">
+                        <i class="fa fa-book-open" style="color: #232424;"></i> Arquivo de Adoções
+                    </button>
+
+                    <button class="btn-adocao" onclick="abrirModalAdocao()">
+                        <i class="fa fa-handshake"></i> Formalizar Adoção
+                    </button>
+                    
+                    <button class="btn-salvar" onclick="abrirModalResgates()" style="padding: 10px 25px; border-radius: 25px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+                        <i class="fa fa-plus"></i> Registar Novo Resgate
+                    </button>
+                </div>
+            </section>
+  
+            
+<section class="grid-resgates">
+                
+    <div class="cartao-animal">
+        <img src="../../img/icone_gato.jpg" alt="Gato Tigrado" class="foto-animal">
+        
+        <div class="info-animal">
+            <h3>Simba</h3>
+            <p class="especie">Gato • Tigrado Europeu • Jovem</p>
+            <p class="data-resgate">Resgatado a: 12/03/2026</p>
+            <span style="display: inline-block; padding: 4px 10px; background-color: #8e44ad; color: white; border-radius: 12px; font-size: 0.75rem; font-weight: bold; margin-top: 8px;">
+                <i class="fa fa-home" style="margin-right: 4px;"></i> Resgatado
+            </span>
+        </div>
+        
+        <div class="acoes-animal">
+            <label style="font-size: 0.8rem; color: #7f8c8d; font-weight: bold; text-transform: uppercase;">Alterar Estado:</label>
+            <div style="display: flex; gap: 8px;">
+                <select class="input-premium" style="flex: 1; padding: 8px; font-size: 0.85rem; border-radius: 6px; border: 1px solid #dcdde1; outline: none; background-color: #f8f9fa;">
+                    <option value="" disabled selected>Escolher ação...</option>
+                    <option value="recolhido">Resgatado</option>
+                    <option value="adocao">Para Adoção (Visível no Site)</option>
+                    
+                </select>
+                <button style="background-color: var(--cor-principal, #2ea89c); color: white; border: none; border-radius: 6px; padding: 0 15px; cursor: pointer; font-weight: bold; transition: background 0.2s;" title="Atualizar Estado">
+                    <i class="fa fa-check"></i>
+                </button>
+            </div>
+        </div>
+    </div> 
+
+        <div class="cartao-animal">
+        <img src="../../img/icone_gato.jpg" alt="Gato Tigrado" class="foto-animal">
+        
+        <div class="info-animal">
+            <h3>Simba</h3>
+            <p class="especie">Gato • Tigrado Europeu • Jovem</p>
+            <p class="data-resgate">Resgatado a: 12/03/2026</p>
+            <span style="display: inline-block; padding: 4px 10px; background-color: #8e44ad; color: white; border-radius: 12px; font-size: 0.75rem; font-weight: bold; margin-top: 8px;">
+                <i class="fa fa-home" style="margin-right: 4px;"></i> Resgatado
+            </span>
+        </div>
+        
+        <div class="acoes-animal">
+            <label style="font-size: 0.8rem; color: #7f8c8d; font-weight: bold; text-transform: uppercase;">Alterar Estado:</label>
+            <div style="display: flex; gap: 8px;">
+                <select class="input-premium" style="flex: 1; padding: 8px; font-size: 0.85rem; border-radius: 6px; border: 1px solid #dcdde1; outline: none; background-color: #f8f9fa;">
+                    <option value="" disabled selected>Escolher ação...</option>
+                    <option value="recolhido">Resgatado</option>
+                    <option value="adocao">Para Adoção (Visível no Site)</option>
+                    
+                </select>
+                <button style="background-color: var(--cor-principal, #2ea89c); color: white; border: none; border-radius: 6px; padding: 0 15px; cursor: pointer; font-weight: bold; transition: background 0.2s;" title="Atualizar Estado">
+                    <i class="fa fa-check"></i>
+                </button>
+            </div>
+        </div>
+    </div> 
+
+            <div class="cartao-animal">
+        <img src="../../img/icone_gato.jpg" alt="Gato Tigrado" class="foto-animal">
+        
+        <div class="info-animal">
+            <h3>Simba</h3>
+            <p class="especie">Gato • Tigrado Europeu • Jovem</p>
+            <p class="data-resgate">Resgatado a: 12/03/2026</p>
+            <span style="display: inline-block; padding: 4px 10px; background-color: #8e44ad; color: white; border-radius: 12px; font-size: 0.75rem; font-weight: bold; margin-top: 8px;">
+                <i class="fa fa-home" style="margin-right: 4px;"></i> Resgatado
+            </span>
+        </div>
+        
+        <div class="acoes-animal">
+            <label style="font-size: 0.8rem; color: #7f8c8d; font-weight: bold; text-transform: uppercase;">Alterar Estado:</label>
+            <div style="display: flex; gap: 8px;">
+                <select class="input-premium" style="flex: 1; padding: 8px; font-size: 0.85rem; border-radius: 6px; border: 1px solid #dcdde1; outline: none; background-color: #f8f9fa;">
+                    <option value="" disabled selected>Escolher ação...</option>
+                    <option value="recolhido">Resgatado</option>
+                    <option value="adocao">Para Adoção (Visível no Site)</option>
+                    
+                </select>
+                <button style="background-color: var(--cor-principal, #2ea89c); color: white; border: none; border-radius: 6px; padding: 0 15px; cursor: pointer; font-weight: bold; transition: background 0.2s;" title="Atualizar Estado">
+                    <i class="fa fa-check"></i>
+                </button>
+            </div>
+        </div>
+    </div> 
+    
+    
+    
+    <div class="cartao-animal">
+        <img src="../../img/icone_cao.jpg" alt="Cão Beagle" class="foto-animal">
+        
+        <div class="info-animal">
+            <h3>Bolinha</h3>
+            <p class="especie">Cão • Cruzado Beagle • Adulto</p>
+            <p class="data-resgate">Resgatado a: 05/02/2026</p>
+            <span style="display: inline-block; padding: 4px 10px; background-color: #3498db; color: white; border-radius: 12px; font-size: 0.75rem; font-weight: bold; margin-top: 8px;">
+                <i class="fa fa-globe" style="margin-right: 4px;"></i> Visível no Site Público
+            </span>
+        </div>
+        
+        <div class="acoes-animal">
+            <label style="font-size: 0.8rem; color: #7f8c8d; font-weight: bold; text-transform: uppercase;">Alterar Estado:</label>
+            <div style="display: flex; gap: 8px;">
+                <select class="input-premium" style="flex: 1; padding: 8px; font-size: 0.85rem; border-radius: 6px; border: 1px solid #dcdde1; outline: none; background-color: #f8f9fa;">
+                    <option value="adocao" selected>Para Adoção (Visível no Site)</option>
+                    <option value="recolhido">Resgatado</option>
+                    
+                </select>
+                <button style="background-color: var(--cor-principal, #2ea89c); color: white; border: none; border-radius: 6px; padding: 0 15px; cursor: pointer; font-weight: bold; transition: background 0.2s;" title="Atualizar Estado">
+                    <i class="fa fa-check"></i>
+                </button>
+            </div>
+        </div>
+    </div> 
+
+    <div class="cartao-animal">
+        <img src="../../img/icone_cao.jpg" alt="Cão Vira-lata" class="foto-animal">
+        
+        <div class="info-animal">
+            <h3>Sem Nome (ID: 405)</h3>
+            <p class="especie">Cão • Indefinida • Sénior</p>
+            <p class="data-resgate">Resgatado a: 17/03/2026</p>
+            <span style="display: inline-block; padding: 4px 10px; background-color: #8e44ad; color: white; border-radius: 12px; font-size: 0.75rem; font-weight: bold; margin-top: 8px;">
+                <i class="fa fa-home" style="margin-right: 4px;"></i> Resgatado
+            </span>
+        </div>
+        
+        
+        <div class="acoes-animal">
+            <label style="font-size: 0.8rem; color: #7f8c8d; font-weight: bold; text-transform: uppercase;">Alterar Estado:</label>
+            <div style="display: flex; gap: 8px;">
+                <select class="input-premium" style="flex: 1; padding: 8px; font-size: 0.85rem; border-radius: 6px; border: 1px solid #dcdde1; outline: none; background-color: #f8f9fa;">
+                    <option value="recolhido" selected>Resgatado</option>
+                    <option value="adocao">Para Adoção (Visível no Site)</option>
+                </select>
+                <button style="background-color: var(--cor-principal, #2ea89c); color: white; border: none; border-radius: 6px; padding: 0 15px; cursor: pointer; font-weight: bold; transition: background 0.2s;" title="Atualizar Estado">
+                    <i class="fa fa-check"></i>
+                </button>
+            </div>
+        </div>
+    </div> 
+    </div> 
+
+</section>
+
+</main>
+        
+    <div id="modal-resgate" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="titulo-seccao" style="margin-bottom: 1.5rem; color:#2c3e50 ;">Novo Resgate</h2>
+            
+            <form action="/api/novo-resgate" method="POST" class="formulario-marcacao">
+                <div class="grid-inputs-duplos">
+                    <div class="grupo-input">
+                        <label for="especie">Espécie do Animal:</label>
+                        <select id="especie" name="especie" required onchange="mudarImagemResgates()">
+                            <option value="cao" selected>Cão</option>
+                            <option value="gato">Gato</option>
+                        </select>
+                    </div>
+                    
+                    <div class="grupo-input" style="align-items: center; justify-content: center;">
+                        <img id="foto-preview" src="../../img/icone_cao.jpg" alt="Pré-visualização" style="width: 120px; height: 120px; border-radius: 50%; border: 5px solid #2ea89c; object-fit: cover;">
+                    </div>
+                </div>
+
+                <div class="grupo-input">
+                    <label for="nome_animal">Nome Provisório (Opcional):</label>
+                    <input type="text" id="nome_animal" name="nome_animal" placeholder="Ex: Farrusco ou 'Sem Nome'">
+                </div>
+
+                <div class="grid-inputs-duplos">
+                    <div class="grupo-input">
+                        <label for="raca">Raça / Tipo:</label>
+                        <input type="text" id="raca" name="raca" placeholder="Ex: Indefinida" required>
+                    </div>
+                    <div class="grupo-input">
+                        <label for="idade_aprox">Idade Aproximada:</label>
+                        <select id="idade_aprox" name="idade_aprox" required>
+                            <option value="bebe">Bebé (Menos de 6 meses)</option>
+                            <option value="jovem">Jovem (6 meses a 2 anos)</option>
+                            <option value="adulto">Adulto</option>
+                            <option value="senior">Sénior</option>
+                        </select>
+                    </div>
+                </div>
+                    <div class="grid-inputs-duplos">
+                        <div class="grupo-input">
+                            <label for="estado_saude">Estado:</label>
+                            <input type="text" id="estado_saude" name="estado_saude" value="Resgatado" readonly style="background-color: #f0f0f0; color: #555; cursor: not-allowed; font-weight: bold;">
+                        </div>
+
+                        <div class="grupo-input">
+                            <label for="data_resgate">Data do Resgate:</label>
+                            <input type="date" id="data_resgate" name="data_resgate" required>
+                        </div>
+                    </div>
+
+                <div class="acoes-formulario" style="margin-top: 1rem;">
+                    <button type="button" class="btn-cancelar" onclick="fecharModalResgates()">Cancelar</button>
+                    <button type="submit" class="btn-salvar">Guardar Registo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+        <div id="modal-adocao" class="modal-overlay" style="display: none;">
+            <div class="modal-content" style="max-width: 550px;">
+                <h2 class="titulo-seccao" style="margin-bottom: 1.5rem; color: #e67e22;">
+                    <i class="fa fa-handshake"></i> Formalizar Adoção
+                </h2>
+                
+                <form id="form-formalizar-adocao" class="formulario-marcacao">
+                    
+                    <div class="grupo-input">
+                        <label for="id_animal_resgate" style="font-weight: bold; color: #2c3e50;">1. ID do Animal a Adotar:</label>
+                        <div style="position: relative;">
+                            <i class="fa fa-paw" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #95a5a6;"></i>
+                            <input type="text" id="id_animal_resgate" placeholder="Ex: 405" style="padding-left: 40px;" required>
+                        </div>
+                        <div id="resultado_animal_resgate" style="margin-top: 10px;"></div>
+                    </div>
+
+                    <hr style="border: none; border-top: 1px dashed #dcdde1; margin: 2rem 0;">
+
+                    <div class="grupo-input">
+                        <label for="nif_novo_dono" style="font-weight: bold; color: #2c3e50;">2. NIF do Novo Dono (Cliente Registado):</label>
+                        <div style="position: relative;">
+                            <i class="fa fa-id-card" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #95a5a6;"></i>
+                            <input type="text" id="nif_novo_dono" placeholder="Introduza os 9 dígitos do NIF" maxlength="9" style="padding-left: 40px;" required>
+                        </div>
+                        <div id="resultado_nif_dono" style="margin-top: 10px;"></div>
+                    </div>
+
+                    <div class="acoes-formulario" style="margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1.5rem; display: flex; justify-content: flex-end; gap: 15px;">
+                        <button type="button" class="btn-cancelar" onclick="fecharModalAdocao()">Cancelar</button>
+                        
+                        <button type="button" id="btn-confirmar-adocao" class="btn-adocao" style="opacity: 0.5; cursor: not-allowed;" disabled>
+                            Confirmar Adoção <i class="fa fa-check"></i>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+
+        <div id="modal-historico-adocoes" class="modal-overlay" style="display: none;">
+            <div class="modal-content" style="max-width: 850px; max-height: 85vh; display: flex; flex-direction: column;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2 class="titulo-seccao" style="color: #2c3e50; margin: 0;">
+                        <i class="fa fa-book-open" style="color: #f39c12; margin-right: 10px;"></i> Livro de Arquivos: Adoções
+                    </h2>
+                    <button onclick="fecharModalHistoricoAdocoes()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #7f8c8d; transition: color 0.2s;"><i class="fa fa-times"></i></button>
+                </div>
+
+                <div style="margin-bottom: 1.5rem; position: relative;">
+                    <i class="fa fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #95a5a6;"></i>
+                    <input type="text" placeholder="Pesquisar por NIF do dono, Nome do Animal ou ID..." style="width: 100%; padding: 12px 12px 12px 45px; border: 1px solid #dcdde1; border-radius: 8px; outline: none; font-size: 0.95rem; background-color: #f8f9fa;">
+                </div>
+
+                <div style="overflow-y: auto; flex-grow: 1; border: 1px solid #eee; border-radius: 8px;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                        <thead style="background-color: #f1f2f6; position: sticky; top: 0; z-index: 1;">
+                            <tr>
+                                <th style="padding: 15px; border-bottom: 2px solid #dcdde1; color: #2c3e50;">Data</th>
+                                <th style="padding: 15px; border-bottom: 2px solid #dcdde1; color: #2c3e50;">Animal</th>
+                                <th style="padding: 15px; border-bottom: 2px solid #dcdde1; color: #2c3e50;">Novo Dono</th>
+                                <th style="padding: 15px; border-bottom: 2px solid #dcdde1; color: #2c3e50;">NIF</th>
+                                <th style="padding: 15px; border-bottom: 2px solid #dcdde1; color: #2c3e50; text-align: center;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 15px; color: #7f8c8d; font-weight: bold;">Hoje</td>
+                                <td style="padding: 15px;"><strong>Luna</strong> <span style="color: #95a5a6;">(ID: 105)</span></td>
+                                <td style="padding: 15px;">João Silva</td>
+                                <td style="padding: 15px; color: #7f8c8d;">123456789</td>
+                                <td style="padding: 15px; text-align: center;">
+                                    <button style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 1.2rem;" title="Ver Termo de Adoção PDF"><i class="fa fa-file-pdf"></i></button>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 15px; color: #7f8c8d; font-weight: bold;">10/04/2026</td>
+                                <td style="padding: 15px;"><strong>Bolinha</strong> <span style="color: #95a5a6;">(ID: 88)</span></td>
+                                <td style="padding: 15px;">Ana Costa</td>
+                                <td style="padding: 15px; color: #7f8c8d;">987654321</td>
+                                <td style="padding: 15px; text-align: center;">
+                                    <button style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 1.2rem;" title="Ver Termo de Adoção PDF"><i class="fa fa-file-pdf"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 15px; color: #7f8c8d; font-weight: bold;">05/03/2026</td>
+                                <td style="padding: 15px;"><strong>Tareco</strong> <span style="color: #95a5a6;">(ID: 12)</span></td>
+                                <td style="padding: 15px;">Carlos Mendes</td>
+                                <td style="padding: 15px; color: #7f8c8d;">222333444</td>
+                                <td style="padding: 15px; text-align: center;">
+                                    <button style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 1.2rem;" title="Ver Termo de Adoção PDF"><i class="fa fa-file-pdf"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: #95a5a6; font-size: 0.85rem;"><i class="fa fa-info-circle"></i> A mostrar os últimos 30 registos.</span>
+                    <button type="button" class="btn-cancelar" onclick="fecharModalHistoricoAdocoes()">Fechar Registo</button>
+                </div>
+
+            </div>
+        </div>
+
+    <footer>
+            <p style="color: white; font-size: 0.9rem;">Área Reservada - Clínica Miacãomigo © 2026</p>
+    </footer>
+    <script src="../../../JS/rececao.js"> </script>
+    </body>
+</html>

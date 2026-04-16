@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Criar Conta - Clínica Miacãomigo</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../CSS/PaginaSite.css">
+    <link rel="stylesheet" href="../../CSS/login.css">
+
+  </head>
+
+  <body>
+    <header>
+      <a href="/frontend/Pag_principal.html" class="header-logo">
+          <img src="../../img/Logo_vet.png" alt="Logótipo Clínica Miacãomigo">
+      </a>
+      <div class="header-texto">
+          <h1>Clínica Miacãomigo</h1> 
+          <p>Clínica de cuidados para os nossos amigos de 4 patas!</p>
+      </div>
+    </header>
+
+<main class="login-container">
+      <form id="formRegisto">
+
+        <div id="passo1">
+          <h1 class="titulo-login">Criar Conta </h1>
+          
+          <div class="mb-3 text-start">
+            <label for="inputNome" class="form-label"><em>Nome Completo</em></label>
+            <input type="text" class="form-control" id="inputNome" placeholder="O teu nome e apelido">
+          </div>
+
+          <div class="mb-3 text-start">
+            <label for="inputEmail" class="form-label"><em>Endereço de Email</em></label>
+            <input type="email" class="form-control" id="inputEmail">
+            <div class="form-text text-light">Não partilharemos o teu email com terceiros.</div>
+          </div>
+
+          <div class="mb-3 text-start">
+            <label for="inputPassword1" class="form-label"><em>Palavra-passe</em></label>
+            <input type="password" class="form-control" id="inputPassword1">
+          </div>
+          
+          <div class="mb-3 text-start">
+            <label for="inputPassword2" class="form-label"><em>Confirmar Palavra-passe</em></label>
+            <input type="password" class="form-control" id="inputPassword2">
+          </div>  
+
+          <div class="d-flex gap-2">
+              <button type="button" class="btn btn-primary" onclick="avancarPasso()">Continuar</button>
+              <a href="../Logins_Sessões/login.html" class="btn btn-secondary">Voltar ao Login</a>
+          </div>
+        </div>
+
+        <div id="passo2" class="d-none">
+          <h1 class="titulo-login">Quase lá! </h1>
+
+          <div class="mb-3 text-start">
+            <label for="inputTelemovel" class="form-label"><em>Telemóvel</em></label>
+            <input type="tel" class="form-control" id="inputTelemovel">
+          </div>
+
+          <div class="mb-3 text-start">
+            <label for="inputDatanasc" class="form-label"><em>Data de Nascimento</em></label>
+            <input type="date" class="form-control" id="inputDatanasc">
+          </div>
+
+          <div class="mb-3 text-start">
+            <label for="inputMorada" class="form-label"><em>Morada Completa</em></label>
+            <input type="text" class="form-control" id="inputMorada">
+          </div>
+
+          <div class="mb-3 text-start">
+            <label for="inputNIF" class="form-label"><em>NIF</em></label>
+            <input type="text" class="form-control" id="inputNIF">
+          </div>
+
+          <div class="mb-3 text-start form-check">
+            <input type="checkbox" class="form-check-input" id="checkTermos">
+            <label class="form-check-label" for="checkTermos">Aceito os termos e condições</label>
+          </div>
+          
+          <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">Concluir Registo</button>
+              <button type="button" class="btn btn-secondary" onclick="voltarPasso()">Voltar</button>
+          </div>
+        </div>
+        
+      </form>
+    </main>
+
+    <footer>
+      <a href="https://www.facebook.com/ClinicaMiacaomigo" target="_blank" rel="noopener noreferrer">Siga-nos no Facebook</a>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/JS/auth_logins.js"></script>
+
+
+  </body>
+</html>

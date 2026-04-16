@@ -1,0 +1,367 @@
+/* se for necessário algumas das cores pra usarmos*/
+:root {
+    --cor-principal: #2ea89c;
+    --cor-base-escura: #2c3e50;
+    --cor-texto-secundario: #7f8c8d;
+    --cor-fundo-pagina: #f4f6f9;
+    --cor-alerta-vermelho: #e74c3c;
+}
+
+/* Reset básico para garantir que fica igual em todos os browsers */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #36485a; /* Fundo cinza muito claro */
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* --- Layout para Páginas com Menu Lateral --- */
+body.com-sidebar header,
+body.com-sidebar main,
+body.com-sidebar footer {
+    margin-left: 240px;
+    width: calc(100% - 240px);
+    transition: all 0.3s ease;
+}
+
+/* --- Logótipo Cabeçalho Superior --- */
+.header-logo {
+    position: absolute;
+    left: 2rem; 
+    display: flex;
+    align-items: center;
+}
+
+.header-logo img {
+    height: 75px; 
+    width: auto; 
+    border-radius: 8px; 
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.header-logo:hover img {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.header-logo:active img {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Botões --- */
+.btn-salvar {
+    background-color: #2ea89c;
+    color: white;
+    padding: 10px 25px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.btn-salvar:hover {
+    background-color: #258c82;
+    transform: translateY(-2px);
+}
+
+.btn-cancelar {
+    background-color: transparent;
+    color: #e74c3c;
+    border: 2px solid #e74c3c;
+    padding: 8px 25px;
+    font-size: 1rem;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-cancelar:hover {
+    background-color: #e74c3c;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(231, 76, 60, 0.2);
+}
+
+/* --- Cabeçalho --- */
+header {
+    background-color: #2ea89c;
+    color: white;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative; 
+}
+
+.header-texto {
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.header-botoes {
+    position: absolute;
+    right: 2rem;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.button {
+    background-color: white;
+    color: #2ea89c;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.button:hover {
+    background-color: #2c3e50;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.oculto {
+    display: none !important;
+}
+
+/* --- Conteúdo Principal --- */
+main {
+    flex: 1;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
+.main-content {
+    margin-left: 240px;
+    padding: 30px;
+}
+
+section {
+    margin-bottom: 3.5rem;
+}
+
+h2 {
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+}
+
+ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+
+ul li {
+    background-color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    font-weight: 600;
+    color: #555;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+ul li:hover {
+    border-color: #2ea89c;
+    color: #2ea89c;
+    transform: translateY(-3px);
+}
+
+img, video {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+/* --- Rodapé --- */
+footer {
+    background-color: #2c3e50;
+    text-align: center;
+    padding: 1.5rem;
+}
+
+footer a {
+    color: #66d9cc;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: color 0.3s;
+}
+
+footer a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+/* --- INPUT COM ÍCONE --- */
+.input-icon {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 0 10px;
+}
+
+.input-icon i {
+    color: #ffffffcc;
+    margin-right: 10px;
+}
+
+.input-icon input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    padding: 12px;
+    width: 100%;
+}
+
+/* =======================================================
+   SIDEBAR (Com Z-index Supremo e Sombra Premium)
+   ======================================================= */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 240px;
+    height: 100vh;
+    z-index: 9999; /* Força a sidebar a ficar por cima da página e do cabeçalho */
+    
+    display: flex;
+    flex-direction: column;
+    padding: 25px 20px;
+    
+    color: white;
+    border: none; /* Removi o border-right para a sombra brilhar mais */
+    
+    /* A SOMBRA MÁGICA: Resolve a "invasão" do bloco verde */
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4); 
+    
+    background-color: #2c3e50;
+    background-image: 
+        linear-gradient(rgba(44, 62, 80, 0.82), rgba(44, 62, 80, 0.90)), 
+        url('../img/1o_cao.png') !important;
+    background-size: cover !important;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    overflow-y: auto; /* Permite scroll se o ecrã for pequeno */
+    overflow-x: hidden;
+}
+
+/* =======================================================
+   MATAR A BARRA CINZA DE SCROLL DO NAVEGADOR
+   ======================================================= */
+.sidebar::-webkit-scrollbar {
+    width: 6px; /* Muito fininha */
+}
+.sidebar::-webkit-scrollbar-track {
+    background: transparent; /* Remove o cinza feio do fundo */
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15); /* Barrinha semi-transparente elegante */
+    border-radius: 10px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3); 
+}
+
+/* --- LOGOTIPO DA SIDEBAR --- */
+.logo {
+    display: block;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.logo img {
+    max-width: 160px;
+    height: auto;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover img {
+    transform: scale(1.05);
+}
+/* =======================================================
+   MENU DA SIDEBAR (Ajuste para o botão não bater na margem)
+   ======================================================= */
+.menu {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.menu a {
+    color: white;
+    text-decoration: none;
+    padding: 12px 15px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    
+    /* O SEGREDO DO BOTÃO: Tiramos 5px à largura para compensar o avanço */
+    width: calc(100% - 5px); 
+}
+
+.menu a:hover {
+    background: #2ea89c;
+    transform: translateX(5px);
+}
+
+.menu a.active {
+    background: #2ea89c;
+    transform: translateX(5px);
+    border-radius: 10px;
+    /* BÓNUS: Uma sombra no botão ativo dá um ar super profissional */
+    box-shadow: 0 4px 10px rgba(46, 168, 156, 0.4); 
+}
+
+.menu i {
+    width: 25px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.menu hr {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    margin: 15px 0;
+}

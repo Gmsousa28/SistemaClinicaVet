@@ -1,0 +1,153 @@
+/* HEADER ADMIN */
+.header-admin {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center;
+    text-align: center;
+}
+
+/* MAIN CENTRADO */
+.dashboard-main {
+    margin-left: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px; 
+    min-height: calc(100vh - 120px);
+    justify-content: flex-start;
+}
+
+/* GRID DA DASHBOARD */
+.dashboard-acoes {
+    display: grid;
+    grid-template-columns: repeat(3, 260px);
+    gap: 40px;
+    justify-content: center;
+    margin: 0 auto; 
+}
+
+/* CARDS 🔥 UPGRADE VISUAL */
+.card-acao {
+    width: 260px;
+    height: 140px;
+    background-color: #ffffff;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #2c3e50;
+    font-weight: bold;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border: 1px solid #edf2f7;
+}
+
+/* HOVER DOS CARDS */
+.card-acao:hover {
+    background-color: #1abc9c;
+    color: white;
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 12px 20px rgba(26, 188, 156, 0.3);
+    border-color: #16a085;
+}
+
+/* UTILIZADORES / TABELAS - TUDO CENTRADO */
+.titulo-seccao {
+    color: white;
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 20px;
+    margin-top: 0;
+}
+
+.tabela-container {
+    width: 95%;
+    max-width: 1200px;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin: 20px auto; /* Centra o bloco branco */
+}
+
+.tabela-consultas {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Mantém colunas alinhadas */
+}
+
+.tabela-consultas th {
+    background-color: #f8f9fa;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    padding: 15px;
+    border-bottom: 2px solid #edf2f7;
+    text-align: center; /* Centra títulos */
+}
+
+.tabela-consultas td {
+    padding: 15px;
+    text-align: center; /* Centra dados */
+    border-bottom: 1px solid #edf2f7;
+    color: #333;
+    vertical-align: middle;
+}
+
+/* Centrar Botões de Ação */
+.tabela-consultas td:last-child {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    border-bottom: none;
+}
+
+.tabela-consultas tr:hover {
+    background-color: #f1fcf9;
+    transition: 0.2s;
+}
+
+/* MODAL */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 550px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+}
+
+.input-modal {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+}
+
+#modalEdicao label {
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 0.9rem;
+    display: block;
+    margin-top: 15px;
+}

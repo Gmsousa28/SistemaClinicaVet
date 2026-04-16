@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clientes - Clínica Miacãomigo</title>
+
+  <link rel="stylesheet" href="../../CSS/PaginaSite.css">
+  <link rel="stylesheet" href="../../CSS/css_rececao/rececionista.css">
+  <link rel="stylesheet" href="../../CSS/css_rececao/marcacoes_recep.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body class="com-sidebar">
+
+  <header>
+      <div class="header-texto">
+          <h1>Ficheiro de Clientes</h1> 
+          <p>Gestão de clientes e fichas de animais</p>
+      </div>
+      <nav class="header-botoes">
+          <a href="rececionista.html" class="button">Voltar ao Dashboard</a>
+      </nav>
+  </header>
+
+  <section class="sidebar">
+    <a href="../../Pag_principal.html" class="logo">
+      <img src="../../img/Logo_vet.png" alt="Logo Clínica">
+    </a>
+    <hr>
+    <nav class="menu">
+        <a href="rececionista.html"><i class="fa fa-home"></i> Dashboard</a>
+        <a href="perfil_funcionario.html"><i class="fa fa-user"></i> Perfil</a>
+        <a href="entradas.html"><i class="fa-regular fa-clock"></i> Entradas </a>
+        <a href="marcacoes_recep.html"><i class="fa fa-calendar"></i> Marcações </a>
+        <a href="faturacao_recep.html"><i class="fa fa-file-invoice"></i> Faturação </a>
+        <a href="clientes_recep.html" class="active"><i class="fa fa-users"></i> Clientes </a>
+        <a href="resg_ado.html"><i class="fa fa-paw" ></i> Resgates e Adoções </a>
+        <hr>
+        <a href="../../Pag_principal.html"><i class="fa fa-sign-out"></i> Sair</a>
+    </nav>
+  </section>
+
+  <main class="dashboard-main">
+
+    <section class="barra-acoes-topo" style="margin-bottom: 2rem;">
+        <h2 class="titulo-seccao" style="margin-bottom: 1rem;">Gestão de Clientes</h2>
+        
+        <button type="button" class="btn-primario" onclick="editarCliente('novo')">
+            <i class="fa fa-user-plus" style="margin-right: 8px;"></i> Registar Cliente
+        </button>
+    
+      </section>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        
+        <div class="grupo-input" style="width: 400px; margin-bottom: 0;">
+            <div style="position: relative;">
+                <i class="fa fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #95a5a6; pointer-events: none;"></i>
+                <input type="text" id="pesquisa_cliente" placeholder="Pesquisar cliente..." style="padding-left: 40px; border-radius: 25px; width: 100%; box-sizing: border-box;">
+            </div>
+        </div>        
+    </div>
+
+    <section class="cartao-formulario" style="max-width: 100%; padding: 2rem;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+          <tr style="border-bottom: 2px solid #ecf0f1; color: var(--cor-texto-secundario);">
+            <th style="padding: 15px 10px;">Nome</th>
+            <th style="padding: 15px 10px;">Morada</th>
+            <th style="padding: 15px 10px;">Email</th>
+            <th style="padding: 15px 10px;">NIF</th>
+            <th style="padding: 15px 10px;">Contacto</th>
+            <th style="padding: 15px 10px; text-align: right;">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaClientes">
+            </tbody>
+      </table>
+    </section>
+  </main>
+
+ <div id="modalCliente" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(44, 62, 80, 0.8); z-index: 1000; justify-content: center; align-items: center;">
+    
+    <style>
+      .input-leitura { width: 100%; padding: 12px 15px; border: 1px solid #dcdde1; border-radius: 8px; background-color: #f8f9fa; color: #2f3640; box-sizing: border-box; font-family: inherit; outline: none; }
+      .btn-outline-vermelho { background: transparent; border: 2px solid #e74c3c; color: #e74c3c; padding: 12px 30px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: all 0.3s; }
+      .btn-outline-vermelho:hover { background: #e74c3c; color: white; }
+      .cartao-animal-lista { display: flex; align-items: center; padding: 15px; border: 1px solid #f1f2f6; border-radius: 12px; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border-left: 4px solid var(--cor-principal); margin-bottom: 15px; }
+    </style>
+
+    <div class="cartao-formulario" style="max-width: 650px; width: 100%; padding: 2.5rem; position: relative; max-height: 90vh; overflow-y: auto;">
+      
+      <button onclick="document.getElementById('modalCliente').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.5rem; color: #7f8c8d; cursor: pointer;">&times;</button>
+      
+      <h2 style="color: var(--cor-base-escura); margin-bottom: 1.5rem; text-align: center;">Ficha de Cliente</h2>
+      
+      <div class="grid-inputs-duplos" style="margin-bottom: 1rem;">
+        <div class="grupo-input">
+          <label style="font-weight: bold;">NIF:</label>
+          <input type="text" id="ver_nif" class="input-leitura" readonly>
+        </div>
+        <div class="grupo-input">
+          <label style="font-weight: bold;">Nome Completo:</label>
+          <input type="text" id="ver_nome" class="input-leitura" readonly>
+        </div>
+        <div class="grupo-input">
+          <label style="font-weight: bold;">E-mail:</label>
+          <input type="text" id="ver_email" class="input-leitura" readonly>
+        </div>
+        <div class="grupo-input">
+          <label style="font-weight: bold;">Nº Telemóvel:</label>
+          <input type="text" id="ver_contacto" class="input-leitura" readonly>
+        </div>
+      </div>
+
+      <div class="grupo-input" style="margin-bottom: 2.5rem;">
+        <label style="font-weight: bold;">Morada:</label>
+        <input type="text" id="ver_morada" class="input-leitura" readonly>
+      </div>
+      
+      <h3 style="color: var(--cor-principal); margin-bottom: 1rem; font-size: 1.2rem;">Animais Registados</h3>
+      
+      <div id="listaAnimaisVisualizacao" style="margin-bottom: 2.5rem;">
+          </div>
+
+      <div style="display: flex; justify-content: center; gap: 15px;">
+        <button type="button" onclick="document.getElementById('modalCliente').style.display='none'" class="btn-outline-vermelho">Fechar Ficha</button>
+        <a href="marcacoes_recep.html" class="btn-primario" style="padding: 12px 30px; border-radius: 25px; text-decoration: none; display: flex; align-items: center;">Agendar Consulta</a>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="modalEdicao" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(44, 62, 80, 0.8); z-index: 1000; justify-content: center; align-items: center;">
+    
+
+    <div class="cartao-formulario" style="max-width: 650px; width: 100%; padding: 2.5rem; position: relative; max-height: 90vh; overflow-y: auto;">
+      
+      <button class="fechar-modal" onclick="document.getElementById('modalEdicao').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.5rem; color: #7f8c8d; cursor: pointer; transition: color 0.2s;">&times;</button>
+      
+      <h2 id="tituloEdicao" style="color: var(--cor-base-escura); margin-bottom: 2rem; text-align: center;">Registar Novo Cliente</h2>
+      
+      <form onsubmit="event.preventDefault(); salvarEdicao();">
+        
+        <div class="grid-inputs-duplos" style="margin-bottom: 1rem;">
+          <div class="grupo-input">
+            <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura);">Nome Completo:</label>
+            <input type="text" id="editNome" class="input-premium" placeholder="Ex: João Silva" required>
+          </div>
+          <div class="grupo-input">
+            <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura);">NIF:</label>
+            <input type="text" id="editNif" class="input-premium" placeholder="Ex: 123456789" maxlength="9" required>
+          </div>
+          <div class="grupo-input">
+            <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura);">E-mail:</label>
+            <input type="email" id="editEmail" class="input-premium" placeholder="Ex: joao@email.com">
+          </div>
+          <div class="grupo-input">
+            <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura);">Nº Telemóvel:</label>
+            <input type="text" id="editContacto" class="input-premium" placeholder="Ex: 912 345 678" required>
+          </div>
+        </div>
+
+        <div class="grupo-input" style="margin-bottom: 2.5rem;">
+          <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura);">Morada:</label>
+          <input type="text" id="editMorada" class="input-premium" placeholder="Ex: Rua das Flores, nº 12, Porto">
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 15px; border-top: 1px solid #eee; padding-top: 2rem;">
+          <button type="button" onclick="document.getElementById('modalEdicao').style.display='none'" class="btn-cancelar" style="padding: 12px 30px; border-radius: 25px; font-weight: bold;">Cancelar</button>
+          <button type="submit" class="btn-salvar" style="padding: 12px 30px; border-radius: 25px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+            <i class="fa fa-save"></i> Guardar Alterações
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <footer>
+    <p style="color: white; font-size: 0.9rem; text-align: center; margin-top: 20px;">Área Reservada - Clínica Miacãomigo © 2026</p>
+  </footer>
+
+  <script src="../../../JS/adm_recep_clientes.js"> </script>
+
+</body>
+</html>
