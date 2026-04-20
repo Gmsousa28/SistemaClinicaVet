@@ -1,0 +1,21 @@
+ /* Estilo para a caixa de texto manual */
+    .caixa-texto-manual {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 1rem;
+        color: #333;
+        background-color: white;
+        transition: all 0.3s ease;
+        resize: vertical; /* Permite ao utilizador aumentar a caixa na vertical se precisar de escrever muito */
+        min-height: 120px;
+    }
+
+    /* Efeito quando o utilizador clica para escrever */
+    .caixa-texto-manual:focus {
+        outline: none;
+        border-color: var(--cor-base-escura, #007bff);
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1); /* Um brilho suave à volta da caixa */
+    }

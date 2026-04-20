@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Perfil do Veterinário - Clínica Miacãomigo</title>
+        
+        <link rel="stylesheet" href="../../CSS/PaginaSite.css">
+        <link rel="stylesheet" href="../../CSS/perfis.css"> 
+        <link rel="stylesheet" href="../../CSS/css_vet/header_vet.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    </head>
+
+    <body class="com-sidebar">
+        <section class="top-header">
+            <h1>Painel Clínico</h1>
+        </section>
+
+        <section class="sidebar">
+            <a href="#" class="logo">
+                <img src="../../img/Logo_vet.png" alt="Logótipo Clínica">
+            </a>
+            <hr>
+            <nav class="menu">
+                <a href="dashboard_vet.html"><i class="fa fa-home"></i> Dashboard</a>
+                <a href="perfil_vet.html" class="active"><i class="fa fa-user"></i> Perfil</a>
+                <!--<a href="minhas_consultas.html"><i class="fa fa-calendar-check"></i> Minha Agenda</a>
+                <a href="pacientes.html"><i class="fa fa-paw"></i> Pacientes</a>
+                <a href="resultados_exames.html"><i class="fa fa-vials"></i> Exames</a>
+                <a href="definicoes_vet.html"><i class="fa fa-cog"></i> Definições</a>-->
+                <hr>
+                <a href="../../Pag_principal.html"><i class="fa fa-sign-out"></i> Sair</a>
+            </nav>
+        </section>
+        
+        <main>
+            <section class="dashboard">
+                <section class="grid">
+
+                    <section class="perfil">
+                        <section class="foto">
+                            <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=150&q=80" alt="Foto do Dr. João Silva">
+                        </section>
+                        <h3>Dr. João Silva</h3>
+                        <p class="user" style="color: #2ea89c; font-weight: bold;">Médico Veterinário</p>
+                        <section class="perfil-bottom">
+                            <button class="editar">Editar Perfil</button>
+                            <br><small>Na clínica desde 2018</small>
+                        </section>
+                    </section>
+
+                    <section class="coluna-direita">
+
+                        <section class="conta"> 
+                            <h2 class="titulo-conta">Dados Profissionais</h2>
+                            <section class="info-grid">
+                                <section class="campo">
+                                    <label>Nome</label>
+                                    <div class="input-icon">
+                                        <i class="fa fa-user"></i>
+                                        <input type="text" value="João" readonly>
+                                    </div>
+                                </section>
+                                <section class="campo">
+                                    <label>Apelido</label>
+                                    <div class="input-icon">
+                                        <i class="fa fa-user"></i>
+                                        <input type="text" value="Silva" readonly>
+                                    </div>
+                                </section>
+                                <section class="campo">
+                                    <label>Email Profissional</label>
+                                    <div class="input-icon">
+                                        <i class="fa fa-envelope"></i>
+                                        <input type="email" value="dr.joao@miacaomigo.pt">
+                                    </div>
+                                </section>
+                                <section class="campo">
+                                    <label>NIF</label>
+                                    <div class="input-icon">
+                                        <i class="fa fa-id-badge"></i>
+                                        <input type="text" value="OMV-4567" readonly>
+                                    </div>
+                                </section>
+                                <section class="campo">
+                                    <label>Telefone</label>
+                                    <div class="input-icon">
+                                        <i class="fa fa-phone"></i>
+                                        <input type="text" value="Ext. 204">
+                                    </div>
+                                </section>
+                                <section class="campo">
+                                    <label>Especialidade</label>
+                                    <div class="input-icon">
+                                        <i class="fa fa-stethoscope"></i>
+                                        <input type="text" value="Cirurgia Geral" readonly>
+                                    </div>
+                                </section>
+                            </section>
+                        </section>
+                    </section> 
+                </section> 
+            </section> 
+        </main>
+    </body>
+</html>
