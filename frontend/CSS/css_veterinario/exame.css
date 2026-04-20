@@ -1,0 +1,40 @@
+.grid-opcoes-selecao {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 1.5rem !important;
+    margin-bottom: 2.5rem !important;
+    width: 100%; /* Garante que ocupa o espaço todo */
+}
+
+/* Caso ainda não tenha formatado o interior dos cartões, aqui vai uma base para eles ficarem bonitos no grid: */
+.cartao-opcao-radio {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Faz com que todos os cartões tenham a mesma altura */
+}
+
+.conteudo-cartao-opcao {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+/* Exemplo de efeito ao passar o mouse ou selecionar */
+.cartao-opcao-radio:hover .conteudo-cartao-opcao {
+    border-color: var(--cor-base-escura, #007bff);
+    background-color: #f8f9fa;
+}
+
+.esconder-radio:checked + .conteudo-cartao-opcao {
+    border-color: var(--cor-base-escura, #007bff);
+    background-color: #e9f5ff;
+    font-weight: bold;
+}
