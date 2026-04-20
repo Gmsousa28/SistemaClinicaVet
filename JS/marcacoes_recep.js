@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // VERIFICAÇÃO DE SEGURANÇA: Só executa se estivermos na página de Marcações!
     if (inputNif && containerAnimais) {
         
-        // Base de Dados Simulada de Clientes
+        // Base de Dados Simulada de Clientes (Pronto para substituir por API Fetch)
         const clientesTeste = {
             "123456789": {
                 nome: "João Silva",
@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // =======================================================
     // PASSO 2: PREPARAÇÃO PARA BASE DE DADOS - VETERINÁRIOS
     // =======================================================
+    // (Pronto para substituir por API Fetch)
     const veterinariosTeste = [
         { id: "qualquer", nome: "Qualquer Médico", especialidade: "Disponível mais cedo", icone: "fa-user-md" },
         { id: 1, nome: "Dr. Rui Silva", especialidade: "Cirurgia Geral", icone: "fa-user-doctor" },
@@ -104,6 +105,35 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             containerVets.innerHTML += vetHTML;
         });
+    }
+
+    // =======================================================
+    // PASSO 2.1: LÓGICA DE VISIBILIDADE DOS VETERINÁRIOS
+    // =======================================================
+    const checkboxesServico = document.querySelectorAll('input[name="servico"]');
+    const seccaoVeterinario = document.getElementById('seccao-veterinario');
+    const checkboxConsulta = document.getElementById('check-consulta');
+
+    if (checkboxesServico.length > 0 && seccaoVeterinario && checkboxConsulta) {
+        
+        function validarVisibilidadeVeterinarios() {
+            if (checkboxConsulta.checked) {
+                seccaoVeterinario.style.display = 'block';
+                seccaoVeterinario.style.animation = "zoom 0.3s ease-out"; 
+            } else {
+                seccaoVeterinario.style.display = 'none';
+                
+                // Limpeza para a API: Desmarca os médicos se a consulta não estiver selecionada
+                const radiosMedicos = document.querySelectorAll('input[name="id_veterinario"]');
+                radiosMedicos.forEach(radio => radio.checked = false);
+            }
+        }
+
+        checkboxesServico.forEach(checkbox => {
+            checkbox.addEventListener('change', validarVisibilidadeVeterinarios);
+        });
+
+        validarVisibilidadeVeterinarios(); // Corre uma vez na inicialização
     }
 
     // =======================================================
@@ -258,9 +288,9 @@ window.mudarPasso = function(direcao) {
 };
 
 
-
-// LÓGICA DO HISTÓRICO DE MARCAÇÕES 
-
+// =======================================================
+// LÓGICA DO HISTÓRICO DE MARCAÇÕES (MODAL E API)
+// =======================================================
 
 window.abrirModalHistoricoMarcacoes = function() {
     const modal = document.getElementById('modal-historico-marcacoes');

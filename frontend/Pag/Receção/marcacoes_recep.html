@@ -96,7 +96,6 @@
                             <p style="color: #7f8c8d; width: 100%; text-align: center; font-style: italic;">Introduza um NIF válido em cima para procurar os animais do cliente.</p>
                         </div>
                     </div> 
-
                     <div class="conteudo-passo" id="passo-2" style="display: none;">
                         <h3 style="color: var(--cor-base-escura); margin-bottom: 1.5rem; text-align: center;">Detalhes do Serviço</h3>
 
@@ -104,18 +103,10 @@
                         
                         <div class="grid-opcoes-selecao" style="margin-bottom: 2.5rem;">
                             <label class="cartao-opcao-radio">
-                                <input type="checkbox" name="servico" value="consulta" class="esconder-radio">
+                                <input type="checkbox" name="servico" value="consulta" class="esconder-radio" id="check-consulta">
                                 <div class="conteudo-cartao-opcao">
                                     <i class="fa fa-stethoscope icon-opcao"></i>
                                     <span>Consulta</span>
-                                </div>
-                            </label>
-                            
-                            <label class="cartao-opcao-radio">
-                                <input type="checkbox" name="servico" value="vacinacao" class="esconder-radio">
-                                <div class="conteudo-cartao-opcao">
-                                    <i class="fa fa-syringe icon-opcao"></i>
-                                    <span>Vacinação</span>
                                 </div>
                             </label>
                             
@@ -136,9 +127,11 @@
                             </label>
                         </div>
                         
-                        <label style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">2. Veterinário (Opcional):</label>
-                        <div class="grid-opcoes-selecao" id="container-vets">
-                            </div>
+                        <div id="seccao-veterinario" style="display: none;">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">2. Veterinário (Opcional):</label>
+                            <div class="grid-opcoes-selecao" id="container-vets">
+                                </div>
+                        </div>
                     </div>
 
                     <div class="conteudo-passo" id="passo-3" style="display: none;">
