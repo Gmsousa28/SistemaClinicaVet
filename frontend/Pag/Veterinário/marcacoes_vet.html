@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="../../CSS/PaginaSite.css">
         <link rel="stylesheet" href="../../CSS/css_rececao/rececionista.css">
         <link rel="stylesheet" href="../../CSS/css_rececao/marcacoes_recep.css">
+        <link rel="stylesheet" href="../../CSS/css_veterinario/medicamentos.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     </head>
 
@@ -47,12 +48,6 @@
            <section class="barra-acoes-topo" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; margin-bottom: 2rem;">
                 
                 <h2 class="titulo-seccao" style="margin: 0; min-width: 300px;">Nova Marcação</h2>
-                
-                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                    <button class="btn-historico" onclick="abrirModalHistoricoMarcacoes()">
-                        <i class="fa fa-calendar-check" style="color: #7f8c8d;"></i> Histórico de Marcações
-                    </button>
-                </div>
 
             </section>
             <section class="cartao-formulario"> 
@@ -94,7 +89,7 @@
                         <div class="grid-animais-selecao">
                             <p style="color: #7f8c8d; width: 100%; text-align: center; font-style: italic;">Introduza um NIF válido em cima para procurar os animais do cliente.</p>
                         </div>
-                    </div> 
+                    </div>
 
                     <div class="conteudo-passo" id="passo-2" style="display: none;">
                         <h3 style="color: var(--cor-base-escura); margin-bottom: 1.5rem; text-align: center;">Detalhes do Serviço</h3>
@@ -109,35 +104,21 @@
                                     <span>Consulta</span>
                                 </div>
                             </label>
-                            
-                            <label class="cartao-opcao-radio">
-                                <input type="checkbox" name="servico" value="vacinacao" class="esconder-radio">
-                                <div class="conteudo-cartao-opcao">
-                                    <i class="fa fa-syringe icon-opcao"></i>
-                                    <span>Vacinação</span>
-                                </div>
-                            </label>
-                            
-                            <label class="cartao-opcao-radio">
-                                <input type="checkbox" name="servico" value="banho" class="esconder-radio">
-                                <div class="conteudo-cartao-opcao">
-                                    <i class="fa fa-bath icon-opcao"></i>
-                                    <span>Banho</span>
-                                </div>
-                            </label>
-                            
-                            <label class="cartao-opcao-radio">
-                                <input type="checkbox" name="servico" value="tosquia" class="esconder-radio">
-                                <div class="conteudo-cartao-opcao">
-                                    <i class="fa fa-cut icon-opcao"></i>
-                                    <span>Tosquia</span>
-                                </div>
-                            </label>
                         </div>
                         
                         <label style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">2. Veterinário (Opcional):</label>
-                        <div class="grid-opcoes-selecao" id="container-vets">
+
+                        <div class="grid-opcoes-selecao" id="container-vets" style="margin-bottom: 2.5rem;">
                             </div>
+
+                        <label for="texto-relatorios" style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">3. Motivo da próxima consulta:</label>
+                        
+                        <textarea 
+                            id="texto-relatorios"
+                            name="relatorio_consulta" 
+                            class="caixa-texto-manual" 
+                            placeholder="Escreva aqui o relatorio clinico desta consulta"
+                        ></textarea>
                     </div>
 
                     <div class="conteudo-passo" id="passo-3" style="display: none;">
@@ -223,5 +204,8 @@
         </footer>
         
         <script src="../../../JS/marcacoes_recep.js"></script>
+        <script src="../../../JS/medicamentos.js"></script>
+
+
     </body>
 </html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Relatório de Consulta - Clínica Miacãomigo</title>
+
+        <link rel="stylesheet" href="../../CSS/PaginaSite.css">
+        <link rel="stylesheet" href="../../CSS/css_rececao/rececionista.css">
+        <link rel="stylesheet" href="../../CSS/css_rececao/marcacoes_recep.css">
+        <link rel="stylesheet" href="../../CSS/css_veterinario/medicamentos.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    </head>
+
+    <body class="com-sidebar">
+        <header>
+            <div class="header-texto">
+                <h1>Relatório de Consulta</h1> 
+                <p>Preencha para finalizar a consulta</p>
+            </div>
+                
+            <nav class="header-botoes">
+                <a href="../Veterinário/dashboard_vet.html" class="button">Voltar à consulta</a>
+            </nav>
+        </header>
+
+        <section class="sidebar">
+            <a href="../../frontend/Pag_principal.html" class="logo">
+                <img src="../../img/Logo_vet.png" alt="Logótipo Clínica Miacãomigo">
+            </a>
+
+        </section>
+
+        <main class="dashboard-main">
+
+            <section class="cartao-formulario">
+
+                <form action="/api/finalizar-consulta" method="POST" class="formulario-marcacao">
+                    <div class="conteudo-passo" id="passo-1" style="display: block;">
+                        <h3 style="color: var(--cor-base-escura); margin-bottom: 1.5rem; text-align: center;">Preencher Relatório da Consulta</h3>
+
+                        <label for="relatorio-consulta" style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">
+                            Escreva o relatório da consulta:
+                        </label>
+
+                        <textarea
+                            id="relatorio-consulta"
+                            name="relatorio_consulta"
+                            class="caixa-texto-manual"
+                            rows="12"
+                            placeholder="Descreva aqui a avaliação clínica, diagnóstico, tratamento indicado e observações finais da consulta..."
+                            required></textarea>
+                    </div>
+
+                    <div class="acoes-formulario" style="margin-top: 3rem; border-top: 1px solid #eee; padding-top: 1.5rem; display: flex; justify-content: flex-end;">
+                        <button type="submit" class="btn-primario" id="btn-finalizar" style="background-color: #27ae60;">
+                            Submeter e Finalizar Consulta <i class="fa fa-check" style="margin-left: 8px;"></i>
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <footer>
+            <p style="color: white; font-size: 0.9rem;">Área Reservada - Clínica Miacãomigo © 2026</p>
+        </footer>
+        <script src="../../../JS/rececao.js"></script> 
+        <script src="../../../JS/consulta_meio.js"></script> 
+    </body>
+</html>

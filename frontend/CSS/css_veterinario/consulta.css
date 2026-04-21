@@ -1,0 +1,4 @@
+.tabela-consultas tbody tr:hover {
+    background-color: #f1f8f7; /* Um verde/azul muito claro, ajusta ao teu design */
+    transition: background-color 0.3s ease;
+}
