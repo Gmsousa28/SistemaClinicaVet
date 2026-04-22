@@ -12,6 +12,9 @@
     </head>
 
     <body class="com-sidebar">
+        <div id="alerta-sucesso">
+            <i class="fa fa-check-circle"></i> Perfil atualizado com sucesso!
+        </div>
         <section class="top-header">
             <h1>Painel do Perfil</h1>
         </section>
@@ -37,8 +40,15 @@
                 <section class="grid">
 
                     <section class="perfil">
-                        <section class="foto">
-                            <img src="https://i.pravatar.cc/150" alt="foto funcionario">
+                        <section class="foto-container">
+                            <img src="../../img/imagemdefault.png" alt="Foto de perfil padrão" id="foto-perfil">
+                            
+                            <input type="file" id="input-foto" accept="image/*" style="display: none;">
+                            
+                            <label for="input-foto" class="overlay-foto">
+                                <i class="fa fa-camera"></i>
+                                <span>Alterar</span>
+                            </label>
                         </section>
                         <h3>João Silva</h3>
                         <p class="user">@joao</p>
@@ -48,88 +58,181 @@
                         </section>
                     </section>
 
-                    <section class="coluna-direita">
-
+                    <section class="coluna-principal">
+                        
                         <section class="conta"> 
                             <h2 class="titulo-conta">Dados da Conta</h2>
                             <section class="info-grid">
                                 <section class="campo">
                                     <label>Nome</label>
-                                    <div class="input-icon">
-                                        <i class="fa fa-user"></i>
+                                    <div class="input-icon"><i class="fa fa-user"></i>
                                         <input type="text" value="João">
                                     </div>
                                 </section>
                                 <section class="campo">
                                     <label>Apelido</label>
-                                    <div class="input-icon">
-                                        <i class="fa fa-user"></i>
+                                    <div class="input-icon"><i class="fa fa-user"></i>
                                         <input type="text" value="Silva">
                                     </div>
                                 </section>
                                 <section class="campo">
                                     <label>Email</label>
-                                    <div class="input-icon">
-                                        <i class="fa fa-envelope"></i>
+                                    <div class="input-icon"><i class="fa fa-envelope"></i>
                                         <input type="email" value="joao@gmail.com">
                                     </div>
                                 </section>
                                 <section class="campo">
                                     <label>NIF</label>
-                                    <div class="input-icon">
-                                        <i class="fa fa-id-card"></i>
+                                    <div class="input-icon"><i class="fa fa-id-card"></i>
                                         <input type="text" value="123456789">
                                     </div>
                                 </section>
                                 <section class="campo">
                                     <label>Telefone</label>
-                                    <div class="input-icon">
-                                        <i class="fa fa-phone"></i>
+                                    <div class="input-icon"><i class="fa fa-phone"></i>
                                         <input type="text" value="912345678">
                                     </div>
                                 </section>
                                 <section class="campo">
                                     <label>Morada</label>
-                                    <div class="input-icon">
-                                        <i class="fa fa-location-dot"></i>
+                                    <div class="input-icon"><i class="fa fa-location-dot"></i>
                                         <input type="text" value="Rua Exemplo, Lisboa">
                                     </div>
                                 </section>
                             </section>
                         </section>
 
-                        <section class="meus-animais">
-                            <h3>Os Meus Animais</h3>
-                            <div class="animais-lista">
-                                <div class="animal-card">
-                                    <img src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=150&q=80">
-                                    <p>Rex</p>
-                                    <small>Cão</small>
-                                </div>
-                                <div class="animal-card">
-                                    <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=150&q=80">
-                                    <p>Mimi</p>
-                                    <small>Gato</small>
-                                </div>
-                                <div class="animal-card adicionar">
-                                    <div class="circulo-add">
-                                        <i class="fa fa-plus"></i>
+                        <div class="linha-inferior">
+                            <section class="meus-animais">
+                                <h3>Os Meus Animais</h3>
+                                <div class="animais-lista">
+                                    <div class="animal-card">
+                                        <div class="foto-animal-wrapper">
+                                            <img src="../../img/icone_cao.jpg">
+                                            <div class="acoes-animal">
+                                                <button class="btn-editar-animal" title="Editar"><i class="fa fa-pencil"></i></button>
+                                                <button class="btn-apagar-animal" title="Remover"><i class="fa fa-trash"></i></button>
+                                            </div>
+                                        </div>
+                                        <p class="nome-animal-texto">Rex</p>
+                                        <small class="especie-animal-texto">Cão</small>
                                     </div>
-                                    <p>Adicionar</p>
+                                    <div class="animal-card">
+                                        <div class="foto-animal-wrapper">
+                                            <img src="../../img/icone_gato.jpg">
+                                            <div class="acoes-animal">
+                                                <button class="btn-editar-animal" title="Editar"><i class="fa fa-pencil"></i></button>
+                                                <button class="btn-apagar-animal" title="Remover"><i class="fa fa-trash"></i></button>
+                                            </div>
+                                        </div>
+                                        <p class="nome-animal-texto">Mimi</p>
+                                        <small class="especie-animal-texto">Gato</small>
+                                    </div>
+                                    
+                                    <div class="animal-card adicionar">
+                                        <div class="circulo-add"><i class="fa fa-plus"></i></div>
+                                        <p>Adicionar</p>
+                                    </div>
                                 </div>
-                            </div>
-                        </section>
+                            </section>
 
-                        <section class="avisos">
-                            <h3>Avisos</h3>
-                            <p class="aviso">Consulta do seu animal marcada às 14:30</p>
-                            <p class="aviso">Vacinação pendente</p>
-                            <p class="aviso">Lembrete de consulta amanhã</p>
-                        </section>
+                            <section class="avisos">
+                                <h3>Avisos</h3>
+                                
+                                <div class="aviso">
+                                    <div class="aviso-texto">
+                                        <i class="fa fa-info-circle"></i> Consulta do seu animal marcada às 14:30
+                                    </div>
+                                    <button class="btn-fechar-aviso" title="Dispensar"><i class="fa fa-times"></i></button>
+                                </div>
+                                
+                                <div class="aviso aviso-importante">
+                                    <div class="aviso-texto">
+                                        <i class="fa fa-exclamation-circle"></i> Vacinação pendente 
+                                        <a href="consultas_cliente.html" class="link-acao">Marcar agora</a>
+                                    </div>
+                                    <button class="btn-fechar-aviso" title="Dispensar"><i class="fa fa-times"></i></button>
+                                </div>
+
+                                <div class="aviso">
+                                    <div class="aviso-texto">
+                                        <i class="fa fa-bell"></i> Lembrete de consulta amanhã
+                                    </div>
+                                    <button class="btn-fechar-aviso" title="Dispensar"><i class="fa fa-times"></i></button>
+                                </div>
+                            </section>
+                        </div>
 
                     </section> 
+
                 </section> 
-            </section> 
+
+            </section>
+            
         </main>
+
+       <div id="modal-animal" class="modal-overlay">
+            <div class="modal-content">
+                <span class="fechar-modal"><i class="fa fa-times"></i></span>
+                <h2>Adicionar Novo Animal</h2>
+                
+                <div class="foto-animal-upload">
+                    <img src="../../img/imagemdefault.png" alt="Foto do Novo Animal" id="preview-novo-animal">
+                    <input type="file" id="input-foto-animal" accept="image/*" style="display: none;">
+                    <label for="input-foto-animal" class="btn-escolher-foto">
+                        <i class="fa fa-camera"></i> Escolher Foto
+                    </label>
+                </div>
+                
+                <div class="campo" style="margin-bottom: 15px;">
+                    <label>Nome do Animal</label>
+                    <div class="input-icon"><i class="fa fa-paw"></i>
+                        <input type="text" id="novo-nome" placeholder="Ex: Bobby">
+                    </div>
+                </div>
+                
+                <div class="campo">
+                    <label>Espécie</label>
+                    <div class="input-icon"><i class="fa fa-tag"></i>
+                        <input type="text" id="nova-especie" placeholder="Ex: Cão, Gato, Coelho...">
+                    </div>
+                </div>
+
+                <button id="btn-guardar-animal" class="btn-guardar">Guardar Animal</button>
+            </div>
+        </div>
+
+        <div id="modal-editar-animal" class="modal-overlay">
+            <div class="modal-content">
+                <span class="fechar-modal"><i class="fa fa-times"></i></span>
+                <h2>Editar Animal</h2>
+
+                <div class="foto-animal-upload">
+                    <img src="" alt="Foto do Animal" id="preview-edit-animal">
+                    <input type="file" id="input-foto-edit" accept="image/*" style="display: none;">
+                    <label for="input-foto-edit" class="btn-escolher-foto">
+                        <i class="fa fa-camera"></i> Mudar Foto
+                    </label>
+                </div>
+                
+                <div class="campo" style="margin-bottom: 15px;">
+                    <label>Nome do Animal</label>
+                    <div class="input-icon"><i class="fa fa-paw"></i>
+                        <input type="text" id="edit-nome">
+                    </div>
+                </div>
+                
+                <div class="campo">
+                    <label>Espécie</label>
+                    <div class="input-icon"><i class="fa fa-tag"></i>
+                        <input type="text" id="edit-especie">
+                    </div>
+                </div>
+
+                <button id="btn-salvar-edicao" class="btn-guardar">Salvar Alterações</button>
+            </div>
+        </div>
+
+        <script src="../../../JS/cliente_perfil.js"></script>
     </body>
 </html>
