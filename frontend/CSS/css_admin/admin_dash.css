@@ -151,3 +151,59 @@
     display: block;
     margin-top: 15px;
 }
+
+/* =======================================================
+   NOVOS ESTILOS: BOTÕES DE SELEÇÃO DE SERVIÇOS
+   ======================================================= */
+
+/* Container que guarda os botões de serviço */
+.container-servicos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 15px;
+    border: 1px solid #ecf0f1;
+    border-radius: 10px;
+    background: #fdfdfd;
+    margin-top: 5px;
+}
+
+/* O "botão" (que na verdade é a label da checkbox) */
+.botao-servico {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    background: #f1f5f9;
+    padding: 10px 20px;
+    border-radius: 30px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    color: #475569;
+    user-select: none;
+    margin-top: 0 !important; /* Para anular o margin-top do #modalEdicao label */
+}
+
+/* Esconde o quadradinho padrão da checkbox */
+.botao-servico input[type="checkbox"] {
+    display: none;
+}
+
+/* Estilo quando passas o rato */
+.botao-servico:hover {
+    background: #e2e8f0;
+}
+
+/* O SEGREDO: Quando a checkbox está marcada, o botão muda de cor sozinho */
+.botao-servico:has(input:checked) {
+    background: #2ea89c; /* Verde da tua marca */
+    color: white;
+    border-color: #248b81;
+    box-shadow: 0 4px 10px rgba(46, 168, 156, 0.3);
+}
+
+/* Ícones dentro dos botões */
+.botao-servico i {
+    font-size: 1.1rem;
+}
