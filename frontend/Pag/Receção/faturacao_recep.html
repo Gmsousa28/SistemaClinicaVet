@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamentos - Clínica Miacãomigo</title>
+    
+    <link rel="stylesheet" href="../../CSS/PaginaSite.css">
+    <link rel="stylesheet" href="../../CSS/css_rececao/rececionista.css">
+    <link rel="stylesheet" href="../../CSS/css_rececao/faturacao.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body class="com-sidebar">
+
+    <header>
+        <div class="header-texto">
+            <h1 style="margin-right: 10px;">Terminal de Pagamento</h1> 
+            <p>Processamento de consultas concluídas e vendas de balcão.</p>
+        </div>
+            
+        <nav class="header-botoes">
+            <a href="rececionista.html" class="button">Voltar ao Dashboard</a>
+        </nav>
+    </header>
+
+    <section class="sidebar">
+        <a href="../../Pag_principal.html" class="logo">
+            <img src="../../img/Logo_vet.png" alt="Logo Clínica">
+        </a>
+        <hr>
+        <nav class="menu">
+            <a href="rececionista.html"><i class="fa fa-home"></i> Dashboard</a>
+            <a href="entradas.html"><i class="fa-regular fa-clock"></i> Entradas</a>
+            <a href="marcacoes_recep.html"><i class="fa fa-calendar"></i> Marcações</a>
+            <a href="faturacao_recep.html" class="active"><i class="fa fa-file-invoice"></i> Faturação</a>
+            <a href="clientes_recep.html"><i class="fa fa-users"></i> Clientes</a>
+            <a href="resg_ado.html"><i class="fa fa-paw"></i> Resgates e Adoções</a>
+            <hr>
+            <a href="../../Pag_principal.html"><i class="fa fa-sign-out"></i> Sair</a>
+        </nav>
+    </section>
+
+    <main class="dashboard-main">
+        <div class="layout-faturacao">
+            
+            <section class="card-painel">
+                <h3>Consultas ou Serviços por Liquidar</h3>
+                <div id="lista-pendentes" class="lista-contas">
+                    <div class="loading-state" style="color: #7f8c8d; font-style: italic; padding: 20px 0;">
+                        <i class="fa fa-spinner fa-spin"></i> A carregar serviços pendentes...
+                    </div>
+                </div>
+            </section>
+
+            <section class="card-painel checkout-container">
+                <div class="recibo-header">
+                    <h3 id="cliente-nome">Selecione um cliente</h3>
+                    <span id="cliente-info" style="color: #7f8c8d;">Aguardando seleção...</span>
+                </div>
+
+                <div class="zona-produtos" id="zona-venda-direta" style="display:none;">
+                    <select id="select-produto">
+                        <option value="">+ Adicionar produto...</option>
+                        <option value="12.50">Vacina Raiva (12.50€)</option>
+                        <option value="20.00">Anestesia (20.00€)</option>
+                        <option value="5.90">Medicação (5.90€)</option>
+                    </select>
+                    <button class="btn-add" onclick="adicionarItem()"><i class="fa fa-plus"></i></button>
+                </div>
+
+                <div class="zona-produtos" id="zona-desconto" style="display:none;">
+                    <input type="number" id="input-desconto-perc" placeholder="Aplicar desconto (%)" min="0" max="100" oninput="atualizarTalao()" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none; font-family: inherit;">
+                    
+                    <button class="btn-add" style="background: #95a5a6; cursor: default;" onclick="return false;"><i class="fa fa-percent"></i></button>
+                </div>
+
+
+                <div class="tabela-recibo">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Serviço/Produto</th>
+                                <th class="txt-dir">Preço</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itens-fatura">
+                            </tbody>
+                    </table>
+                </div>
+
+                <div class="checkout-footer">
+                    <div class="linha-total">
+                        <span>Subtotal</span>
+                        <span id="subtotal">0.00 €</span>
+                    </div>
+                    <div class="linha-total">
+                        <span>IVA (23%)</span>
+                        <span id="iva">0.00 €</span>
+                    </div>
+                    <div class="linha-total total-destaque">
+                        <span>TOTAL</span>
+                        <span id="total-final">0.00 €</span>
+                    </div>
+
+                    <div class="metodos-pagamento">
+                        <button class="btn-checkout" onclick="pagar('Multibanco')" disabled>MB</button>
+                        <button class="btn-checkout" onclick="pagar('Dinheiro')" disabled>Dinheiro</button>
+                        <button class="btn-checkout" onclick="pagar('MBWay')" disabled>MBWay</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="../../../JS/js_faturacao/faturacao_recep.js"></script>
+</body>
+</html>

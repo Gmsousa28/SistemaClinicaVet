@@ -1,0 +1,97 @@
+.layout-faturacao {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.card-painel {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.lista-contas {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.item-pendente {
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    justify-content: space-between;
+}
+
+.item-pendente:hover { background: #f1f8f7; border-color: #2ea89c; }
+.item-pendente.active { border-left: 5px solid #2ea89c; background: #e0f2f1; }
+
+.recibo-header {
+    border-bottom: 2px dashed #eee;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.zona-produtos {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.zona-produtos select {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.btn-add {
+    background: #2ea89c;
+    color: white;
+    border: none;
+    padding: 0 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.tabela-recibo table { width: 100%; border-collapse: collapse; }
+.tabela-recibo th { text-align: left; color: #999; font-size: 0.8rem; padding-bottom: 10px; }
+.tabela-recibo td { padding: 10px 0; border-bottom: 1px solid #f9f9f9; }
+.txt-dir { text-align: right; }
+
+.checkout-footer {
+    background: #2c3e50;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.linha-total { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.total-destaque { font-size: 1.5rem; font-weight: bold; color: #2ea89c; margin-top: 10px; border-top: 1px solid #444; padding-top: 10px; }
+
+.metodos-pagamento {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-checkout {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-checkout:hover:not(:disabled) { background: #2ea89c; border-color: #2ea89c; }
+.btn-checkout:disabled { opacity: 0.3; cursor: not-allowed; }

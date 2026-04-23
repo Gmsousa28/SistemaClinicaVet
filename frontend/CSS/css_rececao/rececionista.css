@@ -463,7 +463,6 @@
 
 
 
-
 /* --- Mini Cartões dos Animais do modal da ficha do cliente --- */
 .mini-cartao-animal {
     display: flex;
@@ -496,3 +495,4 @@
     color: #7f8c8d;
     font-size: 0.85rem;
 }
+
