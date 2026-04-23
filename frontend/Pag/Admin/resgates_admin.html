@@ -70,9 +70,14 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 1.5rem;">
           
           <div class="grupo-input">
-            <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">Espécie / Descrição:</label>
-            <input type="text" id="editNome" class="input-premium" style="width: 100%; padding: 12px 15px; border: 1px solid #ecf0f1; border-radius: 8px; box-sizing: border-box;" required>
-          </div>
+           <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">Espécie / Descrição:</label>
+           <select id="editNome" class="input-premium" required style="width: 100%; padding: 12px 15px; border: 1px solid #ecf0f1; border-radius: 8px; background-color: #fff; outline: none; box-sizing: border-box; cursor: pointer;">
+              <option value="" disabled selected>Selecione a espécie</option>
+              <option value="Cão">Cão</option>
+              <option value="Gato">Gato</option>
+              <option value="Outros">Outros</option>
+            </select>
+           </div>
 
           <div class="grupo-input">
             <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">Estado Atual:</label>

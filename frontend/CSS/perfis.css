@@ -1,232 +1,416 @@
-/*ESTRUTURA GERAL DA PÁGINA E GRELHA*/
+
+/* ================================= */
+/* GRELHA PRINCIPAL DE 2 COLUNAS     */
+/* ================================= */
+main {
+    max-width: 100% !important; /* O !important dá prioridade máxima e ignora os 1000px do outro ficheiro */
+    padding-left: 50px !important; /* Espaço extra à esquerda para não colar ao menu */
+}
 
 .grid {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 280px 1fr; 
     gap: 30px;
     align-items: start;
-    max-width: 1200px;
+    max-width: 1200px; 
+    margin-left: 150px; 
 }
 
-.coluna-direita {
+/* Colunas flexíveis para empilhar o conteúdo com espaço entre eles */
+.coluna-esquerda, .coluna-direita {
     display: flex;
     flex-direction: column;
     gap: 30px;
     width: 100%;
 }
 
-/* 2. LADO ESQUERDO: CARTÃO DO PERFIL*/
+/* ========================================================================== */
+/* ESTILOS EXCLUSIVOS DA PÁGINA DE PERFIL                                     */
+/* ========================================================================== */
 
+/* 1. CARTÃO DE PERFIL (Lado Esquerdo) */
 .perfil {
-    background: white;
-    padding: 30px;
-    border-radius: 18px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    text-align: center;
+    background: white; padding: 30px; border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center;
+    height: auto;
 }
 
-.foto {
-    margin-bottom: 10px;
+/* CAIXA DA FOTO (Precisa de ser relative para o botão não fugir) */
+/* CAIXA DA FOTO */
+.foto-container {
     position: relative;
-}
-
-.foto img {
-    width: 140px;
-    height: 140px;
+    display: inline-block;
+    width: 140px; 
+    height: 140px; 
+    margin-bottom: 15px;
     border-radius: 50%;
     border: 6px solid #2ea89c;
-    object-fit: cover;
-    margin-bottom: 15px;
-}
-
-.user { 
-    color: #888; 
-    margin-bottom: 20px; 
-}
-
-.editar, .guardar {
-    background: #2ea89c;
-    color: white;
-    border: none;
-    padding: 10px 26px;
-    border-radius: 25px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-bottom: 25px;
-    transition: all 0.3s ease;
+    overflow: hidden; /* Isto garante que o efeito escuro não sai fora da roda */
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.editar:hover, .guardar:hover { 
-    background: #249186; 
-    transform: translateY(-2px); 
+.foto-container img {
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    display: block;
 }
 
-/* 3. DADOS DA CONTA (Caixa, Título e Formulário)*/
-
-.conta {
-    background: #ffffff;
-    padding: 35px;
-    border-radius: 18px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
-    border: 1px solid #eaeaea;
-    width: 100%;
-}
-
-.titulo-conta {
-    color: #2ea89c;
-    font-size: 24px;
-    margin-bottom: 25px;
-}
-
-.info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.campo { 
-    display: flex; 
-    flex-direction: column; 
-    text-align: left; 
-}
-
-.campo label { 
-    font-size: 13px; 
-    color: #555; 
-    margin-bottom: 8px; 
-    font-weight: 600; 
-}
-
-.input-icon { 
-    position: relative; 
-    display: flex; 
-    align-items: center; 
-}
-
-.input-icon i { 
-    position: absolute; 
-    left: 15px; 
-    color: #2ea89c; 
-    z-index: 2; 
-}
-
-.input-icon input {
-    width: 100%;
-    padding: 12px 12px 12px 42px; 
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    background: #f9f9f9;
-    color: #333;
-    outline: none;
-    transition: 0.3s; 
-}
-
-.input-icon input:focus { 
-    border-color: #2ea89c; 
-    background: #fff; 
-}
-
-/* ========================================================================== */
-/* 4. OS MEUS PATUDOS (Caixa, Título e Animais)                               */
-/* ========================================================================== */
-
-.meus-animais {
-    background: #ffffff;
-    padding: 35px;
-    border-radius: 18px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
-    border: 1px solid #eaeaea;
-    width: 100%;
-}
-
-.meus-animais h3 {
-    color: #2ea89c;
-    font-size: 24px;
-    margin-bottom: 25px;
-}
-
-.animais-lista {
-    display: flex;
-    gap: 40px; 
-    flex-wrap: wrap; 
-    justify-content: flex-start;
-}
-
-.animal-card {
+/* O EFEITO MÁGICO (Invisível por padrão) */
+.overlay-foto {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.6); /* Fundo escuro semi-transparente */
+    color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
+    justify-content: center;
+    opacity: 0; /* Começa invisível */
+    cursor: pointer;
+    transition: opacity 0.3s ease; /* Transição suave */
 }
 
+/* Quando o rato passa por cima da caixa, o efeito aparece */
+.foto-container:hover .overlay-foto {
+    opacity: 1;
+}
+
+
+
+.overlay-foto i {
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+
+.overlay-foto span {
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* Resto do perfil... */
+.user { color: #888; margin-bottom: 20px; }
+.editar {
+    background: #2ea89c; color: white; border: none; padding: 10px 26px;
+    border-radius: 25px; font-weight: bold; cursor: pointer; transition: 0.3s;
+}
+.editar:hover { background: #249186; transform: translateY(-2px); }
+
+
+/* ================================= */
+/* 2. DADOS DA CONTA                 */
+/* ================================= */
+.conta {
+    background: #ffffff; padding: 35px; border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05); border: 1px solid #eaeaea; width: 100%;
+}
+.titulo-conta { color: #2ea89c; font-size: 24px; margin-bottom: 25px; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.campo { display: flex; flex-direction: column; text-align: left; }
+.campo label { font-size: 13px; color: #555; margin-bottom: 8px; font-weight: 600; }
+.input-icon { position: relative; display: flex; align-items: center; }
+.input-icon i { position: absolute; left: 15px; color: #2ea89c; z-index: 2; }
+.input-icon input {
+    width: 100%; padding: 12px 12px 12px 42px; border-radius: 8px;
+    border: 1px solid #e0e0e0; background: #f9f9f9; color: #333; outline: none;
+}
+.input-icon input:focus { border-color: #2ea89c; background: #fff; }
+
+
+/* ================================= */
+/* 3. OS MEUS ANIMAIS                */
+/* ================================= */
+.meus-animais {
+    background: #ffffff; padding: 35px; border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05); border: 1px solid #eaeaea; width: 100%;
+}
+.meus-animais h3 { color: #2ea89c; font-size: 24px; margin-bottom: 25px; }
+.animais-lista { display: flex; gap: 40px; flex-wrap: wrap; justify-content: flex-start; }
+.animal-card { 
+display: flex; 
+flex-direction: column; 
+align-items: center; 
+text-align: center;  
+transition: transform 0.3s ease;
+cursor: pointer; }
+
+.animal-card:hover {
+transform: translateY(-5px);
+}
 .animal-card img {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #2ea89c;
-    margin-bottom: 10px;
+width: 80px; 
+height: 80px; 
+border-radius: 50%; 
+object-fit: cover;
+border: 3px solid #2ea89c; 
+margin-bottom: 10px;
+}
+.animal-card p { 
+font-weight: 700; 
+color: #333; 
+margin: 0; 
+}
+.animal-card small { 
+color: #777; 
+font-size: 13px; 
+}
+.animal-card.adicionar { 
+cursor: pointer; 
+}
+.circulo-add {
+width: 80px; 
+height: 80px; 
+border-radius: 50%;
+border: 3px dashed #ccc;
+display: flex; 
+align-items: center; 
+justify-content: center; 
+margin-bottom: 10px;
+}
+.circulo-add i { 
+font-size: 24px; 
+color: #ccc;
 }
 
-.animal-card p { font-weight: 700; color: #333; margin: 0; }
-.animal-card small { color: #777; font-size: 13px; }
 
-/* Botão "Adicionar Animal" */
-.animal-card.adicionar { cursor: pointer; }
-.animal-card.adicionar p { color: #888; font-weight: normal; }
+/* ================================= */
+/* 4. PREFERÊNCIAS                   */
+/* ================================= */
+.preferencias {
+background: #ffffff; 
+padding: 30px; 
+border-radius: 18px;
+box-shadow: 0 8px 25px rgba(0,0,0,0.05); 
+border: 1px solid #eaeaea; 
+width: 100%;
+}
+.preferencias h3 { color: #2ea89c; font-size: 22px; margin-bottom: 20px; }
+.toggle-box { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
+.toggle-box:last-child { border-bottom: none; padding-bottom: 0; }
+.toggle-info { display: flex; align-items: center; gap: 10px; color: #444; font-weight: 500; }
+.toggle-info i { color: #2ea89c; width: 20px; text-align: center; }
 
-.circulo-add {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 3px dashed #ccc;
+/* Botões do tipo Toggle */
+.switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: #2ea89c; }
+input:checked + .slider:before { transform: translateX(20px); }
+
+
+/* ================================= */
+/* 5. AVISOS                         */
+/* ================================= */
+/* ========================================================================== */
+/* AVISOS INTERATIVOS                                                         */
+/* ========================================================================== */
+.aviso {
+    display: flex;
+    justify-content: space-between; /* Empurra texto para a esquerda e botão para a direita */
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 12px;
+    background-color: #f9f9f9;
+    border-left: 4px solid #2ea89c; /* Barra lateral verde */
+    border-radius: 8px;
+    transition: transform 0.3s ease, opacity 0.3s ease; /* Transições para quando apagarmos o aviso */
+}
+
+.aviso:last-child { margin-bottom: 0; }
+.aviso:hover { transform: translateX(5px); /* Dá um saltinho para a direita ao passar o rato */ }
+
+/* Aviso vermelho/urgente */
+.aviso-importante {
+    border-left-color: #e74c3c;
+    background-color: #fdf5f4;
+}
+
+.aviso-texto {
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 10px;
+    color: #444;
+    font-size: 14px;
+}
+
+.aviso-texto i { color: #888; font-size: 16px; }
+.aviso-importante .aviso-texto i { color: #e74c3c; }
+.avisos h3 { color: #2ea89c; font-size: 22px; margin-bottom: 20px; }
+
+/* Botão de Ação Rápida (Ex: Marcar agora) */
+.link-acao {
+    margin-left: 5px;
+    background-color: #e74c3c;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: bold;
+    transition: 0.2s;
+}
+.link-acao:hover { background-color: #c0392b; color: white; }
+
+/* Botão do X (Fechar) */
+.btn-fechar-aviso {
+    background: none;
+    border: none;
+    color: #bbb;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 5px;
+    transition: color 0.2s;
+}
+.btn-fechar-aviso:hover { color: #e74c3c; }
+/* ========================================================================== */
+/* ALERTA DE SUCESSO (Notificação Flutuante)                                  */
+/* ========================================================================== */
+#alerta-sucesso {
+    position: fixed;
+    top: -100px; /* Começa escondido lá em cima, fora do ecrã */
+    left: 50%;
+    transform: translateX(-50%); /* Garante que fica perfeitamente centrado */
+    background-color: #2ea89c;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(46, 168, 156, 0.4);
+    font-weight: bold;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 9999; /* Fica por cima de TUDO (menus, barras, etc) */
+    
+    /* A animação suave com um ligeiro efeito de "mola" no final */
+    transition: top 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+}
+
+/* Quando o JavaScript adicionar esta classe, o aviso desce! */
+#alerta-sucesso.mostrar {
+    top: 40px; 
+}
+
+/* ========================================================================== */
+/* MODAL (Pop-up Adicionar Animal)                                            */
+/* ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Fundo escuro */
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10000;
+    
+    /* Escondido por defeito */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+/* Quando o JavaScript ativa o modal */
+.modal-overlay.ativo {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: white; padding: 40px; border-radius: 20px;
+    width: 400px; max-width: 90%;
+    position: relative;
+    transform: translateY(-30px); /* Começa um pouco mais acima */
+    transition: transform 0.3s ease;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+}
+
+.modal-overlay.ativo .modal-content {
+    transform: translateY(0); /* Desliza para o centro */
+}
+
+/* O botão do 'X' para fechar */
+.fechar-modal {
+    position: absolute; top: 20px; right: 20px;
+    font-size: 20px; color: #888; cursor: pointer; transition: 0.2s;
+}
+.fechar-modal:hover { color: #e74c3c; }
+
+.modal-content h2 { color: #2ea89c; margin-bottom: 25px; text-align: center; font-size: 22px; }
+
+.btn-guardar {
+    width: 100%; background: #2ea89c; color: white; border: none; padding: 12px;
+    border-radius: 10px; font-weight: bold; font-size: 16px;
+    cursor: pointer; margin-top: 25px; transition: 0.3s;
+}
+.btn-guardar:hover { background: #249186; }
+/* ========================================================================== */
+/* AÇÕES DOS ANIMAIS (Hover - Editar / Apagar)                                */
+/* ========================================================================== */
+.foto-animal-wrapper {
+    position: relative;
+    width: 80px; height: 80px;
     margin-bottom: 10px;
-    background: #fdfdfd;
-    transition: 0.3s;
+    border-radius: 50%;
+    overflow: hidden; /* Mantém o escuro dentro da roda */
+    border: 3px solid #2ea89c;
 }
 
-.circulo-add i { font-size: 24px; color: #ccc; transition: 0.3s; }
-
-.animal-card.adicionar:hover .circulo-add { 
-    border-color: #2ea89c; 
-    background: #f0faf9; 
+.foto-animal-wrapper img {
+    width: 100%; height: 100%; object-fit: cover; display: block; border: none; margin: 0;
 }
 
-.animal-card.adicionar:hover .circulo-add i { 
-    color: #2ea89c; 
-    transform: scale(1.1); 
+/* O menu de ações escondido */
+.acoes-animal {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    opacity: 0; /* Começa invisível */
+    transition: opacity 0.3s ease;
 }
+
+/* Fica visível ao passar o rato */
+.foto-animal-wrapper:hover .acoes-animal { opacity: 1; }
+
+.acoes-animal button {
+    background: none; border: none; color: white;
+    font-size: 18px; cursor: pointer; transition: transform 0.2s, color 0.2s;
+}
+
+/* Cores quando passas o rato em cima do lápis ou lixo */
+.btn-editar-animal:hover { color: #3498db; transform: scale(1.2); }
+.btn-apagar-animal:hover { color: #e74c3c; transform: scale(1.2); }
 
 /* ========================================================================== */
-/* 5. AVISOS (Caixa, Título e Textos)                                         */
+/* UPLOAD FOTO MODAL ANIMAIS (Adicionar e Editar)                            */
 /* ========================================================================== */
-
-.avisos {
-    background: #ffffff;
-    padding: 35px;
-    border-radius: 18px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
-    border: 1px solid #eaeaea;
-    width: 100%;
-}
-
-.avisos h3 {
-    color: #2ea89c;
-    font-size: 24px;
+.foto-animal-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin-bottom: 25px;
 }
 
-.avisos p {
-    padding: 15px 0;
-    border-bottom: 1px solid #eee;
-    color: #444;
+/* Aplica o estilo ao preview de 'Adicionar' e 'Editar' */
+#preview-novo-animal, #preview-edit-animal {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #2ea89c;
+    margin-bottom: 12px;
 }
 
-.avisos p:last-child { 
-    border-bottom: none; 
-    padding-bottom: 0; 
+.btn-escolher-foto {
+    background-color: #f0f0f0;
+    color: #555;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.btn-escolher-foto:hover {
+    background-color: #e0e0e0;
 }
