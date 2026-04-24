@@ -33,11 +33,6 @@
             <nav class="menu">
                 <a href="dashboard_vet.html"><i class="fa fa-home"></i> Dashboard</a>
                 <a href="perfil_vet.html"><i class="fa fa-user"></i> Perfil</a>
-                <!--<a href="entradas.html"><i class="fa-regular fa-clock"></i> Entradas </a>
-                <a href="marcacoes_recep.html" class="active"><i class="fa fa-calendar"></i> Marcações </a>
-                <a href="faturacao_recep.html"><i class="fa fa-file-invoice"></i> Faturação </a>
-                <a href="clientes_recep.html"><i class="fa fa-users"></i> Clientes </a>
-                <a href="resg_ado.html"><i class="fa fa-paw"></i> Resgates e Adoções </a>-->
                 <hr>
                 <a href="../../Pag_principal.html"><i class="fa fa-sign-out"></i> Sair</a>
             </nav>
@@ -46,10 +41,9 @@
         <main class="dashboard-main">
 
            <section class="barra-acoes-topo" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; margin-bottom: 2rem;">
-                
                 <h2 class="titulo-seccao" style="margin: 0; min-width: 300px;">Nova Marcação</h2>
-
             </section>
+            
             <section class="cartao-formulario"> 
                 
                 <div class="barra-passos">
@@ -98,7 +92,7 @@
                         
                         <div class="grid-opcoes-selecao" style="margin-bottom: 2.5rem;">
                             <label class="cartao-opcao-radio">
-                                <input type="checkbox" name="servico" value="consulta" class="esconder-radio">
+                                <input type="checkbox" id="check-consulta" name="servico" value="consulta" class="esconder-radio">
                                 <div class="conteudo-cartao-opcao">
                                     <i class="fa fa-stethoscope icon-opcao"></i>
                                     <span>Consulta</span>
@@ -106,18 +100,19 @@
                             </label>
                         </div>
                         
-                        <label style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">2. Veterinário (Opcional):</label>
-
-                        <div class="grid-opcoes-selecao" id="container-vets" style="margin-bottom: 2.5rem;">
-                            </div>
-
+                        <div id="seccao-veterinario" style="display: none;">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">2. Veterinário (Opcional):</label>
+                            <div class="grid-opcoes-selecao" id="container-vets">
+                                </div>
+                        </div>
+                    
                         <label for="texto-relatorios" style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">3. Motivo da próxima consulta:</label>
                         
                         <textarea 
                             id="texto-relatorios"
                             name="relatorio_consulta" 
                             class="caixa-texto-manual" 
-                            placeholder="Escreva aqui o relatorio clinico desta consulta"
+                            placeholder="Escreva aqui o motivo clínico desta marcação"
                         ></textarea>
                     </div>
 
@@ -144,68 +139,30 @@
                     </div>
                     
                     <div class="acoes-formulario" style="margin-top: 3rem; border-top: 1px solid #eee; padding-top: 1.5rem; display: flex; justify-content: space-between;">
-                        <button type="button" class="btn-secundario" id="btn-voltar" onclick="mudarPasso(-1)" style="display:none;"><i class="fa fa-arrow-left" style="margin-right: 8px;"></i> Recuar</button>
+                        <button type="button" class="btn-secundario" id="btn-voltar" style="display:none;">
+                            <i class="fa fa-arrow-left" style="margin-right: 8px;"></i> Recuar
+                        </button>
                         
                         <div style="flex-grow: 1;"></div> 
-
-                        <button type="button" class="btn-primario" id="btn-avancar" onclick="mudarPasso(1)">Seguinte <i class="fa fa-arrow-right" style="margin-left: 8px;"></i></button>
+                    
+                        <button type="button" class="btn-primario" id="btn-avancar">
+                            Seguinte <i class="fa fa-arrow-right" style="margin-left: 8px;"></i>
+                        </button>
                         
-                        <button type="submit" class="btn-primario" id="btn-confirmar" style="display:none; background-color: #27ae60;">Confirmar Marcação <i class="fa fa-check" style="margin-left: 8px;"></i></button>
+                        <button type="submit" class="btn-primario" id="btn-confirmar" style="display:none; background-color: #27ae60;">
+                            Confirmar Marcação <i class="fa fa-check" style="margin-left: 8px;"></i>
+                        </button>
                     </div>
 
                 </form>
             </section>
         </main>
-
-
-<div id="modal-historico-marcacoes" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.6); z-index: 99999; align-items: center; justify-content: center;">
-            <div class="modal-content" style="max-width: 850px; max-height: 85vh; display: flex; flex-direction: column; width: 100%;">
-                
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h2 class="titulo-seccao" style="color: #2c3e50; margin: 0;">
-                        <i class="fa fa-calendar-check" style="color: #3498db; margin-right: 10px;"></i> Histórico de Marcações
-                    </h2>
-                    <button onclick="fecharModalHistoricoMarcacoes()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #7f8c8d; transition: color 0.2s;"><i class="fa fa-times"></i></button>
-                </div>
-
-                <div style="margin-bottom: 1.5rem; position: relative;">
-                    <i class="fa fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #95a5a6;"></i>
-                    <input type="text" id="pesquisa-marcacoes" placeholder="Pesquisar por NIF do dono, Nome do Cliente ou Animal..." style="width: 100%; padding: 12px 12px 12px 45px; border: 1px solid #dcdde1; border-radius: 8px; outline: none; font-size: 0.95rem; background-color: #f8f9fa;">
-                </div>
-
-                <div style="overflow-y: auto; flex-grow: 1; border: 1px solid #eee; border-radius: 8px;">
-                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
-                        <thead style="background-color: #f1f2f6; position: sticky; top: 0; z-index: 1;">
-                            <tr>
-                                <th style="padding: 15px; border-bottom: 2px solid #dcdde1; color: #2c3e50;">Data/Hora</th>
-                                <th style="padding: 15px; border-bottom: 2px solid #dcdde1; color: #2c3e50;">Cliente</th>
-                                <th style="padding: 15px; border-bottom: 2px solid #dcdde1; color: #2c3e50;">Animal</th>
-                                <th style="padding: 15px; border-bottom: 2px solid #dcdde1; color: #2c3e50;">Consulta</th>
-                                <th style="padding: 15px; border-bottom: 2px solid #dcdde1; color: #2c3e50; text-align: center;">Estado</th>
-                            </tr>
-                        </thead>
-                        
-                        <tbody id="tabela-marcacoes-body">
-                        </tbody>
-                        
-                    </table>
-                </div>
-                
-                <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: #95a5a6; font-size: 0.85rem;"><i class="fa fa-info-circle"></i> A mostrar os últimos 30 registos.</span>
-                    <button type="button" class="btn-cancelar" onclick="fecharModalHistoricoMarcacoes()">Fechar Registo</button>
-                </div>
-
-            </div>
-        </div>
         
         <footer>
             <p style="color: white; font-size: 0.9rem;">Área Reservada - Clínica Miacãomigo © 2026</p>
         </footer>
         
-        <script src="../../../JS/marcacoes_recep.js"></script>
-        <script src="../../../JS/medicamentos.js"></script>
-
+        <script src="/JS/js_veterinario/marcacoes_vet.js"></script>
 
     </body>
 </html>

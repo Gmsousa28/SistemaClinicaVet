@@ -3,7 +3,7 @@
     <head> 
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Painel da Receção - Clínica Miacãomigo</title>
+        <title>Painel da Consulta - Clínica Miacãomigo</title>
         
         <link rel="stylesheet" href="../../CSS/consulta.css">
         <link rel="stylesheet" href="../../CSS/PaginaSite.css">
@@ -13,106 +13,100 @@
 
     <body class="com-sidebar"> 
         <header>
-
             <div class="header-texto">
                 <h1>Painel da Consulta</h1> 
                 <p>Olá! Boa Consulta.</p>
             </div>
-
-                
         </header>
             
-        <!-- MENU LATERAL -->
         <section class="sidebar">
-
             <a href="../../frontend/Pag_principal.html" class="logo">
                 <img src="../../img/Logo_vet.png" alt="Logótipo Clínica Miacãomigo">
             </a>
-
             <hr>
             <nav class="menu">
                 <a href="dashboard_vet.html" class="active"><i class="fa fa-home"></i> Dashboard</a>
                 <a href="perfil_vet.html"><i class="fa fa-user"></i> Perfil</a>
-                <a href=""a></a>
-                <!--<a href="entradas.html"><i class="fa-regular fa-clock"></i> Entradas </a>
-                <a href="faturacao_recep.html"><i class="fa fa-file-invoice"></i> Faturação </a>
-                <a href="clientes_recep.html"><i class="fa fa-users"></i> Clientes </a>
-                <a href="resg_ado.html"><i class="fa fa-paw"></i> Resgates e Adoções </a>-->
                 <hr>
                 <a href="../../Pag_principal.html"><i class="fa fa-sign-out"></i> Sair</a> 
             </nav>
-            
         </section>
 
         <main class="dashboard-main">
+
+            <section class="dashboard-acoes">
+                <a href="exame.html" class="card-acao" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 2rem 1.5rem;">
+                    <i class="fa fa-calendar-plus" style="font-size: 2.8rem; color: #2ea89c; margin-bottom: 15px; transition: transform 0.3s ease;"></i>
+                    <h3 style="margin-bottom: 10px; color: #2c3e50;">Exame</h3>
+                    <p style="margin: 0; color: #7f8c8d; font-size: 0.95rem;">Marcação de exame</p>
+                </a>
+                
+                <a href="medicamentos.html" class="card-acao" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 2rem 1.5rem;">
+                    <i class="fa fa-paw" style="font-size: 2.8rem; color: #2ea89c; margin-bottom: 15px; transition: transform 0.3s ease;"></i>
+                    <h3 style="margin-bottom: 10px; color: #2c3e50;">Medicamentos</h3>
+                    <p style="margin: 0; color: #7f8c8d; font-size: 0.95rem;">Prescrição de Medicação</p>  
+                </a>
+
+                <a href="finalizar.html" class="card-acao" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 2rem 1.5rem;">
+                    <i class="fa fa-user-clock" style="font-size: 2.8rem; color: #2ea89c; margin-bottom: 15px; transition: transform 0.3s ease;"></i>
+                    <h3 style="margin-bottom: 10px; color: #2c3e50;">Finalizar Consulta</h3>
+                    <p style="margin: 0; color: #7f8c8d; font-size: 0.95rem;">Submissão de Consulta</p>  
+                </a>
+            </section>
 
             <div id="popup-motivo" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.6); z-index: 99999; align-items: center; justify-content: center;">
                 <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
                     
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 1rem; margin-bottom: 1.5rem;">
                         <h3 style="margin: 0; color: #2c3e50;"><i class="fa fa-info-circle" style="color: #3498db; margin-right: 10px;"></i> Motivo da Consulta</h3>
-                        <button onclick="fecharPopupInfo()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #7f8c8d;"><i class="fa fa-times"></i></button>
+                        <button id="btn-fechar-x-motivo" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #7f8c8d;"><i class="fa fa-times"></i></button>
                     </div>
             
                     <p style="color: #444; line-height: 1.6; font-size: 1rem;">
-                        <strong>Sintomas descritos:</strong> O animal apresenta falta de apetite, letargia e vómitos há cerca de 2 dias. Suspeita de ingestão de corpo estranho ou gastroenterite. Necessita de exames para despiste.
+                        <strong>Sintomas descritos:</strong> <span id="texto-motivo-dinamico"></span>
                     </p>
             
-                    <div style="text-align: right; margin-top: 2rem;">
-                        <button type="button" class="btn-primario" onclick="fecharPopupInfo()">Compreendido</button>
-                    </div>
                 </div>
             </div>
             
-        <section class="dashboard-acoes">
+            <div id="popup-relatorio" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.6); z-index: 99999; align-items: center; justify-content: center;">
+                <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                        <h3 style="margin: 0; color: #2c3e50;"><i class="fa fa-file-medical" style="color: #2ea89c; margin-right: 10px;"></i> Relatório da Consulta</h3>
+                        <button id="btn-fechar-x-relatorio" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #7f8c8d;"><i class="fa fa-times"></i></button>
+                    </div>
             
-            <a href="exame.html" class="card-acao" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 2rem 1.5rem;">
-                <i class="fa fa-calendar-plus" style="font-size: 2.8rem; color: #2ea89c; margin-bottom: 15px; transition: transform 0.3s ease;"></i>
-                <h3 style="margin-bottom: 10px; color: #2c3e50;">Exame</h3>
-                <p style="margin: 0; color: #7f8c8d; font-size: 0.95rem;">Marcação de exame</p>
-            </a>
+                    <p style="color: #444; line-height: 1.6; font-size: 1rem;">
+                        <strong>Relatório:</strong> <span id="texto-relatorio-dinamico"></span>
+                    </p>
             
-            <a href="medicamentos.html" class="card-acao" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 2rem 1.5rem;">
-                <i class="fa fa-paw" style="font-size: 2.8rem; color: #2ea89c; margin-bottom: 15px; transition: transform 0.3s ease;"></i>
-                <h3 style="margin-bottom: 10px; color: #2c3e50;">Medicamentos</h3>
-                <p style="margin: 0; color: #7f8c8d; font-size: 0.95rem;">Prescrição de Medicação</p>  
-            </a>
-
-            <a href="finalizar.html" class="card-acao" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 2rem 1.5rem;">
-                <i class="fa fa-user-clock" style="font-size: 2.8rem; color: #2ea89c; margin-bottom: 15px; transition: transform 0.3s ease;"></i>
-                <h3 style="margin-bottom: 10px; color: #2c3e50;">Finalizar Consulta</h3>
-                <p style="margin: 0; color: #7f8c8d; font-size: 0.95rem;">Sublimissão de Consulta</p>  
-            </a>
-
-
-        </section>
-
-        <section class="dashboard-resumo" style="margin-top: 30px;">
-            <h2 class="titulo-seccao">Historio de consultas </h2>
-            <div class="tabela-container"> 
-                <table class="tabela-consultas">
-                    <thead> 
-                        <tr>
-                            <th>Data</th> <th>Hora</th>
-                            <th>Animal</th>
-                            <th>Cliente</th>
-                            <th>Serviço</th>
-                        </tr>
-                    </thead>
-                    <tbody id="corpo-tabela-historico">
-                        </tbody>
-                </table>
+                </div>
             </div>
-        </section>
+            
+            <section class="dashboard-resumo">
+                <h2 class="titulo-seccao">Histórico de Consultas</h2>
+                <div class="tabela-container"> 
+                    <table class="tabela-consultas">
+                        <thead> 
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Animal</th>
+                                <th style="text-align: center;">Motivo</th>
+                                <th style="text-align: center;">Relatório</th> 
+                            </tr>
+                        </thead>
+                        <tbody id="corpo-tabela-historico-animal">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
 
         <footer>
             <p style="color: white; font-size: 0.9rem;">Área Reservada - Clínica Miacãomigo © 2026</p>
         </footer>
-    <script src="../../../JS/rececao.js"></script> 
-    <script src="../../../JS/exame.js"></script>
-    <script src="../../../JS/medicamentos.js"></script> 
-    <script src="../../../JS/momento_consulta.js"></script> 
-
-    
+        <script src="/JS/js_veterinario/momento_consulta.js"></script>      
     </body>
 </html>

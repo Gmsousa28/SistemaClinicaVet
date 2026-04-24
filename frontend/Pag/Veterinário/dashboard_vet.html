@@ -33,10 +33,6 @@
                 <a href="dashboard_vet.html" class="active"><i class="fa fa-home"></i> Dashboard</a>
                 <a href="perfil_vet.html"><i class="fa fa-user"></i> Perfil</a>
                 <a href=""a></a>
-                <!--<a href="entradas.html"><i class="fa-regular fa-clock"></i> Entradas </a>
-                <a href="faturacao_recep.html"><i class="fa fa-file-invoice"></i> Faturação </a>
-                <a href="clientes_recep.html"><i class="fa fa-users"></i> Clientes </a>
-                <a href="resg_ado.html"><i class="fa fa-paw"></i> Resgates e Adoções </a>-->
                 <hr>
                 <a href="../../Pag_principal.html"><i class="fa fa-sign-out"></i> Sair</a> 
             </nav>
@@ -46,14 +42,15 @@
         <main class="dashboard-main">
             <section class="pesquisa-cliente" style="margin-top: 1rem; margin-bottom: 2.5rem;">
                 <h2 class="titulo-seccao">Procurar Cliente</h2>
-                <form action="/api/procurar-cliente" method="GET" class="barra-pesquisa" style="display: flex; gap: 15px;">
+                
+                <form id="form-pesquisa-cliente" action="/api/procurar-cliente" method="GET" class="barra-pesquisa" style="display: flex; gap: 15px;">
                     
                     <div style="position: relative; flex-grow: 1;">
                         <i class="fa fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #95a5a6;"></i>
                         <input type="text" name="nif" id="pesquisa-nif" placeholder="Introduza o NIF do cliente (Ex: 123456789)" maxlength="9" pattern="\d{9}" required style="width: 100%; padding-left: 40px; box-sizing: border-box;">
                     </div>
                     
-                    <button type="button" class="btn-pesquisar" onclick="abrirModalCliente()">
+                    <button type="submit" id="btn-pesquisar-cliente" class="btn-pesquisar">
                         <i class="fa fa-id-card" style="margin-right: 5px;"></i> Pesquisar Dados
                     </button>
                 </form>
@@ -95,7 +92,7 @@
         <footer>
             <p style="color: white; font-size: 0.9rem;">Área Reservada - Clínica Miacãomigo © 2026</p>
         </footer>
-    <script src="../../../JS/rececao.js"></script> 
-    <script src="../../../JS/consulta_meio.js"></script> 
+    
+        <script src="/JS/js_veterinario/dashboard.js"></script> 
     </body>
 </html>
