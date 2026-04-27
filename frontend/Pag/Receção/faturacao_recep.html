@@ -20,6 +20,9 @@
         </div>
             
         <nav class="header-botoes">
+            <button id="btn-abrir-historico" class="btn-historico" style="background-color: #2c3e50; margin-right: 10px; cursor: pointer;">
+                <i class="fa fa-history"></i> Histórico
+            </button>
             <a href="rececionista.html" class="button">Voltar ao Dashboard</a>
         </nav>
     </header>
@@ -66,15 +69,14 @@
                         <option value="20.00">Anestesia (20.00€)</option>
                         <option value="5.90">Medicação (5.90€)</option>
                     </select>
-                    <button class="btn-add" onclick="adicionarItem()"><i class="fa fa-plus"></i></button>
+                    <button class="btn-add" id="btn-add-produto"><i class="fa fa-plus"></i></button>
                 </div>
 
                 <div class="zona-produtos" id="zona-desconto" style="display:none;">
-                    <input type="number" id="input-desconto-perc" placeholder="Aplicar desconto (%)" min="0" max="100" oninput="atualizarTalao()" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none; font-family: inherit;">
+                    <input type="number" id="input-desconto-perc" placeholder="Aplicar desconto (%)" min="0" max="100" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none; font-family: inherit;">
                     
                     <button class="btn-add" style="background: #95a5a6; cursor: default;" onclick="return false;"><i class="fa fa-percent"></i></button>
                 </div>
-
 
                 <div class="tabela-recibo">
                     <table>
@@ -82,7 +84,7 @@
                             <tr>
                                 <th>Serviço/Produto</th>
                                 <th class="txt-dir">Preço</th>
-                            </tr>
+                                <th style="width: 40px;"></th> </tr>
                         </thead>
                         <tbody id="itens-fatura">
                             </tbody>
@@ -102,16 +104,62 @@
                         <span>TOTAL</span>
                         <span id="total-final">0.00 €</span>
                     </div>
-
+                    
                     <div class="metodos-pagamento">
-                        <button class="btn-checkout" onclick="pagar('Multibanco')" disabled>MB</button>
-                        <button class="btn-checkout" onclick="pagar('Dinheiro')" disabled>Dinheiro</button>
-                        <button class="btn-checkout" onclick="pagar('MBWay')" disabled>MBWay</button>
+                        <button class="btn-checkout" data-metodo="Multibanco" disabled>MB</button>
+                        <button class="btn-checkout" data-metodo="Dinheiro" disabled>Dinheiro</button>
+                        <button class="btn-checkout" data-metodo="MBWay" disabled>MBWay</button>
                     </div>
                 </div>
             </section>
         </div>
     </main>
+
+    <div id="modal-historico" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.6); z-index: 99999; align-items: center; justify-content: center;">
+        <div class="modal-content" style="max-width: 850px; max-height: 85vh; display: flex; flex-direction: column; width: 100%; background: white; padding: 30px; border-radius: 12px;">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 class="titulo-seccao" style="color: #2c3e50; margin: 0;">
+                    <i class="fa fa-list-ul" style="color: #2ea89c; margin-right: 10px;"></i> Histórico de Faturação
+                </h2>
+                <button id="btn-fechar-historico-icon" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #7f8c8d; transition: color 0.2s;"><i class="fa fa-times"></i></button>
+            </div>
+
+            <div style="margin-bottom: 1.5rem; position: relative;">
+                <i class="fa fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #95a5a6;"></i>
+                <input type="text" id="pesquisa-historico" placeholder="Pesquisar por NIF, Nome do Cliente ou Serviço..." style="width: 100%; padding: 12px 12px 12px 45px; border: 1px solid #dcdde1; border-radius: 8px; outline: none; font-size: 0.95rem; background-color: #f8f9fa;">
+            </div>
+
+            <div style="overflow-y: auto; flex-grow: 1; border: 1px solid #eee; border-radius: 8px;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                    <thead style="background-color: #f1f2f6; position: sticky; top: 0; z-index: 1;">
+                        <tr>
+                            <th style="padding: 15px; border-bottom: 2px solid #dcdde1; color: #2c3e50;">Hora</th>
+                            <th style="padding: 15px; border-bottom: 2px solid #dcdde1; color: #2c3e50;">Cliente</th>
+                            <th style="padding: 15px; border-bottom: 2px solid #dcdde1; color: #2c3e50;">Serviços/Produtos</th>
+                            <th style="padding: 15px; border-bottom: 2px solid #dcdde1; color: #2c3e50; text-align: center;">Método</th>
+                            <th style="padding: 15px; border-bottom: 2px solid #dcdde1; color: #2c3e50; text-align: right;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-historico-body">
+                        </tbody>
+                </table>
+            </div>
+            
+            <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 1.1rem; color: #2c3e50;">
+                    Total em Caixa Hoje: <strong style="color: #2ea89c; font-size: 1.3rem;" id="total-caixa-hoje">0.00 €</strong>
+                </div>
+                <button type="button" id="btn-fechar-historico-btn" class="btn-cancelar">Fechar Registo</button>
+            </div>
+
+        </div>
+    </div>
+
+
+        <footer>
+            <p style="color: white; font-size: 0.9rem;">Área Reservada - Clínica Miacãomigo © 2026</p>
+        </footer>
 
     <script src="../../../JS/js_rececao/faturacao_recep.js"></script>
 </body>

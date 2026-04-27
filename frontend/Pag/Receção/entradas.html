@@ -8,8 +8,6 @@
         <link rel="stylesheet" href="../../CSS/PaginaSite.css">
         <link rel="stylesheet" href="../../CSS/css_rececao/rececionista.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-
     </head>
 
     <body class ="com-sidebar">
@@ -24,13 +22,10 @@
             </nav>
         </header>
             
-        <!-- MENU LATERAL -->
         <section class="sidebar">
-
             <a href="../../frontend/Pag_principal.html" class="logo">
                 <img src="../../img/Logo_vet.png" alt="Logótipo Clínica Miacãomigo">
             </a>
-
             <hr>
             <nav class="menu">
                 <a href="rececionista.html"><i class="fa fa-home"></i> Dashboard</a>
@@ -40,14 +35,10 @@
                 <a href="faturacao_recep.html"><i class="fa fa-file-invoice"></i> Faturação </a>
                 <a href="clientes_recep.html"><i class="fa fa-users"></i> Clientes </a>
                 <a href="resg_ado.html"><i class="fa fa-paw"></i> Resgates e Adoções </a>
-                
-                
                 <hr>
                 <a href="../../Pag_principal.html"><i class="fa fa-sign-out"></i> Sair</a>
             </nav>
-            
         </section>
-
 
         <main class="dashboard-main">
             <section class="barra-acoes-topo" style="margin-bottom: 2rem;">
@@ -57,105 +48,15 @@
                 </div>
             </section>
             
-            <div class="grid-veterinarios">
-            
-            <div class="cartao-vet">
-                <img src="https://cdn-icons-png.flaticon.com/512/387/387561.png" alt="Foto Dr. Rui" class="foto-vet">
-                <h3>Dr. Rui Silva</h3>
-                <p class="especialidade">Cirurgia Geral</p>
-                
-                <div class="acoes-ponto">
-                    <button class="btn-ponto falta" onclick="abrirModalRegisto('Dr. Rui Silva', 'Falta')">Registar Falta</button>
-                    <button class="btn-ponto atraso" onclick="abrirModalRegisto('Dr. Rui Silva', 'Atraso')">Registar Atraso</button>
+            <div class="grid-veterinarios" id="container-veterinarios">
                 </div>
-            </div>
-
-            <div class="cartao-vet">
-                <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" alt="Foto Dra. Ana" class="foto-vet">
-                <h3>Dra. Ana Costa</h3>
-                <p class="especialidade">Animais Exóticos</p>
-                
-                <div class="acoes-ponto">
-                    <button class="btn-ponto falta" onclick="abrirModalRegisto('Dra. Ana Costa', 'Falta')">Registar Falta</button>
-                    <button class="btn-ponto atraso" onclick="abrirModalRegisto('Dra. Ana Costa', 'Atraso')">Registar Atraso</button>
-                </div>
-            </div>
-            
-            <div class="cartao-vet">
-                <img src="https://cdn-icons-png.flaticon.com/512/387/387561.png" alt="Foto Dr. Rui" class="foto-vet">
-                <h3>Dr. Rui Silva</h3>
-                <p class="especialidade">Cirurgia Geral</p>
-                
-                <div class="acoes-ponto">
-                    <button class="btn-ponto falta" onclick="abrirModalRegisto('Dr. Rui Silva', 'Falta')">Registar Falta</button>
-                    <button class="btn-ponto atraso" onclick="abrirModalRegisto('Dr. Rui Silva', 'Atraso')">Registar Atraso</button>
-                </div>
-            </div>
-
-            
-            <div class="cartao-vet">
-                <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" alt="Foto Dra. Ana" class="foto-vet">
-                <h3>Dra. Ana Costa</h3>
-                <p class="especialidade">Animais Exóticos</p>
-                
-                <div class="acoes-ponto">
-                    <button class="btn-ponto falta" onclick="abrirModalRegisto('Dra. Ana Costa', 'Falta')">Registar Falta</button>
-                    <button class="btn-ponto atraso" onclick="abrirModalRegisto('Dra. Ana Costa', 'Atraso')">Registar Atraso</button>
-                </div>
-            </div>
-
-            
-            <div class="cartao-vet">
-                <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" alt="Foto Dra. Ana" class="foto-vet">
-                <h3>Dra. Ana Costa</h3>
-                <p class="especialidade">Animais Exóticos</p>
-                
-                <div class="acoes-ponto">
-                    <button class="btn-ponto falta" onclick="abrirModalRegisto('Dra. Ana Costa', 'Falta')">Registar Falta</button>
-                    <button class="btn-ponto atraso" onclick="abrirModalRegisto('Dra. Ana Costa', 'Atraso')">Registar Atraso</button>
-                </div>
-            </div>
-
-            
-            <div class="cartao-vet">
-                <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" alt="Foto Dra. Ana" class="foto-vet">
-                <h3>Dra. Ana Costa</h3>
-                <p class="especialidade">Animais Exóticos</p>
-                
-                <div class="acoes-ponto">
-                    <button class="btn-ponto falta" onclick="abrirModalRegisto('Dra. Ana Costa', 'Falta')">Registar Falta</button>
-                    <button class="btn-ponto atraso" onclick="abrirModalRegisto('Dra. Ana Costa', 'Atraso')">Registar Atraso</button>
-                </div>
-            </div>
-
-            <div class="cartao-vet">
-                <img src="https://cdn-icons-png.flaticon.com/512/387/387561.png" alt="Foto Dr. João" class="foto-vet">
-                <h3>Dr. João Mendes</h3>
-                <p class="especialidade">Clínica Geral</p>
-                
-                <div class="acoes-ponto">
-                    <button class="btn-ponto falta" onclick="abrirModalRegisto('Dr. João Mendes', 'Falta')">Registar Falta </button>
-                    <button class="btn-ponto atraso" onclick="abrirModalRegisto('Dr. João Mendes', 'Atraso')">Registar Atraso</button>
-                </div>
-            </div>
-                
-            <div class="cartao-vet">
-                <img src="https://cdn-icons-png.flaticon.com/512/387/387561.png" alt="Foto Dr. João" class="foto-vet">
-                <h3>Dr. João Mendes</h3>
-                <p class="especialidade">Clínica Geral</p>
-                
-                <div class="acoes-ponto">
-                    <button class="btn-ponto falta" onclick="abrirModalRegisto('Dr. João Mendes', 'Falta')">Registar Falta </button>
-                    <button class="btn-ponto atraso" onclick="abrirModalRegisto('Dr. João Mendes', 'Atraso')">Registar Atraso</button>
-                </div>
-            </div>
         </main>
 
         <div id="modal-registo-ponto" class="modal-overlay">
             <div class="modal-content" style="max-width: 500px;">
                 <h2 class="titulo-seccao" style="margin-bottom: 1.5rem; color: #2c3e50;">Registo de Assiduidade</h2>
 
-                <form class="formulario-marcacao">
+                <form class="formulario-marcacao" id="form-registo-ponto">
                     
                     <div class="grupo-input">
                         <label for="registo_vet_nome">Membro da Equipa:</label>
@@ -180,8 +81,8 @@
                     </div>
 
                     <div class="acoes-formulario" style="margin-top: 2rem;">
-                        <button type="button" class="btn-cancelar" onclick="fecharModalRegisto()">Cancelar</button>
-                        <button type="button" class="btn-salvar">Guardar Registo</button>
+                        <button type="button" class="btn-cancelar" id="btn-cancelar-registo">Cancelar</button>
+                        <button type="button" class="btn-salvar" id="btn-guardar-registo">Guardar Registo</button>
                     </div>
                 </form>
             </div>
@@ -191,6 +92,6 @@
             <p style="color: white; font-size: 0.9rem;">Área Reservada - Clínica Miacãomigo © 2026</p>
         </footer>
 
-        <script src="../../../JS/js_rececao/entradas.js"> </script>
+        <script src="../../../JS/js_rececao/entradas_recep.js"></script>
     </body>
 </html>

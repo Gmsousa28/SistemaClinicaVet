@@ -1,5 +1,5 @@
 // =======================================================
-// BASE DE DADOS DE TESTE (Mock Data)
+// BASE DE DADOS DE TESTE E ESTADO (Pronto para API)
 // =======================================================
 let clientesBD = [
     {
@@ -25,16 +25,17 @@ let clientesBD = [
     }
 ];
 
-// Variável para sabermos se estamos a editar alguém ou a criar um novo
 let clienteEmEdicao = null;
 
 // =======================================================
-// INICIALIZAÇÃO DA PÁGINA
+// INICIALIZAÇÃO "MESTRE" E EVENT LISTENERS
 // =======================================================
 document.addEventListener('DOMContentLoaded', function() {
+    
+    // 1. Carregar a Tabela Inicial
     atualizarTabelaClientes(clientesBD);
 
-    // Ligar a barra de pesquisa
+    // 2. Listener da Barra de Pesquisa
     const barraPesquisa = document.getElementById('pesquisa_cliente');
     if (barraPesquisa) {
         barraPesquisa.addEventListener('input', function() {
@@ -47,16 +48,61 @@ document.addEventListener('DOMContentLoaded', function() {
             atualizarTabelaClientes(clientesFiltrados);
         });
     }
+
+    // 3. Listener Delegado para os botões "Ver" e "Editar" DENTRO da tabela
+    const tbody = document.getElementById('tabelaClientes');
+    if (tbody) {
+        tbody.addEventListener('click', (evento) => {
+            // Procura se clicámos num botão com a classe específica
+            const btnVer = evento.target.closest('.btn-ver-cliente');
+            const btnEditar = evento.target.closest('.btn-editar-cliente');
+
+            if (btnVer) {
+                const nif = btnVer.getAttribute('data-nif');
+                verCliente(nif);
+            }
+            if (btnEditar) {
+                const nif = btnEditar.getAttribute('data-nif');
+                editarCliente(nif);
+            }
+        });
+    }
+
+    // 4. Listeners para os Modais e Formulários (Garante que tens estes IDs no HTML!)
+    
+    // Botão de Adicionar Novo Cliente (na página principal)
+    const btnNovoCliente = document.getElementById('btn-novo-cliente');
+    if (btnNovoCliente) btnNovoCliente.addEventListener('click', () => editarCliente('novo'));
+
+    // Botão de Guardar Alterações (no modal de Edição)
+    const btnSalvar = document.getElementById('btn-salvar-edicao');
+    if (btnSalvar) btnSalvar.addEventListener('click', salvarEdicao);
+
+    // Botões de fechar os Modais
+    const btnFecharVerX = document.getElementById('btn-fechar-modal-x');
+    if (btnFecharVerX) btnFecharVerX.addEventListener('click', fecharModalVerCliente);
+
+    const btnFecharVerBaixo = document.getElementById('btn-fechar-modal-baixo');
+    if (btnFecharVerBaixo) btnFecharVerBaixo.addEventListener('click', fecharModalVerCliente);
+
+    // Botões de fechar o Modal "Editar Cliente" (Estes já estavam certos)
+    const btnFecharEdicaoX = document.getElementById('btn-fechar-edicao-x');
+    if (btnFecharEdicaoX) btnFecharEdicaoX.addEventListener('click', fecharModalEdicaoCliente);
+
+    const btnFecharEdicaoBaixo = document.getElementById('btn-fechar-edicao-baixo');
+    if (btnFecharEdicaoBaixo) btnFecharEdicaoBaixo.addEventListener('click', fecharModalEdicaoCliente);
 });
 
 // =======================================================
-// DESENHAR A TABELA DE CLIENTES
+// LÓGICA DA INTERFACE E FUNÇÕES
 // =======================================================
+
+// DESENHAR A TABELA DE CLIENTES
 function atualizarTabelaClientes(listaClientes) {
     const tbody = document.getElementById('tabelaClientes');
     if (!tbody) return;
 
-    tbody.innerHTML = ''; // Limpa a tabela antes de desenhar
+    tbody.innerHTML = ''; 
 
     if (listaClientes.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">Nenhum cliente encontrado.</td></tr>';
@@ -67,6 +113,7 @@ function atualizarTabelaClientes(listaClientes) {
         const tr = document.createElement('tr');
         tr.style.borderBottom = "1px solid #f1f2f6";
         
+        // Repara: Usamos classes e data-nif em vez de onclick!
         tr.innerHTML = `
             <td style="padding: 15px 10px; font-weight: bold; color: var(--cor-base-escura);">${cliente.nome}</td>
             <td style="padding: 15px 10px;">${cliente.morada}</td>
@@ -75,15 +122,12 @@ function atualizarTabelaClientes(listaClientes) {
             <td style="padding: 15px 10px;">${cliente.contacto}</td>
             <td style="padding: 15px 10px; text-align: center;">
                 <div style="display: flex; gap: 10px; justify-content: center; align-items: center;">
-                    
-                    <button style="background-color: #f0f2f5; color: #5c636a; border-radius: 20px; padding: 8px 18px; border: none; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem; transition: background 0.2s;" onclick="verCliente('${cliente.nif}')">
+                    <button class="btn-ver-cliente" data-nif="${cliente.nif}" style="background-color: #f0f2f5; color: #5c636a; border-radius: 20px; padding: 8px 18px; border: none; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem; transition: background 0.2s;">
                         <i class="fa fa-eye"></i> Ver
                     </button>
-                    
-                    <button style="background-color: #f39c12; color: white; border-radius: 20px; padding: 8px 18px; border: none; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem; transition: background 0.2s;" onclick="editarCliente('${cliente.nif}')">
+                    <button class="btn-editar-cliente" data-nif="${cliente.nif}" style="background-color: #f39c12; color: white; border-radius: 20px; padding: 8px 18px; border: none; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem; transition: background 0.2s;">
                         <i class="fa fa-edit"></i> Editar
                     </button>
-                    
                 </div>
             </td>
         `;
@@ -91,14 +135,11 @@ function atualizarTabelaClientes(listaClientes) {
     });
 }
 
-// =======================================================
-// VER DETALHES DO CLIENTE E ANIMAIS (MODAL PREMIUM)
-// =======================================================
-window.verCliente = function(nif) {
+// VER DETALHES DO CLIENTE
+function verCliente(nif) {
     const cliente = clientesBD.find(c => c.nif === nif);
     if (!cliente) return;
 
-    // 1. Preencher as caixas de leitura do Cliente
     const nifEl = document.getElementById('ver_nif');
     const nomeEl = document.getElementById('ver_nome');
     const emailEl = document.getElementById('ver_email');
@@ -111,22 +152,19 @@ window.verCliente = function(nif) {
     if(contactoEl) contactoEl.value = cliente.contacto;
     if(moradaEl) moradaEl.value = cliente.morada || 'Não fornecida';
 
-    // 2. Desenhar os cartões bonitos dos Animais
     const listaAnimais = document.getElementById('listaAnimaisVisualizacao');
     if(listaAnimais) {
-        listaAnimais.innerHTML = ''; // Limpa a lista anterior
+        listaAnimais.innerHTML = ''; 
 
         if (cliente.animais.length === 0) {
             listaAnimais.innerHTML = '<p style="color: #7f8c8d; font-style: italic; padding: 10px 0;">Este cliente não tem animais registados.</p>';
         } else {
             cliente.animais.forEach(animal => {
-                
-                // Escolhe um ícone diferente consoante a espécie
-                let iconeUrl = '../../img/icone_cao.jpg'; // Ícone Cão
+                let iconeUrl = '../../img/icone_cao.jpg'; 
                 if(animal.especie.toLowerCase() === 'gato') {
-                    iconeUrl = '../../img/icone_gato.jpg'; // Ícone Gato
+                    iconeUrl = '../../img/icone_gato.jpg'; 
                 } else if (animal.especie.toLowerCase() === 'outros') {
-                    iconeUrl = '../../img/icone_outros.jpg'; // Ícone Outros
+                    iconeUrl = '../../img/icone_outros.jpg'; 
                 }
 
                 listaAnimais.innerHTML += `
@@ -144,15 +182,12 @@ window.verCliente = function(nif) {
         }
     }
 
-    // Abre o Modal e Bloqueia Scroll Traseiro
     document.getElementById('modalCliente').style.display = 'flex';
     document.body.style.overflow = 'hidden';
-};
+}
 
-// =======================================================
-// EDITAR OU CRIAR CLIENTE (MODAL 2) - NIF SEMPRE EDITÁVEL
-// =======================================================
-window.editarCliente = function(nif) {
+// EDITAR OU CRIAR CLIENTE
+function editarCliente(nif) {
     clienteEmEdicao = nif; 
     const titulo = document.getElementById('tituloEdicao');
 
@@ -183,17 +218,16 @@ window.editarCliente = function(nif) {
         caixaNif.style.cursor = 'text'; 
     }
 
-    // Abre o Modal e Bloqueia Scroll Traseiro
     document.getElementById('modalEdicao').style.display = 'flex';
     document.body.style.overflow = 'hidden';
-};
+}
 
-// =======================================================
-// GUARDAR ALTERAÇÕES (FORMULÁRIO)
-// =======================================================
-window.salvarEdicao = function() {
+// GUARDAR ALTERAÇÕES
+function salvarEdicao() {
     const nifInserido = document.getElementById('editNif').value;
     
+    if(!nifInserido) return alert("O NIF é obrigatório!");
+
     const dadosFormulario = {
         nif: nifInserido,
         nome: document.getElementById('editNome').value,
@@ -220,28 +254,23 @@ window.salvarEdicao = function() {
         }
     }
 
-    // Fecha o Modal e Devolve Scroll Traseiro
-    document.getElementById('modalEdicao').style.display = 'none';
-    document.body.style.overflow = '';
+    fecharModalEdicaoCliente();
     atualizarTabelaClientes(clientesBD);
-};
+}
 
-
-// =======================================================
-// FUNÇÕES PARA FECHAR MODAIS (Para usares nos botões X ou Cancelar)
-// =======================================================
-window.fecharModalVerCliente = function() {
+// FECHAR MODAIS
+function fecharModalVerCliente() {
     const modal = document.getElementById('modalCliente');
     if (modal) {
         modal.style.display = 'none';
-        document.body.style.overflow = ''; // Devolve scroll
+        document.body.style.overflow = ''; 
     }
-};
+}
 
-window.fecharModalEdicaoCliente = function() {
+function fecharModalEdicaoCliente() {
     const modal = document.getElementById('modalEdicao');
     if (modal) {
         modal.style.display = 'none';
-        document.body.style.overflow = ''; // Devolve scroll
+        document.body.style.overflow = ''; 
     }
-};
+}

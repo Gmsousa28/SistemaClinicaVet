@@ -46,14 +46,12 @@
     <section class="barra-acoes-topo" style="margin-bottom: 2rem;">
         <h2 class="titulo-seccao" style="margin-bottom: 1rem;">Gestão de Clientes</h2>
         
-        <button type="button" class="btn-primario" onclick="editarCliente('novo')">
+        <button type="button" class="btn-primario" id="btn-novo-cliente">
             <i class="fa fa-user-plus" style="margin-right: 8px;"></i> Registar Cliente
         </button>
-    
-      </section>
+    </section>
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-        
         <div class="grupo-input" style="width: 400px; margin-bottom: 0;">
             <div style="position: relative;">
                 <i class="fa fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #95a5a6; pointer-events: none;"></i>
@@ -80,7 +78,7 @@
     </section>
   </main>
 
- <div id="modalCliente" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(44, 62, 80, 0.8); z-index: 1000; justify-content: center; align-items: center;">
+  <div id="modalCliente" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(44, 62, 80, 0.8); z-index: 1000; justify-content: center; align-items: center;">
     
     <style>
       .input-leitura { width: 100%; padding: 12px 15px; border: 1px solid #dcdde1; border-radius: 8px; background-color: #f8f9fa; color: #2f3640; box-sizing: border-box; font-family: inherit; outline: none; }
@@ -91,7 +89,7 @@
 
     <div class="cartao-formulario" style="max-width: 650px; width: 100%; padding: 2.5rem; position: relative; max-height: 90vh; overflow-y: auto;">
       
-      <button onclick="document.getElementById('modalCliente').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.5rem; color: #7f8c8d; cursor: pointer;">&times;</button>
+      <button id="btn-fechar-modal-x" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.5rem; color: #7f8c8d; cursor: pointer;">&times;</button>
       
       <h2 style="color: var(--cor-base-escura); margin-bottom: 1.5rem; text-align: center;">Ficha de Cliente</h2>
       
@@ -125,7 +123,7 @@
           </div>
 
       <div style="display: flex; justify-content: center; gap: 15px;">
-        <button type="button" onclick="document.getElementById('modalCliente').style.display='none'" class="btn-outline-vermelho">Fechar Ficha</button>
+        <button type="button" id="btn-fechar-modal-baixo" class="btn-outline-vermelho">Fechar Ficha</button>
         <a href="marcacoes_recep.html" class="btn-primario" style="padding: 12px 30px; border-radius: 25px; text-decoration: none; display: flex; align-items: center;">Agendar Consulta</a>
       </div>
 
@@ -134,14 +132,13 @@
 
   <div id="modalEdicao" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(44, 62, 80, 0.8); z-index: 1000; justify-content: center; align-items: center;">
     
-
     <div class="cartao-formulario" style="max-width: 650px; width: 100%; padding: 2.5rem; position: relative; max-height: 90vh; overflow-y: auto;">
       
-      <button class="fechar-modal" onclick="document.getElementById('modalEdicao').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.5rem; color: #7f8c8d; cursor: pointer; transition: color 0.2s;">&times;</button>
+      <button id="btn-fechar-edicao-x" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.5rem; color: #7f8c8d; cursor: pointer; transition: color 0.2s;">&times;</button>
       
       <h2 id="tituloEdicao" style="color: var(--cor-base-escura); margin-bottom: 2rem; text-align: center;">Registar Novo Cliente</h2>
       
-      <form onsubmit="event.preventDefault(); salvarEdicao();">
+      <form id="form-edicao-cliente">
         
         <div class="grid-inputs-duplos" style="margin-bottom: 1rem;">
           <div class="grupo-input">
@@ -168,8 +165,9 @@
         </div>
 
         <div style="display: flex; justify-content: center; gap: 15px; border-top: 1px solid #eee; padding-top: 2rem;">
-          <button type="button" onclick="document.getElementById('modalEdicao').style.display='none'" class="btn-cancelar" style="padding: 12px 30px; border-radius: 25px; font-weight: bold;">Cancelar</button>
-          <button type="submit" class="btn-salvar" style="padding: 12px 30px; border-radius: 25px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+          <button type="button" id="btn-fechar-edicao-baixo" class="btn-cancelar" style="padding: 12px 30px; border-radius: 25px; font-weight: bold;">Cancelar</button>
+          
+          <button type="button" id="btn-salvar-edicao" class="btn-salvar" style="padding: 12px 30px; border-radius: 25px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
             <i class="fa fa-save"></i> Guardar Alterações
           </button>
         </div>
@@ -182,7 +180,7 @@
     <p style="color: white; font-size: 0.9rem; text-align: center; margin-top: 20px;">Área Reservada - Clínica Miacãomigo © 2026</p>
   </footer>
 
-  <script src="../../../JS/js_rececao/adm_recep_clientes.js"> </script>
+  <script src="../../../JS/js_rececao/clientes_recep.js"></script>
 
 </body>
 </html>

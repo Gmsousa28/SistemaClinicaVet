@@ -45,20 +45,22 @@
 
         
         <main class="dashboard-main">
+            
             <section class="pesquisa-cliente" style="margin-top: 1rem; margin-bottom: 2.5rem;">
                 <h2 class="titulo-seccao">Procurar Cliente</h2>
-                <form action="/api/procurar-cliente" method="GET" class="barra-pesquisa" style="display: flex; gap: 15px;">
+                <form class="barra-pesquisa" onsubmit="return false;" style="display: flex; gap: 15px;">
                     
                     <div style="position: relative; flex-grow: 1;">
                         <i class="fa fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #95a5a6;"></i>
-                        <input type="text" name="nif" id="pesquisa-nif" placeholder="Introduza o NIF do cliente (Ex: 123456789)" maxlength="9" pattern="\d{9}" required style="width: 100%; padding-left: 40px; box-sizing: border-box;">
+                        <input type="text" id="pesquisa-nif" placeholder="Introduza o NIF do cliente (Ex: 123456789)" maxlength="9" pattern="\d{9}" required style="width: 100%; padding-left: 40px; box-sizing: border-box;">
                     </div>
                     
-                    <button type="button" class="btn-pesquisar" onclick="abrirModalCliente()">
+                    <button type="button" class="btn-pesquisar" id="btn-pesquisar-cliente">
                         <i class="fa fa-id-card" style="margin-right: 5px;"></i> Pesquisar Dados
                     </button>
                 </form>
             </section>
+
         <section class="dashboard-acoes">
             
             <a href="entradas.html" class="card-acao" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 2rem 1.5rem;">
@@ -128,76 +130,58 @@
         </main>
 
 
-<!-- Modal Da ficha do cliente-->        
-<div id="modal-cliente" class="modal-overlay">
-    <div class="modal-content">
-        <h2 class="titulo-seccao" style="margin-bottom: 1.5rem; color: #2c3e50;">Ficha de Cliente</h2>
+        <!-- Modal Da ficha do cliente-->        
+        <div id="modal-cliente" class="modal-overlay">
+            <div class="modal-content">
+                <h2 class="titulo-seccao" style="margin-bottom: 1.5rem; color: #2c3e50;">Ficha de Cliente</h2>
 
-
-        <form class="formulario-marcacao">
-            
-            <div class="grupo-input">
-                <label for="cliente_nome">Nome Completo:</label>
-                <input type="text" id="cliente_nome" value="João Manuel Silva" readonly>
-            </div>
-
-            <div class="grid-inputs-duplos">
-                <div class="grupo-input">
-                    <label for="cliente_nif">NIF:</label>
-                    <input type="text" id="cliente_nif" value="123456789" readonly>
-                </div>
-                <div class="grupo-input">
-                    <label for="cliente_nascimento">Data de Nascimento:</label>
-                    <input type="date" id="cliente_nascimento" value="1985-06-15" readonly>
-                </div>
-            </div>
-
-            <div class="grid-inputs-duplos">
-                <div class="grupo-input">
-                    <label for="cliente_email">E-mail:</label>
-                    <input type="email" id="cliente_email" value="joao.silva@email.com" readonly>
-                </div>
-                <div class="grupo-input">
-                    <label for="cliente_tlm">Nº Telemóvel:</label>
-                    <input type="tel" id="cliente_tlm" value="912345678" readonly>
-                </div>
-            </div>
-
-            <div class="grupo-input">
-                <label for="cliente_morada">Morada:</label>
-                <input type="text" id="cliente_morada" value="Rua dos Animais, Nº 42, Porto" readonly>
-            </div>
-
-            <hr style="border: none; border-top: 1px solid #eee; margin: 2rem 0 1.5rem 0;">
-            <h3 class="titulo-seccao" style="font-size: 1.2rem; color: #2ea89c; margin-bottom: 1rem;">Animais Registados</h3>
-            
-            <div class="lista-animais-cliente" id="lista_animais_cliente" style="display: flex; flex-direction: column; gap: 12px;">
-                
-                <div class="mini-cartao-animal">
-                    <img src="../../img/icone_cao.jpg" alt="Max">
-                    <div class="mini-info">
-                        <strong>Max</strong>
-                        <span>Cão • Labrador • Nasc: 2019-01-10</span>
+                <form class="formulario-marcacao">
+                    
+                    <div class="grupo-input">
+                        <label for="cliente_nome">Nome Completo:</label>
+                        <input type="text" id="cliente_nome" readonly>
                     </div>
-                </div>
-                
-                <div class="mini-cartao-animal">
-                    <img src="../../img/icone_gato.jpg" alt="Luna">
-                    <div class="mini-info">
-                        <strong>Luna</strong>
-                        <span>Gato • Europeu Comum • Nasc: 2020-03-20</span>
+
+                    <div class="grid-inputs-duplos">
+                        <div class="grupo-input">
+                            <label for="cliente_nif">NIF:</label>
+                            <input type="text" id="cliente_nif" readonly>
+                        </div>
+                        <div class="grupo-input">
+                            <label for="cliente_nascimento">Data de Nascimento:</label>
+                            <input type="date" id="cliente_nascimento" readonly>
+                        </div>
                     </div>
-                </div>
 
-            </div>
+                    <div class="grid-inputs-duplos">
+                        <div class="grupo-input">
+                            <label for="cliente_email">E-mail:</label>
+                            <input type="email" id="cliente_email" readonly>
+                        </div>
+                        <div class="grupo-input">
+                            <label for="cliente_tlm">Nº Telemóvel:</label>
+                            <input type="tel" id="cliente_tlm" readonly>
+                        </div>
+                    </div>
 
-            <div class="acoes-formulario" style="margin-top: 2rem;">
-                <button type="button" class="btn-cancelar" onclick="fecharModalCliente()">Fechar Ficha</button>
-                <button type="button" class="btn-salvar" onclick="window.location.href='marcacoes_recep.html'">Agendar Consulta</button>
+                    <div class="grupo-input">
+                        <label for="cliente_morada">Morada:</label>
+                        <input type="text" id="cliente_morada" readonly>
+                    </div>
+
+                    <hr style="border: none; border-top: 1px solid #eee; margin: 2rem 0 1.5rem 0;">
+                    <h3 class="titulo-seccao" style="font-size: 1.2rem; color: #2ea89c; margin-bottom: 1rem;">Animais Registados</h3>
+                    
+                    <div class="lista-animais-cliente" id="lista_animais_cliente" style="display: flex; flex-direction: column; gap: 12px;">
+                    </div>
+
+                    <div class="acoes-formulario" style="margin-top: 2rem;">
+                        <button type="button" class="btn-cancelar" id="btn-fechar-ficha">Fechar Ficha</button>
+                        <button type="button" class="btn-salvar" id="btn-agendar-consulta">Agendar Consulta</button>
+                    </div>
+                </form>
             </div>
-        </form>
-    </div>
-</div>
+        </div>
 
         <footer>
             <p style="color: white; font-size: 0.9rem;">Área Reservada - Clínica Miacãomigo © 2026</p>
