@@ -36,13 +36,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnGuardarNovo = document.getElementById('btn-guardar-animal');
     const btnSalvarEdicao = document.getElementById('btn-salvar-edicao');
     
-    let cartaoEmEdicao = null; // Memória para saber qual animal estamos a editar
+    let cartaoEmEdicao = null; 
 
     if (listaAnimais) {
-        // --- A. ADICIONAR NOVO ANIMAL (Com foto) ---
+        // --- A. ADICIONAR NOVO ANIMAL ---
         if (btnAdicionarNovo && modalAdd) {
             
-            // Lógica da Foto do NOVO Animal
             const inputFotoAnimal = document.getElementById('input-foto-animal');
             const previewNovoAnimal = document.getElementById('preview-novo-animal');
 
@@ -57,27 +56,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
 
-            btnAdicionarNovo.addEventListener('click', () => modalAdd.classList.add('ativo'));
+            // ABRIR MODAL
+            btnAdicionarNovo.addEventListener('click', () => {
+                modalAdd.classList.add('ativo');
+                document.body.classList.add('no-scroll'); // Bloqueia o fundo!
+            });
             
-            // Fechar no X ou clicando fora
-            modalAdd.querySelector('.fechar-modal').addEventListener('click', () => modalAdd.classList.remove('ativo'));
-            modalAdd.addEventListener('click', (e) => { if(e.target === modalAdd) modalAdd.classList.remove('ativo'); });
+            // FECHAR MODAL (X ou fora)
+            modalAdd.querySelector('.fechar-modal').addEventListener('click', () => {
+                modalAdd.classList.remove('ativo');
+                document.body.classList.remove('no-scroll'); // Desbloqueia o fundo!
+            });
+            modalAdd.addEventListener('click', (e) => { 
+                if(e.target === modalAdd) {
+                    modalAdd.classList.remove('ativo');
+                    document.body.classList.remove('no-scroll'); // Desbloqueia o fundo!
+                }
+            });
 
+            // GUARDAR NOVO ANIMAL
             btnGuardarNovo.addEventListener('click', function() {
                 const nome = document.getElementById('novo-nome').value;
                 const especie = document.getElementById('nova-especie').value;
                 
-                // Vai buscar a foto que está na janela de preview, ou usa uma padrão se falhar
                 let fotoEscolhida = "../../img/imagemdefault.png";
-                if (previewNovoAnimal) {
-                    fotoEscolhida = previewNovoAnimal.src;
-                }
+                if (previewNovoAnimal) { fotoEscolhida = previewNovoAnimal.src; }
 
                 if (nome !== '' && especie !== '') {
                     const novoCartao = document.createElement('div');
                     novoCartao.className = 'animal-card';
                     
-                    // O novo animal agora já nasce com a foto escolhida e o menu de Lápis/Lixo!
                     novoCartao.innerHTML = `
                         <div class="foto-animal-wrapper">
                             <img src="${fotoEscolhida}" alt="${nome}">
@@ -92,23 +100,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     listaAnimais.insertBefore(novoCartao, btnAdicionarNovo);
                     
-                    // Limpar as caixas para a próxima vez
                     document.getElementById('novo-nome').value = '';
                     document.getElementById('nova-especie').value = '';
-                    if (previewNovoAnimal) {
-                        previewNovoAnimal.src = '../../img/imagemdefault.png'; // Repõe a imagem padrão na janela
-                    }
+                    if (previewNovoAnimal) { previewNovoAnimal.src = '../../img/imagemdefault.png'; }
                     
                     modalAdd.classList.remove('ativo');
+                    document.body.classList.remove('no-scroll'); // Desbloqueia o fundo!
                 } else {
                     alert("Preencha o nome e espécie!");
                 }
             });
         }
 
-        // --- B. EDITAR E REMOVER ANIMAIS (Agora com EDIÇÃO DE FOTO!) ---
+        // --- B. EDITAR E REMOVER ANIMAIS ---
         if (modalEdit) {
-            // Lógica para carregar foto na Preview de EDIÇÃO
             const inputFotoEdit = document.getElementById('input-foto-edit');
             const previewEditAnimal = document.getElementById('preview-edit-animal');
 
@@ -123,60 +128,89 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
 
-            // Fechar janela de edição
-            modalEdit.querySelector('.fechar-modal').addEventListener('click', () => modalEdit.classList.remove('ativo'));
-            modalEdit.addEventListener('click', (e) => { if(e.target === modalEdit) modalEdit.classList.remove('ativo'); });
+            // FECHAR MODAL EDIÇÃO (X ou fora)
+            modalEdit.querySelector('.fechar-modal').addEventListener('click', () => {
+                modalEdit.classList.remove('ativo');
+                document.body.classList.remove('no-scroll'); // Desbloqueia o fundo!
+            });
+            modalEdit.addEventListener('click', (e) => { 
+                if(e.target === modalEdit) {
+                    modalEdit.classList.remove('ativo');
+                    document.body.classList.remove('no-scroll'); // Desbloqueia o fundo!
+                }
+            });
 
-            // Detetar cliques dentro da lista de animais (Lápis ou Lixo)
             listaAnimais.addEventListener('click', function(e) {
                 
-                // Se clicou no botão de apagar
                 const btnApagar = e.target.closest('.btn-apagar-animal');
                 if (btnApagar) {
                     const cartao = btnApagar.closest('.animal-card');
                     const nome = cartao.querySelector('.nome-animal-texto').innerText;
                     if (confirm(`Tem a certeza que deseja remover o(a) ${nome}?`)) {
-                        cartao.remove(); // Apaga o animal da página
+                        cartao.remove(); 
                     }
                 }
 
-                // Se clicou no botão de editar (A lógica mudou aqui!)
+                // ABRIR MODAL DE EDIÇÃO (Clicar no Lápis)
                 const btnEditarAnimal = e.target.closest('.btn-editar-animal');
                 if (btnEditarAnimal) {
                     cartaoEmEdicao = btnEditarAnimal.closest('.animal-card');
                     const nomeAtual = cartaoEmEdicao.querySelector('.nome-animal-texto').innerText;
                     const especieAtual = cartaoEmEdicao.querySelector('.especie-animal-texto').innerText;
-                    // NOVA ZONA: Agarrar a foto do cartão que clicámos
                     const fotoAtual = cartaoEmEdicao.querySelector('.foto-animal-wrapper img').src;
 
-                    // Preenche a janela com os dados atuais
                     document.getElementById('edit-nome').value = nomeAtual;
                     document.getElementById('edit-especie').value = especieAtual;
-                    // NOVA ZONA: Preenche o preview da janela com a foto que já lá estava
-                    if (previewEditAnimal) {
-                        previewEditAnimal.src = fotoAtual;
-                    }
+                    if (previewEditAnimal) { previewEditAnimal.src = fotoAtual; }
                     
                     modalEdit.classList.add('ativo');
+                    document.body.classList.add('no-scroll'); // Bloqueia o fundo!
                 }
             });
 
-            // Guardar as alterações na edição (A lógica mudou aqui!)
+            // GUARDAR EDIÇÃO
             btnSalvarEdicao.addEventListener('click', function() {
                 const novoNome = document.getElementById('edit-nome').value;
                 const novaEspecie = document.getElementById('edit-especie').value;
-                // NOVA ZONA: Agarrar a foto que está na preview da janela (pode ser a nova ou a antiga)
                 const fotoEditada = document.getElementById('preview-edit-animal').src;
 
                 if (novoNome !== '' && novaEspecie !== '' && cartaoEmEdicao) {
                     cartaoEmEdicao.querySelector('.nome-animal-texto').innerText = novoNome;
                     cartaoEmEdicao.querySelector('.especie-animal-texto').innerText = novaEspecie;
-                    // NOVA ZONA: Atualizar a foto no cartão original!
                     cartaoEmEdicao.querySelector('.foto-animal-wrapper img').src = fotoEditada;
 
                     modalEdit.classList.remove('ativo');
+                    document.body.classList.remove('no-scroll'); // Desbloqueia o fundo!
                 }
             });
         }
     }
+
+    // --- 4. GESTÃO DE AVISOS INTERATIVOS ---
+    const secAvisos = document.querySelector('.avisos');
+    
+    if (secAvisos) {
+        secAvisos.addEventListener('click', function(e) {
+            const btnFechar = e.target.closest('.btn-fechar-aviso');
+            if (btnFechar) {
+                const aviso = btnFechar.closest('.aviso');
+                aviso.style.opacity = '0';
+                aviso.style.transform = 'translateX(30px)';
+                setTimeout(function() {
+                    aviso.remove();
+                    const avisosRestantes = secAvisos.querySelectorAll('.aviso');
+                    if (avisosRestantes.length === 0) {
+                        const semAvisos = document.createElement('p');
+                        semAvisos.style.color = '#888';
+                        semAvisos.style.textAlign = 'center';
+                        semAvisos.style.padding = '20px 0';
+                        semAvisos.style.fontStyle = 'italic';
+                        semAvisos.innerHTML = '<i class="fa fa-check-circle" style="color: #2ea89c; font-size: 20px; display: block; margin-bottom: 10px;"></i> Não tem novos avisos!';
+                        secAvisos.appendChild(semAvisos);
+                    }
+                }, 300);
+            }
+        });
+    }
+
 });

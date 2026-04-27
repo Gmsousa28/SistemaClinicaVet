@@ -1,4 +1,10 @@
 
+/* ========================================================================== */
+/* BLOQUEAR SCROLL DA PÁGINA (Quando o modal está aberto)                     */
+/* ========================================================================== */
+body.no-scroll {
+    overflow: hidden;
+}
 /* ================================= */
 /* GRELHA PRINCIPAL DE 2 COLUNAS     */
 /* ================================= */
@@ -200,70 +206,112 @@ input:checked + .slider { background-color: #2ea89c; }
 input:checked + .slider:before { transform: translateX(20px); }
 
 
-/* ================================= */
-/* 5. AVISOS                         */
-/* ================================= */
 /* ========================================================================== */
-/* AVISOS INTERATIVOS                                                         */
+/* AVISOS INTERATIVOS - DESIGN PREMIUM                                        */
 /* ========================================================================== */
-.aviso {
-    display: flex;
-    justify-content: space-between; /* Empurra texto para a esquerda e botão para a direita */
-    align-items: center;
-    padding: 12px 15px;
-    margin-bottom: 12px;
-    background-color: #f9f9f9;
-    border-left: 4px solid #2ea89c; /* Barra lateral verde */
-    border-radius: 8px;
-    transition: transform 0.3s ease, opacity 0.3s ease; /* Transições para quando apagarmos o aviso */
+
+/* O contentor principal */
+.avisos {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 20px; /* Cantos ligeiramente mais redondos */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06); /* Sombra maior mas muito mais suave */
+    border: none; /* Sem linha de borda, fica mais limpo */
+    width: 100%;
 }
 
-.aviso:last-child { margin-bottom: 0; }
-.aviso:hover { transform: translateX(5px); /* Dá um saltinho para a direita ao passar o rato */ }
+.avisos h3 { 
+    color: #2ea89c; 
+    font-size: 22px; 
+    margin-bottom: 25px; 
+}
 
-/* Aviso vermelho/urgente */
+/* As caixas de notificação individuais */
+.aviso {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px; /* Mais espaço interior para "respirar" */
+    margin-bottom: 15px;
+    background-color: #ffffff;
+    border: 1px solid #f2f2f2; /* Borda hiper suave a toda a volta */
+    border-left: 5px solid #2ea89c; /* Barra esquerda um pouco mais grossa */
+    border-radius: 12px; /* Cantos arredondados na própria notificação */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02); /* Sombra individual subtil */
+    transition: all 0.3s ease;
+}
+
+.aviso:hover { 
+    transform: translateY(-2px); /* Em vez de ir para o lado, levanta um bocadinho */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06); /* A sombra aumenta ao passar o rato */
+}
+
+/* Aviso Vermelho/Urgente */
 .aviso-importante {
     border-left-color: #e74c3c;
-    background-color: #fdf5f4;
+    background-color: #fffaf9; /* Fundo com um tom super suave de vermelho */
+    border-color: #fceceb;
 }
 
 .aviso-texto {
     display: flex;
     align-items: center;
-    gap: 10px;
-    color: #444;
+    gap: 12px;
+    color: #333;
     font-size: 14px;
+    font-weight: 500;
 }
 
-.aviso-texto i { color: #888; font-size: 16px; }
-.aviso-importante .aviso-texto i { color: #e74c3c; }
-.avisos h3 { color: #2ea89c; font-size: 22px; margin-bottom: 20px; }
+/* Ícones */
+.aviso-texto i { 
+    font-size: 18px; 
+    color: #2ea89c; /* O ícone normal ganha a cor verde da clínica */
+}
+.aviso-importante .aviso-texto i { 
+    color: #e74c3c; 
+}
 
 /* Botão de Ação Rápida (Ex: Marcar agora) */
 .link-acao {
-    margin-left: 5px;
+    margin-left: 12px;
     background-color: #e74c3c;
     color: white;
-    padding: 4px 12px;
-    border-radius: 12px;
+    padding: 6px 16px;
+    border-radius: 20px; /* Formato pílula moderna */
     text-decoration: none;
-    font-size: 11px;
-    font-weight: bold;
-    transition: 0.2s;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); /* Brilho vermelho à volta do botão */
+    transition: all 0.2s ease;
 }
-.link-acao:hover { background-color: #c0392b; color: white; }
+
+.link-acao:hover { 
+    background-color: #c0392b; 
+    transform: scale(1.05); /* Aumenta ligeiramente */
+    box-shadow: 0 6px 14px rgba(231, 76, 60, 0.4);
+}
 
 /* Botão do X (Fechar) */
 .btn-fechar-aviso {
-    background: none;
+    background: transparent;
     border: none;
-    color: #bbb;
+    color: #c0c0c0;
     cursor: pointer;
     font-size: 14px;
-    padding: 5px;
-    transition: color 0.2s;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%; /* Quando passas o rato, cria um fundo redondo perfeito */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
 }
-.btn-fechar-aviso:hover { color: #e74c3c; }
+
+.btn-fechar-aviso:hover { 
+    color: #e74c3c; 
+    background-color: #f5f5f5; /* Fundo cinza claro */
+}
 /* ========================================================================== */
 /* ALERTA DE SUCESSO (Notificação Flutuante)                                  */
 /* ========================================================================== */
