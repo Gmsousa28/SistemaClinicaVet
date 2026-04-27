@@ -207,3 +207,19 @@
 .botao-servico i {
     font-size: 1.1rem;
 }
+
+/* =======================================================
+   EFEITOS PREMIUM PARA INPUTS E CAIXAS DE TEXTO
+   ======================================================= */
+
+/* Efeito quando clicas para escrever na caixa (SEM SOMBRA) */
+.input-premium:focus {
+    border-color: #2ea89c; /* Fica com a cor verde da tua marca */
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+/* Um ligeiro efeito quando passas o rato por cima da caixa (antes de clicar) */
+.input-premium:hover {
+    border-color: #b0bec5;
+}
