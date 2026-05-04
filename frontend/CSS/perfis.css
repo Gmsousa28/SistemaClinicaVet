@@ -10,7 +10,7 @@ body.no-scroll {
 /* ================================= */
 main {
     max-width: 100% !important; /* O !important dá prioridade máxima e ignora os 1000px do outro ficheiro */
-    padding-left: 50px !important; /* Espaço extra à esquerda para não colar ao menu */
+    padding-left: 0px !important; /* Espaço extra à esquerda para não colar ao menu */
 }
 
 .grid {
