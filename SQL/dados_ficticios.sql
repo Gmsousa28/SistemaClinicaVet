@@ -18,428 +18,559 @@ TRUNCATE TABLE
     public.medicamento,
     public.clinica,
 	public.horario_clinica,
+	public.alerta,
 	public.logs,
 	public.servicos
 	RESTART IDENTITY CASCADE;
+-- ============================================================
+-- DADOS FICTÍCIOS EXTRA PARA TESTES
+-- ============================================================
 
---🧪 1. CLINICA
-INSERT INTO clinica (nome, email, morada, contacto_geral) VALUES
-('Clínica Animal Vida', 'geral@vida.pt', 'Rua Central 123, Braga', 912345678);
+-- ****************************************************************************
+-- 2. HORÁRIO DA CLÍNICA
+-- ****************************************************************************
 
---👤 2. LOGIN COLABORADOR
-INSERT INTO login_colaborador 
-(nome, email, palavra_passe, telemovel, data_nascimento, morada, nif, cargo)
+INSERT INTO public.horario_clinica (dia_semana, hora_abertura, hora_fecho) VALUES
+('Segunda', '09:00', '18:00'),
+('Terça', '09:00', '18:00'),
+('Quarta', '09:00', '18:00'),
+('Quinta', '09:00', '18:00'),
+('Sexta', '09:00', '18:00'),
+('Sábado', '09:00', '13:00');
+
+
+-- ****************************************************************************
+-- 3. LOGIN CLIENTES
+-- ****************************************************************************
+
+INSERT INTO public.login_cliente 
+(nome, email, palavra_passe, telemovel, data_nascimento, morada, nif, conta_ativa)
 VALUES
-('João Silva', 'joao@clinica.pt', 'hash123', 911111111, '1985-05-10', 'Braga', 123456789, 'Veterinário'),
-('Ana Costa', 'ana@clinica.pt', 'hash456', 922222222, '1990-08-20', 'Porto', 987654321, 'Funcionario');
+('Mariana Lopes', 'mariana.lopes@email.com', 'hash_mariana', 910100101, '1992-04-12', 'Rua Verde 10, Braga', 501100101, TRUE),
+('Tiago Ferreira', 'tiago.ferreira@email.com', 'hash_tiago', 910100102, '1988-09-23', 'Rua Azul 20, Porto', 501100102, TRUE),
+('Beatriz Martins', 'beatriz.martins@email.com', 'hash_beatriz', 910100103, '1997-01-05', 'Rua Amarela 30, Braga', 501100103, TRUE),
+('Rui Almeida', 'rui.almeida@email.com', 'hash_rui', 910100104, '1985-11-17', 'Rua do Sol 40, Guimarães', 501100104, TRUE),
+('Sofia Moreira', 'sofia.moreira@email.com', 'hash_sofia', 910100105, '1999-07-29', 'Rua da Lua 50, Vila Verde', 501100105, TRUE);
 
---👥 3. FUNCIONARIO & VETERINARIO
-INSERT INTO funcionario (nome, morada, email, nif, contacto, cargo) VALUES
-('Ana Costa', 'Porto', 'ana.func@clinica.pt', 111222333, 933333333, 'Rececionista');
 
-INSERT INTO veterinario (nome, morada, contacto, email, nif, especialidade) VALUES
-('João Silva', 'Braga', 944444444, 'joao.vet@clinica.pt', 222333444, 'Cirurgia');
+-- ****************************************************************************
+-- 4. CLIENTES
+-- ****************************************************************************
 
---🔗 4. COLABORADOR
--- João (veterinário)
-INSERT INTO colaborador (id_login_colaborador, id_veterinario)
-VALUES (1, 1);
-
--- Ana (funcionária)
-INSERT INTO colaborador (id_login_colaborador, id_funcionario)
-VALUES (2, 1);
-
---🧑‍💻 5. LOGIN CLIENTE
-INSERT INTO login_cliente 
-(nome, email, palavra_passe, telemovel, data_nascimento, morada, nif)
-VALUES
-('Carlos Mendes', 'carlos@gmail.com', 'pass123', 955555555, '1995-03-15', 'Braga', 333444555);
-
---🧾 6. CLIENTE
-INSERT INTO cliente 
+INSERT INTO public.cliente 
 (id_login_cliente, nome, morada, email, nif, contacto)
 VALUES
-(1, 'Carlos Mendes', 'Braga', 'carlos@gmail.com', 333444555, 955555555);
-
---🐶 7. ANIMAL
-INSERT INTO animal 
-(id_cliente, nome, especie, raca, sexo, data_nascimento, estado)
-VALUES
-(1, 'Rex', 'Cão', 'Labrador', 'M', '2020-06-01', 'Domestico'),
-(1, 'Mia', 'Gato', 'Siamês', 'F', '2022-01-10', 'Adotado');
-
---🚑 8. RESGATE
-INSERT INTO resgate 
-(id_animal, id_funcionario, data_resgate, idade)
-VALUES
-(2, 1, '2023-02-01', 'Juvenil');
-
---❤️ 9. ADOÇÃO
-INSERT INTO adocao 
-(id_animal, id_funcionario, data_adocao)
-VALUES
-(2, 1, '2023-03-01');
-
---🩺 10. CONSULTA
-INSERT INTO consulta 
-(id_animal, id_veterinario, data_consulta, motivo)
-VALUES
-(1, 1, '2024-01-10 10:00:00', 'Vacinação'),
-(2, 1, '2024-02-15 14:30:00', 'Check-up');
-
---💊 11. MEDICAMENTO & EXAME
-INSERT INTO medicamento (nome) VALUES
-('Paracetamol'),
-('Antibiótico');
-
-INSERT INTO exame (nome) VALUES
-('Raio-X'),
-('Análise de Sangue');
-
---🔗 12. PRESCREVE
-INSERT INTO prescreve 
-(id_consulta, id_medicamento, quantidade, descricao)
-VALUES
-(1, 1, 2, 'Tomar 2x ao dia'),
-(2, 2, 1, 'Tomar 1x ao dia');
-
---🔬 13. ORIENTA
-INSERT INTO orienta 
-(id_consulta, id_exame, descricao)
-VALUES
-(1, 1, 'Verificar fratura'),
-(2, 2, 'Check geral');
-
---💰 14. FATURA
-INSERT INTO fatura 
-(id_consulta, valor_total)
-VALUES
-(1, 50.00),
-(2, 75.00);
-
---📅 15. HORARIO
-INSERT INTO horario 
-(id_colaborador, dia_semana, hora_entrada, hora_saida)
-VALUES
-(1, 'Segunda', '09:00', '17:00'),
-(2, 'Segunda', '10:00', '18:00');
-
---⚠️ 16. OCORRENCIA LABORAL
-INSERT INTO ocorrencia_laboral 
-(id_colaborador, data_inicio, data_fim, tipo, observacoes)
-VALUES
-(2, '2024-03-01', '2024-03-01', 'Falta', 'Falta justificada');
-
-
--- 1. Criar Cliente e o respetivo Login
-INSERT INTO public.login_cliente (nome, email, palavra_passe, telemovel, morada, nif) 
-VALUES ('João Cliente', 'joao@email.com', 'pass123', 910000001, 'Rua dos Cães, 123', 123456789);
-
-INSERT INTO public.cliente (id_login_cliente, nome, morada, email, nif, contacto) 
-VALUES (1, 'João Cliente', 'Rua dos Cães, 123', 'joao@email.com', 123456789, 910000001);
-
--- 2. Criar Animal
-INSERT INTO public.animal (id_cliente, nome, especie, raca, sexo, data_nascimento, estado) 
-VALUES (1, 'Bobi', 'Cão', 'Rafeiro', 'M', '2020-01-01', 'Domestico');
-
--- 3. Criar Veterinário e o respetivo Login/Colaborador
-INSERT INTO public.veterinario (nome, morada, contacto, email, nif, especialidade) 
-VALUES ('Dr. Silva', 'Clínica Central', 920000002, 'silva@vet.com', 987654321, 'Geral');
-
-INSERT INTO public.login_colaborador (nome, email, palavra_passe, telemovel, morada, nif, cargo) 
-VALUES ('Dr. Silva', 'silva@vet.com', 'pass123', 920000002, 'Clínica Central', 987654321, 'Veterinário');
-
-INSERT INTO public.colaborador (id_login_colaborador, id_veterinario) 
-VALUES (1, 1);
-
--- 4. Definir o Horário de Trabalho do Veterinário (Segunda a Sexta, das 09:00 às 18:00)
--- O id_colaborador dele é 1
-INSERT INTO public.horario (id_colaborador, dia_semana, hora_entrada, hora_saida) VALUES 
-(1, 'Segunda', '09:00:00', '18:00:00'),
-(1, 'Terça', '09:00:00', '18:00:00'),
-(1, 'Quarta', '09:00:00', '18:00:00'),
-(1, 'Quinta', '09:00:00', '18:00:00'),
-(1, 'Sexta', '09:00:00', '18:00:00');
-
--- 5. Marcar Férias para o Veterinário (1 a 5 de Junho de 2026)
-INSERT INTO public.ocorrencia_laboral (id_colaborador, data_inicio, data_fim, tipo, observacoes) 
-VALUES (1, '2026-06-01', '2026-06-05', 'Ferias', 'Férias de Verão');
-
--- 1. Criar o Veterinário
-INSERT INTO public.veterinario (nome, morada, contacto, email, nif, especialidade) 
-VALUES ('Dr. Teste', 'Rua da Clínica', 930000001, 'teste@vet.com', 200000001, 'Cirurgia');
-
--- 2. Criar o Login do Colaborador
-INSERT INTO public.login_colaborador (nome, email, palavra_passe, telemovel, morada, nif, cargo) 
-VALUES ('Dr. Teste', 'teste@vet.com', 'pass123', 930000001, 'Rua da Clínica', 200000001, 'Veterinário');
-
--- 3. Ligar ambos na tabela Colaborador (Fica com o id_colaborador = 1)
-INSERT INTO public.colaborador (id_login_colaborador, id_veterinario) 
-VALUES (1, 1);
-
--- Vai funcionar perfeitamente: Férias de 1 a 10 de Maio de 2026
-INSERT INTO public.ocorrencia_laboral (id_colaborador, data_inicio, data_fim, tipo, observacoes) 
-VALUES (1, '2026-05-01', '2026-05-10', 'Ferias', 'Férias da Primavera');
-**************************************************************************************************
--- DEVE FALHAR: Tenta marcar para o ano 2020 (passado)
-INSERT INTO public.consulta (id_animal, id_veterinario, data_consulta, motivo) 
-VALUES (1, 1, '2020-05-10 10:00:00', 'Checkup rotina');
-
--- DEVE FALHAR: O horário é até às 18:00, mas a consulta começa às 18:30
-INSERT INTO public.consulta (id_animal, id_veterinario, data_consulta, motivo) 
-VALUES (1, 1, '2026-06-08 18:30:00', 'Urgência');
-
--- DEVE FUNCIONAR: Dia 8 de Junho de 2026 (Segunda), às 10:00. Não está de férias e está no horário.
-INSERT INTO public.consulta (id_animal, id_veterinario, data_consulta, motivo) 
-VALUES (1, 1, '2026-06-08 10:00:00', 'Consulta normal');
-
--- DEVE FALHAR: Tenta marcar para as 10:15 do mesmo dia, mas a consulta anterior (das 10:00) dura 30 mins!
-INSERT INTO public.consulta (id_animal, id_veterinario, data_consulta, motivo) 
-VALUES (1, 1, '2026-06-08 10:15:00', 'Outro animal');
-**************************************************************************************************
--- O trigger vai bloquear porque o dia 5 está dentro das férias!
-INSERT INTO public.ocorrencia_laboral (id_colaborador, data_inicio, data_fim, tipo, observacoes) 
-VALUES (1, '2026-05-05', '2026-05-06', 'Folgas', 'Folga extra');
-
--- O trigger vai bloquear porque o dia 10 já está ocupado pelas férias anteriores!
-INSERT INTO public.ocorrencia_laboral (id_colaborador, data_inicio, data_fim, tipo, observacoes) 
-VALUES (1, '2026-04-25', '2026-05-02', 'Ferias', 'Férias antecipadas');
-
-**************************************************************************************************
--- 1. Criar o Funcionário
-INSERT INTO public.funcionario (nome, morada, contacto, email, nif, cargo) 
-VALUES ('João Rececionista', 'Rua da Receção', 910000002, 'joao@clinica.com', 200000002, 'Rececionista');
-
--- 2. Criar o Login do Colaborador
-INSERT INTO public.login_colaborador (nome, email, palavra_passe, telemovel, morada, nif, cargo) 
-VALUES ('João Rececionista', 'joao@clinica.com', 'pass456', 910000002, 'Rua da Receção', 200000002, 'Funcionario');
-
--- 3. Ligar ambos na tabela Colaborador (Vamos assumir que este ganha o id_colaborador = 2)
-INSERT INTO public.colaborador (id_login_colaborador, id_funcionario) 
-VALUES (
-    (SELECT id_login_colaborador FROM public.login_colaborador WHERE nif = 200000002 LIMIT 1),
-    (SELECT id_funcionario FROM public.funcionario WHERE nif = 200000002 LIMIT 1)
+(
+    (SELECT id_login_cliente FROM public.login_cliente WHERE email = 'mariana.lopes@email.com'),
+    'Mariana Lopes',
+    'Rua Verde 10, Braga',
+    'mariana.lopes@email.com',
+    501100101,
+    910100101
+),
+(
+    (SELECT id_login_cliente FROM public.login_cliente WHERE email = 'tiago.ferreira@email.com'),
+    'Tiago Ferreira',
+    'Rua Azul 20, Porto',
+    'tiago.ferreira@email.com',
+    501100102,
+    910100102
+),
+(
+    (SELECT id_login_cliente FROM public.login_cliente WHERE email = 'beatriz.martins@email.com'),
+    'Beatriz Martins',
+    'Rua Amarela 30, Braga',
+    'beatriz.martins@email.com',
+    501100103,
+    910100103
+),
+(
+    (SELECT id_login_cliente FROM public.login_cliente WHERE email = 'rui.almeida@email.com'),
+    'Rui Almeida',
+    'Rua do Sol 40, Guimarães',
+    'rui.almeida@email.com',
+    501100104,
+    910100104
+),
+(
+    (SELECT id_login_cliente FROM public.login_cliente WHERE email = 'sofia.moreira@email.com'),
+    'Sofia Moreira',
+    'Rua da Lua 50, Vila Verde',
+    'sofia.moreira@email.com',
+    501100105,
+    910100105
 );
 
 
+-- ****************************************************************************
+-- 5. LOGIN COLABORADORES
+-- ****************************************************************************
 
-**************************************************************************************************
-
--- Vai funcionar perfeitamente: Férias de 1 a 15 de Agosto de 2026
-INSERT INTO public.ocorrencia_laboral (id_colaborador, data_inicio, data_fim, tipo, observacoes) 
-VALUES (2, '2026-08-01', '2026-08-15', 'Ferias', 'Férias de Verão do João');
-
-
--- O trigger vai bloquear porque o dia 10 está dentro das férias!
-INSERT INTO public.ocorrencia_laboral (id_colaborador, data_inicio, data_fim, tipo, observacoes) 
-VALUES (2, '2026-08-10', '2026-08-11', 'Folgas', 'Tentativa de folga extra');
-
-
--- O trigger vai bloquear porque os dias 14 e 15 já estão ocupados!
-INSERT INTO public.ocorrencia_laboral (id_colaborador, data_inicio, data_fim, tipo, observacoes) 
-VALUES (2, '2026-08-14', '2026-08-20', 'Ferias', 'Tentativa de esticar férias');
-
-
--- Vai funcionar! O Filtro 1 ignora 'Falta' e 'Atraso'.
-INSERT INTO public.ocorrencia_laboral (id_colaborador, data_inicio, data_fim, tipo, observacoes) 
-VALUES (2, '2026-08-05', '2026-08-05', 'Atraso', 'Sistema não bloqueia atrasos nas férias');
-
-
--- Vai funcionar! A tua regra do OLD garante que ele não choca consigo mesmo.
-UPDATE public.ocorrencia_laboral 
-SET observacoes = 'Férias de Verão do João (Aprovadas pela gerência)'
-WHERE id_colaborador = 2 AND data_inicio = '2026-08-01';
-
-**************************************************************************************************
-
-INSERT INTO login_cliente 
-(nome, email, palavra_passe, telemovel, data_nascimento, morada, nif)
+INSERT INTO public.login_colaborador 
+(nome, email, palavra_passe, telemovel, data_nascimento, morada, nif, cargo)
 VALUES
-('Carlos Mendes', 'carlos@gmail.com', 'pass123', 955555555, '1995-03-15', 'Braga', 333444555);
+('Dra. Inês Pereira', 'ines.pereira@clinica.pt', 'hash_ines', 920200101, '1983-03-14', 'Braga', 601200101, 'Veterinário'),
+('Dr. Miguel Santos', 'miguel.santos@clinica.pt', 'hash_miguel', 920200102, '1979-12-08', 'Porto', 601200102, 'Veterinário'),
+('Sara Oliveira', 'sara.oliveira@clinica.pt', 'hash_sara', 920200103, '1994-06-21', 'Braga', 601200103, 'Funcionario'),
+('Pedro Nunes', 'pedro.nunes@clinica.pt', 'hash_pedro', 920200104, '1991-02-02', 'Guimarães', 601200104, 'Funcionario');
 
 
-INSERT INTO cliente 
-(id_login_cliente, nome, morada, email, nif, contacto)
+-- ****************************************************************************
+-- 6. VETERINÁRIOS
+-- ****************************************************************************
+
+INSERT INTO public.veterinario 
+(nome, morada, contacto, email, nif, especialidade)
 VALUES
-(1, 'Carlos Mendes', 'Braga', 'carlos@gmail.com', 333444555, 955555555);
+('Dra. Inês Pereira', 'Braga', 920200101, 'ines.pereira@clinica.pt', 601200101, 'Dermatologia'),
+('Dr. Miguel Santos', 'Porto', 920200102, 'miguel.santos@clinica.pt', 601200102, 'Ortopedia');
 
 
-INSERT INTO animal 
+-- ****************************************************************************
+-- 7. FUNCIONÁRIOS
+-- ****************************************************************************
+
+INSERT INTO public.funcionario 
+(nome, morada, email, nif, contacto, cargo)
+VALUES
+('Sara Oliveira', 'Braga', 'sara.oliveira@clinica.pt', 601200103, 920200103, 'Rececionista'),
+('Pedro Nunes', 'Guimarães', 'pedro.nunes@clinica.pt', 601200104, 920200104, 'Auxiliar');
+
+
+-- ****************************************************************************
+-- 8. COLABORADORES
+-- ****************************************************************************
+
+INSERT INTO public.colaborador 
+(id_login_colaborador, id_veterinario)
+VALUES
+(
+    (SELECT id_login_colaborador FROM public.login_colaborador WHERE email = 'ines.pereira@clinica.pt'),
+    (SELECT id_veterinario FROM public.veterinario WHERE email = 'ines.pereira@clinica.pt')
+),
+(
+    (SELECT id_login_colaborador FROM public.login_colaborador WHERE email = 'miguel.santos@clinica.pt'),
+    (SELECT id_veterinario FROM public.veterinario WHERE email = 'miguel.santos@clinica.pt')
+);
+
+INSERT INTO public.colaborador 
+(id_login_colaborador, id_funcionario)
+VALUES
+(
+    (SELECT id_login_colaborador FROM public.login_colaborador WHERE email = 'sara.oliveira@clinica.pt'),
+    (SELECT id_funcionario FROM public.funcionario WHERE email = 'sara.oliveira@clinica.pt')
+),
+(
+    (SELECT id_login_colaborador FROM public.login_colaborador WHERE email = 'pedro.nunes@clinica.pt'),
+    (SELECT id_funcionario FROM public.funcionario WHERE email = 'pedro.nunes@clinica.pt')
+);
+
+
+-- ****************************************************************************
+-- 9. HORÁRIOS DOS COLABORADORES
+-- ****************************************************************************
+
+-- Dra. Inês Pereira
+INSERT INTO public.horario 
+(id_colaborador, dia_semana, hora_entrada, hora_saida)
+VALUES
+((SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'ines.pereira@clinica.pt'), 'Segunda', '09:00', '13:00'),
+((SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'ines.pereira@clinica.pt'), 'Segunda', '14:00', '18:00'),
+((SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'ines.pereira@clinica.pt'), 'Quarta', '09:00', '18:00'),
+((SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'ines.pereira@clinica.pt'), 'Sexta', '09:00', '18:00');
+
+-- Dr. Miguel Santos
+INSERT INTO public.horario 
+(id_colaborador, dia_semana, hora_entrada, hora_saida)
+VALUES
+((SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'miguel.santos@clinica.pt'), 'Terça', '09:00', '18:00'),
+((SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'miguel.santos@clinica.pt'), 'Quinta', '09:00', '18:00'),
+((SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'miguel.santos@clinica.pt'), 'Sábado', '09:00', '13:00');
+
+-- Sara Oliveira
+INSERT INTO public.horario 
+(id_colaborador, dia_semana, hora_entrada, hora_saida)
+VALUES
+((SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'sara.oliveira@clinica.pt'), 'Segunda', '09:00', '18:00'),
+((SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'sara.oliveira@clinica.pt'), 'Terça', '09:00', '18:00'),
+((SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'sara.oliveira@clinica.pt'), 'Quarta', '09:00', '18:00');
+
+-- Pedro Nunes
+INSERT INTO public.horario 
+(id_colaborador, dia_semana, hora_entrada, hora_saida)
+VALUES
+((SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'pedro.nunes@clinica.pt'), 'Quinta', '09:00', '18:00'),
+((SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'pedro.nunes@clinica.pt'), 'Sexta', '09:00', '18:00'),
+((SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'pedro.nunes@clinica.pt'), 'Sábado', '09:00', '13:00');
+
+
+-- ****************************************************************************
+-- 10. ANIMAIS
+-- ****************************************************************************
+
+INSERT INTO public.animal 
 (id_cliente, nome, especie, raca, sexo, data_nascimento, estado)
 VALUES
-(1, 'Rex', 'Cão', 'Labrador', 'M', '2020-06-01', 'Domestico'),
-(1, 'Mia', 'Gato', 'Siamês', 'F', '2022-01-10', 'Adotado');
+(
+    (SELECT id_cliente FROM public.cliente WHERE email = 'mariana.lopes@email.com'),
+    'Luna',
+    'Cão',
+    'Golden Retriever',
+    'F',
+    '2021-05-10',
+    'Domestico'
+),
+(
+    (SELECT id_cliente FROM public.cliente WHERE email = 'mariana.lopes@email.com'),
+    'Tico',
+    'Coelho',
+    'Anão Holandês',
+    'M',
+    '2023-02-18',
+    'Domestico'
+),
+(
+    (SELECT id_cliente FROM public.cliente WHERE email = 'tiago.ferreira@email.com'),
+    'Nina',
+    'Gato',
+    'Europeu Comum',
+    'F',
+    '2020-09-01',
+    'Domestico'
+),
+(
+    (SELECT id_cliente FROM public.cliente WHERE email = 'beatriz.martins@email.com'),
+    'Max',
+    'Cão',
+    'Pastor Alemão',
+    'M',
+    '2019-03-22',
+    'Domestico'
+),
+(
+    (SELECT id_cliente FROM public.cliente WHERE email = 'rui.almeida@email.com'),
+    'Pipoca',
+    'Gato',
+    'Persa',
+    'F',
+    '2022-12-11',
+    'Adotado'
+),
+(
+    (SELECT id_cliente FROM public.cliente WHERE email = 'sofia.moreira@email.com'),
+    'Thor',
+    'Cão',
+    'Bulldog Francês',
+    'M',
+    '2021-08-30',
+    'Domestico'
+),
+(
+    (SELECT id_cliente FROM public.cliente WHERE email = 'sofia.moreira@email.com'),
+    'Mel',
+    'Cão',
+    'Beagle',
+    'F',
+    '2024-01-15',
+    'Resgatado'
+);
 
-INSERT INTO public.horario 
-(id_colaborador, dia_semana, hora_entrada, hora_saida)
+
+-- ****************************************************************************
+-- 11. MEDICAMENTOS
+-- ****************************************************************************
+
+INSERT INTO public.medicamento (nome) VALUES
+('Antibiótico Vet Plus'),
+('Anti-inflamatório Canino'),
+('Desparasitante Interno'),
+('Desparasitante Externo'),
+('Suplemento Articular'),
+('Colírio Veterinário'),
+('Vacina Polivalente'),
+('Pomada Cicatrizante');
+
+
+-- ****************************************************************************
+-- 12. EXAMES
+-- ****************************************************************************
+
+INSERT INTO public.exame (nome) VALUES
+('Ecografia Abdominal'),
+('Hemograma Completo'),
+('Teste de Leishmaniose'),
+('Radiografia Torácica'),
+('Análise Urina'),
+('Eletrocardiograma'),
+('Teste FIV/FELV'),
+('Citologia Cutânea');
+
+
+-- ****************************************************************************
+-- 13. RESGATES
+-- ****************************************************************************
+
+INSERT INTO public.resgate 
+(id_animal, id_funcionario, data_resgate, idade)
 VALUES
-(1, 'Segunda', '09:00', '18:00'),
-(1, 'Terça', '09:00', '18:00'),
-(1, 'Quarta', '09:00', '18:00'),
-(1, 'Quinta', '09:00', '18:00'),
-(1, 'Sexta', '09:00', '18:00'),
-(1, 'Sábado', '09:00', '13:00');
+(
+    (SELECT a.id_animal FROM public.animal a JOIN public.cliente c ON c.id_cliente = a.id_cliente WHERE a.nome = 'Mel' AND c.email = 'sofia.moreira@email.com'),
+    (SELECT id_funcionario FROM public.funcionario WHERE email = 'pedro.nunes@clinica.pt'),
+    '2026-01-20',
+    'Jovem'
+),
+(
+    (SELECT a.id_animal FROM public.animal a JOIN public.cliente c ON c.id_cliente = a.id_cliente WHERE a.nome = 'Pipoca' AND c.email = 'rui.almeida@email.com'),
+    (SELECT id_funcionario FROM public.funcionario WHERE email = 'sara.oliveira@clinica.pt'),
+    '2025-11-05',
+    'Adulto'
+);
 
-INSERT INTO public.horario 
-(id_colaborador, dia_semana, hora_entrada, hora_saida)
+
+-- ****************************************************************************
+-- 14. ADOÇÕES
+-- ****************************************************************************
+
+INSERT INTO public.adocao 
+(id_animal, id_funcionario, data_adocao)
 VALUES
-(2, 'Segunda', '09:00', '18:00'),
-(2, 'Terça', '09:00', '18:00'),
-(2, 'Quarta', '09:00', '18:00'),
-(2, 'Quinta', '09:00', '18:00'),
-(2, 'Sexta', '09:00', '18:00'),
-(2, 'Sábado', '09:00', '13:00');
+(
+    (SELECT a.id_animal FROM public.animal a JOIN public.cliente c ON c.id_cliente = a.id_cliente WHERE a.nome = 'Pipoca' AND c.email = 'rui.almeida@email.com'),
+    (SELECT id_funcionario FROM public.funcionario WHERE email = 'sara.oliveira@clinica.pt'),
+    '2025-12-01'
+);
 
 
+-- ****************************************************************************
+-- 15. OCORRÊNCIAS LABORAIS
+-- ****************************************************************************
+
+INSERT INTO public.ocorrencia_laboral 
+(id_colaborador, data_inicio, data_fim, tipo, observacoes)
+VALUES
+(
+    (SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'ines.pereira@clinica.pt'),
+    '2026-07-01',
+    '2026-07-05',
+    'Ferias',
+    'Férias de verão'
+),
+(
+    (SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'miguel.santos@clinica.pt'),
+    '2026-09-10',
+    '2026-09-12',
+    'Ferias',
+    'Férias curtas'
+),
+(
+    (SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'sara.oliveira@clinica.pt'),
+    '2026-06-15',
+    '2026-06-15',
+    'Falta',
+    'Falta justificada'
+),
+(
+    (SELECT c.id_colaborador FROM public.colaborador c JOIN public.login_colaborador lc ON lc.id_login_colaborador = c.id_login_colaborador WHERE lc.email = 'pedro.nunes@clinica.pt'),
+    '2026-06-20',
+    '2026-06-20',
+    'Atraso',
+    'Atraso de 20 minutos'
+);
 
 
--- Marcamos para as 10:00 em ponto.
-INSERT INTO public.consulta (id_animal, id_veterinario, data_consulta, motivo) 
-VALUES (1, 1, '2026-05-09 10:00:00', 'Vacina Anual do Rex');
+-- ****************************************************************************
+-- 16. CONSULTAS
+-- Datas futuras para não chocarem com triggers que bloqueiam passado
+-- ****************************************************************************
+
+INSERT INTO public.consulta 
+(id_animal, id_veterinario, data_consulta, motivo)
+VALUES
+(
+    (SELECT a.id_animal FROM public.animal a JOIN public.cliente c ON c.id_cliente = a.id_cliente WHERE a.nome = 'Luna' AND c.email = 'mariana.lopes@email.com'),
+    (SELECT id_veterinario FROM public.veterinario WHERE email = 'ines.pereira@clinica.pt'),
+    '2026-06-10 09:30:00',
+    'Consulta dermatológica'
+),
+(
+    (SELECT a.id_animal FROM public.animal a JOIN public.cliente c ON c.id_cliente = a.id_cliente WHERE a.nome = 'Tico' AND c.email = 'mariana.lopes@email.com'),
+    (SELECT id_veterinario FROM public.veterinario WHERE email = 'ines.pereira@clinica.pt'),
+    '2026-06-10 10:30:00',
+    'Perda de apetite'
+),
+(
+    (SELECT a.id_animal FROM public.animal a JOIN public.cliente c ON c.id_cliente = a.id_cliente WHERE a.nome = 'Nina' AND c.email = 'tiago.ferreira@email.com'),
+    (SELECT id_veterinario FROM public.veterinario WHERE email = 'miguel.santos@clinica.pt'),
+    '2026-06-11 11:00:00',
+    'Check-up anual'
+),
+(
+    (SELECT a.id_animal FROM public.animal a JOIN public.cliente c ON c.id_cliente = a.id_cliente WHERE a.nome = 'Max' AND c.email = 'beatriz.martins@email.com'),
+    (SELECT id_veterinario FROM public.veterinario WHERE email = 'miguel.santos@clinica.pt'),
+    '2026-06-11 15:00:00',
+    'Claudicação na pata traseira'
+),
+(
+    (SELECT a.id_animal FROM public.animal a JOIN public.cliente c ON c.id_cliente = a.id_cliente WHERE a.nome = 'Thor' AND c.email = 'sofia.moreira@email.com'),
+    (SELECT id_veterinario FROM public.veterinario WHERE email = 'ines.pereira@clinica.pt'),
+    '2026-06-12 14:30:00',
+    'Vacinação anual'
+),
+(
+    (SELECT a.id_animal FROM public.animal a JOIN public.cliente c ON c.id_cliente = a.id_cliente WHERE a.nome = 'Mel' AND c.email = 'sofia.moreira@email.com'),
+    (SELECT id_veterinario FROM public.veterinario WHERE email = 'miguel.santos@clinica.pt'),
+    '2026-06-13 10:00:00',
+    'Avaliação pós-resgate'
+);
 
 
--- O sistema tem de bloquear porque assumimos que a consulta das 10:00 dura até às 10:30.
-INSERT INTO public.consulta (id_animal, id_veterinario, data_consulta, motivo) 
-VALUES (1, 1, '2026-05-09 10:15:00', 'Verificação de peso do Rex');
+-- ****************************************************************************
+-- 17. PRESCRIÇÕES
+-- ****************************************************************************
 
-
--- Vai funcionar! A primeira consulta do Rex terminou às 10:30, logo ele já está livre para a próxima.
-INSERT INTO public.consulta (id_animal, id_veterinario, data_consulta, motivo) 
-VALUES (1, 1, '2026-05-09 10:30:00', 'Tosquia do Rex');
-
-
--- Vai funcionar perfeitamente, mesmo sendo às 10:15, porque a Mia (ID 2) é OUTRO animal!
-INSERT INTO public.consulta (id_animal, id_veterinario, data_consulta, motivo) 
-VALUES (2, 1, '2026-05-09 10:15:00', 'Consulta de rotina da Mia');
-
-
-
-
-
-
-
-
--- Deve gravar sem problemas. O turno é das 09:00 às 13:00.
-INSERT INTO public.horario (id_colaborador, dia_semana, hora_entrada, hora_saida)
-VALUES (1, 'Segunda', '09:00', '13:00');
-
-
--- Vai disparar o teu RAISE EXCEPTION! 
--- Ele tenta entrar às 12:00, mas o turno anterior só acaba às 13:00.
-INSERT INTO public.horario (id_colaborador, dia_semana, hora_entrada, hora_saida)
-VALUES (1, 'Segunda', '12:00', '18:00');
-
-
--- Vai funcionar! A matemática do "< e >" permite que o turno da tarde 
--- comece exatamente à mesma hora em que o da manhã acaba (13:00).
-INSERT INTO public.horario (id_colaborador, dia_semana, hora_entrada, hora_saida)
-VALUES (1, 'Segunda', '13:00', '18:00');
-
-
--- Funciona perfeitamente porque a função também filtra pelo NEW.dia_semana.
--- À Terça-feira o calendário dele ainda está limpo!
-INSERT INTO public.horario (id_colaborador, dia_semana, hora_entrada, hora_saida)
-VALUES (1, 'Terça', '09:00', '13:00');
-
-
-
-
-
-
-
-
-
-INSERT INTO public.horario_clinica (dia_semana, hora_abertura, hora_fecho)
-VALUES ('Segunda', '09:00', '18:00');
-INSERT INTO public.horario_clinica (dia_semana, hora_abertura, hora_fecho)
-VALUES ('Quarta', '09:00', '18:00');
-
--- Logins
-INSERT INTO public.login_colaborador (nome, email, palavra_passe, telemovel, morada, nif, cargo)
-VALUES 
-('Dr. João Silva', 'joao@vet.pt', '123', 911111111, 'Rua A', 111111111, 'Veterinário'),
-('Ana Auxiliar', 'ana@vet.pt', '123', 922222222, 'Rua B', 222222222, 'Funcionario');
-
--- Entidades específicas
-INSERT INTO public.veterinario (nome, morada, contacto, email, nif, especialidade)
-VALUES ('Dr. João Silva', 'Rua A', 911111111, 'joao@vet.pt', 111111111, 'Cirurgia');
-
-INSERT INTO public.funcionario (nome, morada, email, nif, contacto, cargo)
-VALUES ('Ana Auxiliar', 'Rua B', 'ana@vet.pt', 222222222, 922222222, 'Rececionista');
-
--- Ligar na tabela Colaborador (IDs costumam ser 1 e 2 se for base de dados limpa)
-INSERT INTO public.colaborador (id_login_colaborador, id_veterinario) VALUES (1, 1);
-INSERT INTO public.colaborador (id_login_colaborador, id_funcionario) VALUES (2, 1);
-
-
-
--- Adicionar turnos da tarde
-INSERT INTO public.horario (id_colaborador, dia_semana, hora_entrada, hora_saida)
-VALUES 
-(1, 'Segunda', '09:00', '18:00'), -- João continua à tarde
-(2, 'Segunda', '09:00', '18:00'); -- Ana continua à tarde
-
--- TESTAR (Deve dar SUCESSO)
-SELECT public.verificar_escalas_dia('Segunda');
--- TESTAR (Deve dar RAISE EXCEPTION 'Escala Inválida')
-SELECT public.verificar_escalas_dia('Segunda');
-
-
-************************************************************************************
---LOGON COLAORADOR
-*************************************************************************************
--- ==========================================
--- 3. INSERIR DADOS PARA TESTAR
--- ==========================================
--- Vamos criar duas contas de colaborador diferentes para brincar
-INSERT INTO public.login_colaborador (email, palavra_passe) 
-VALUES ('joao.vet@clinica.pt', 'senha123');
-
-INSERT INTO public.login_colaborador (email, palavra_passe) 
-VALUES ('admin@clinica.pt', 'admin2024');
-
-SELECT public.realizar_login_colab('joao.vet@clinica.pt', 'senha123');
--- Sucesso! Vai retornar 1
-
-SELECT public.realizar_login_colab('joao.vet@clinica.pt', 'batata');
--- Não devolve nada (ID vazio), e a aplicação sabe que as credenciais falharam.
-
-SELECT public.realizar_login_colab('joao.vet@clinica.pt', 'senha123');
--- Erro: "Acesso negado: O colaborador já possui uma sessão ativa."
-
-SELECT public.realizar_login_colab('admin@clinica.pt', 'admin2024');
--- Sucesso! Vai retornar 2. O Admin entra sem problemas porque o bloqueio é apenas para o ID 1.
-
-SELECT public.realizar_logout_colab(2)
-SELECT public.alterar_palavra_passe_colab
-(2, 'admin2024', 'dri')
-SELECT public.alterar_email_colaborador(
-   2, 
-    'admin2024', 
-    'admin@clinica.pt', 
-    'emailnovo@gmail.pt'
-)
-select *
-from public.login_colaborador
-
-select *
-from public.logs
-
-SELECT public.alterar_estado_conta_colab(2, TRUE);
-
-
-SELECT public.logout_dispositivo_colab(
+INSERT INTO public.prescreve 
+(id_consulta, id_medicamento, quantidade, descricao)
+VALUES
+(
+    (SELECT id_consulta FROM public.consulta WHERE motivo = 'Consulta dermatológica' LIMIT 1),
+    (SELECT id_medicamento FROM public.medicamento WHERE nome = 'Pomada Cicatrizante' LIMIT 1),
+    1,
+    'Aplicar na zona afetada 2 vezes ao dia durante 7 dias'
+),
+(
+    (SELECT id_consulta FROM public.consulta WHERE motivo = 'Perda de apetite' LIMIT 1),
+    (SELECT id_medicamento FROM public.medicamento WHERE nome = 'Suplemento Articular' LIMIT 1),
+    1,
+    'Administrar conforme indicação veterinária'
+),
+(
+    (SELECT id_consulta FROM public.consulta WHERE motivo = 'Claudicação na pata traseira' LIMIT 1),
+    (SELECT id_medicamento FROM public.medicamento WHERE nome = 'Anti-inflamatório Canino' LIMIT 1),
     2,
-    1
-)
+    'Tomar 1 comprimido de 12 em 12 horas durante 5 dias'
+),
+(
+    (SELECT id_consulta FROM public.consulta WHERE motivo = 'Vacinação anual' LIMIT 1),
+    (SELECT id_medicamento FROM public.medicamento WHERE nome = 'Vacina Polivalente' LIMIT 1),
+    1,
+    'Vacina administrada em consulta'
+);
 
-SELECT public.logout_todas_sessoes_colab(
-    2
-)
 
-SELECT funcao_email_existe('admi@clinica.pt')
+-- ****************************************************************************
+-- 18. EXAMES ORIENTADOS
+-- ****************************************************************************
 
-INSERT INTO public.login_cliente (email, palavra_passe) 
-VALUES ('admin@clinica.pt', 'admin2024');
+INSERT INTO public.orienta 
+(id_consulta, id_exame, descricao)
+VALUES
+(
+    (SELECT id_consulta FROM public.consulta WHERE motivo = 'Consulta dermatológica' LIMIT 1),
+    (SELECT id_exame FROM public.exame WHERE nome = 'Citologia Cutânea' LIMIT 1),
+    'Recolha de amostra da pele para análise'
+),
+(
+    (SELECT id_consulta FROM public.consulta WHERE motivo = 'Check-up anual' LIMIT 1),
+    (SELECT id_exame FROM public.exame WHERE nome = 'Hemograma Completo' LIMIT 1),
+    'Análise geral de rotina'
+),
+(
+    (SELECT id_consulta FROM public.consulta WHERE motivo = 'Claudicação na pata traseira' LIMIT 1),
+    (SELECT id_exame FROM public.exame WHERE nome = 'Radiografia Torácica' LIMIT 1),
+    'Avaliar possível lesão óssea'
+),
+(
+    (SELECT id_consulta FROM public.consulta WHERE motivo = 'Avaliação pós-resgate' LIMIT 1),
+    (SELECT id_exame FROM public.exame WHERE nome = 'Teste de Leishmaniose' LIMIT 1),
+    'Despiste após resgate'
+);
 
-public.bloquear_email_duplicado_trigger
+
+-- ****************************************************************************
+-- 19. FATURAS
+-- ****************************************************************************
+
+INSERT INTO public.fatura 
+(id_consulta, valor_total)
+VALUES
+((SELECT id_consulta FROM public.consulta WHERE motivo = 'Consulta dermatológica' LIMIT 1), 65.00),
+((SELECT id_consulta FROM public.consulta WHERE motivo = 'Perda de apetite' LIMIT 1), 45.00),
+((SELECT id_consulta FROM public.consulta WHERE motivo = 'Check-up anual' LIMIT 1), 55.00),
+((SELECT id_consulta FROM public.consulta WHERE motivo = 'Claudicação na pata traseira' LIMIT 1), 90.00),
+((SELECT id_consulta FROM public.consulta WHERE motivo = 'Vacinação anual' LIMIT 1), 35.00),
+((SELECT id_consulta FROM public.consulta WHERE motivo = 'Avaliação pós-resgate' LIMIT 1), 70.00);
+
+
+-- ****************************************************************************
+-- 20. SERVIÇOS
+-- ****************************************************************************
+
+INSERT INTO public.servicos 
+(id_animal, id_funcionario, data_servicos, tipo_servico)
+VALUES
+(
+    (SELECT a.id_animal FROM public.animal a JOIN public.cliente c ON c.id_cliente = a.id_cliente WHERE a.nome = 'Luna' AND c.email = 'mariana.lopes@email.com'),
+    (SELECT id_funcionario FROM public.funcionario WHERE email = 'sara.oliveira@clinica.pt'),
+    '2026-06-14 10:00:00',
+    'Banho'
+),
+(
+    (SELECT a.id_animal FROM public.animal a JOIN public.cliente c ON c.id_cliente = a.id_cliente WHERE a.nome = 'Max' AND c.email = 'beatriz.martins@email.com'),
+    (SELECT id_funcionario FROM public.funcionario WHERE email = 'pedro.nunes@clinica.pt'),
+    '2026-06-14 11:00:00',
+    'Tosquia'
+),
+(
+    (SELECT a.id_animal FROM public.animal a JOIN public.cliente c ON c.id_cliente = a.id_cliente WHERE a.nome = 'Thor' AND c.email = 'sofia.moreira@email.com'),
+    (SELECT id_funcionario FROM public.funcionario WHERE email = 'sara.oliveira@clinica.pt'),
+    '2026-06-15 09:30:00',
+    'Corte de unhas'
+),
+(
+    (SELECT a.id_animal FROM public.animal a JOIN public.cliente c ON c.id_cliente = a.id_cliente WHERE a.nome = 'Nina' AND c.email = 'tiago.ferreira@email.com'),
+    (SELECT id_funcionario FROM public.funcionario WHERE email = 'pedro.nunes@clinica.pt'),
+    '2026-06-15 12:00:00',
+    'Higiene'
+);
+
+
+-- ****************************************************************************
+-- 21. ALERTAS
+-- ****************************************************************************
+
+INSERT INTO public.alerta 
+(id_cliente, mensagem)
+VALUES
+(
+    (SELECT id_cliente FROM public.cliente WHERE email = 'mariana.lopes@email.com'),
+    'A consulta da Luna está marcada para 10 de junho de 2026 às 09:30.'
+),
+(
+    (SELECT id_cliente FROM public.cliente WHERE email = 'tiago.ferreira@email.com'),
+    'A Nina tem check-up anual marcado para 11 de junho de 2026.'
+),
+(
+    (SELECT id_cliente FROM public.cliente WHERE email = 'beatriz.martins@email.com'),
+    'O Max tem uma consulta ortopédica marcada.'
+),
+(
+    (SELECT id_cliente FROM public.cliente WHERE email = 'sofia.moreira@email.com'),
+    'O Thor tem vacinação anual marcada.'
+),
+(
+    (SELECT id_cliente FROM public.cliente WHERE email = 'sofia.moreira@email.com'),
+    'A Mel deve fazer avaliação pós-resgate.'
+);
+
+
+-- ****************************************************************************
+-- 22. LOGS DE COLABORADORES
+-- ****************************************************************************
+
+INSERT INTO public.logs 
+(data_hora_login, data_hora_logout, id_login_colaborador)
+VALUES
+('2026-05-01 09:00:00', '2026-05-01 17:45:00', (SELECT id_login_colaborador FROM public.login_colaborador WHERE email = 'ines.pereira@clinica.pt')),
+('2026-05-02 09:10:00', '2026-05-02 18:00:00', (SELECT id_login_colaborador FROM public.login_colaborador WHERE email = 'miguel.santos@clinica.pt')),
+('2026-05-03 08:55:00', '2026-05-03 17:30:00', (SELECT id_login_colaborador FROM public.login_colaborador WHERE email = 'sara.oliveira@clinica.pt')),
+('2026-05-04 09:20:00', '2026-05-04 18:10:00', (SELECT id_login_colaborador FROM public.login_colaborador WHERE email = 'pedro.nunes@clinica.pt'));

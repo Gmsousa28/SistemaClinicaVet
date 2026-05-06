@@ -12,15 +12,6 @@ CREATE TYPE servico AS ENUM ('Banho', 'Tosquia');
 -- 1. TABELAS INDEPENDENTES (Não dependem de outras tabelas - Sem Foreign Keys)
 -- ****************************************************************************
 
-CREATE TABLE public.clinica(
-    id_clinica SERIAL UNIQUE,
-    nome VARCHAR(150) NOT NULL,
-    email VARCHAR(150) NOT NULL,
-    morada VARCHAR(150) NOT NULL,
-    contacto_geral BIGINT NOT NULL UNIQUE CHECK (contacto_geral >= 100000000 AND contacto_geral <= 999999999),
-    CONSTRAINT clinica_pk PRIMARY KEY(id_clinica)
-);
-
 CREATE TABLE public.horario_clinica (
     dia_semana dia_semana NOT NULL,
     hora_abertura TIME NOT NULL,
@@ -42,7 +33,7 @@ CREATE TABLE public.login_cliente(
     id_login_cliente SERIAL UNIQUE,
     email VARCHAR(150) NOT NULL UNIQUE,
     palavra_passe VARCHAR(255) NOT NULL,
-	conta_ativa BOOLEAN DEFAULT TRUE;
+	conta_ativa BOOLEAN DEFAULT TRUE,
     CONSTRAINT login_cliente_pk PRIMARY KEY(id_login_cliente)
 );
 	
@@ -214,10 +205,13 @@ CREATE TABLE public.servicos(
 
 CREATE TABLE public.fatura(
     id_fatura SERIAL UNIQUE,
-    id_consulta INT NOT NULL UNIQUE, 
-    valor_total NUMERIC(10,2) NOT NULL CHECK(valor_total>=0),
+    id_consulta INT UNIQUE, 
+    id_servicos INT UNIQUE,
+    valor_total NUMERIC(10,2) NOT NULL CHECK(valor_total >= 0),
     CONSTRAINT fat_pk PRIMARY KEY(id_fatura),
-    CONSTRAINT fat_cons_fk FOREIGN KEY (id_consulta) REFERENCES public.consulta(id_consulta)
+    CONSTRAINT fat_cons_fk FOREIGN KEY (id_consulta) REFERENCES public.consulta(id_consulta),
+    CONSTRAINT fat_serv_fk FOREIGN KEY (id_servicos) REFERENCES public.servicos(id_servicos),
+    CONSTRAINT chk_fatura_associacao CHECK (id_consulta IS NOT NULL OR id_servicos IS NOT NULL)
 );
 
 -- ****************************************************************************
@@ -241,4 +235,31 @@ CREATE TABLE public.orienta(
     CONSTRAINT ori_pk PRIMARY KEY (id_consulta, id_exame),
     CONSTRAINT orien_consl_fk FOREIGN KEY (id_consulta) REFERENCES public.consulta(id_consulta),
     CONSTRAINT orien_exame_fk FOREIGN KEY (id_exame) REFERENCES public.exame(id_exame)
+);
+
+
+
+
+
+
+-- Desafios Random podem ser uteis
+CREATE TABLE public.alerta(
+	id_alerta SERIAL UNIQUE,
+    id_cliente INT NOT NULL,
+    mensagem VARCHAR(150) NOT NULL,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    lida BOOLEAN DEFAULT FALSE,
+    CONSTRAINT alerta_pk PRIMARY KEY (id_alerta),
+    CONSTRAINT alerta_cli_fk FOREIGN KEY (id_cliente) REFERENCES public.cliente(id_cliente)
+);
+
+
+CREATE TABLE public.relatorio_clinico_mensal (
+    id_relatorio SERIAL PRIMARY KEY,
+    nome_cliente VARCHAR(150),
+    nome_animal VARCHAR(150),
+    mes INT,
+    ano INT,
+    lista_prescricoes TEXT,
+    lista_exames TEXT
 );
