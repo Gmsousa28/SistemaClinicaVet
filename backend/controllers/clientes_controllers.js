@@ -1,5 +1,4 @@
 const {
-<<<<<<< HEAD
     listarClientesBD,
     obterClienteByIDBD,
     obterClienteByNifBD,
@@ -7,15 +6,6 @@ const {
     atualizarClienteBD,
     eliminarClienteByIdBD
 } = require('../models/clientes_models.js');
-=======
-  listarClientesBD,
-  criarClienteBD,
-  obterClientePorIdBD,
-  atualizarClienteBD,
-  eliminarClienteBD,
-  obterClientePorNIFBD
-} = require("../models/clientes_models.js");
->>>>>>> 27675fc4444e5b89983d48557e236d01c5e5feea
 
 const handleResponse = (res, status, message, data = null) => { 
     res.status(status).json({ status, message, data }); 
@@ -102,19 +92,10 @@ const obterClientePorNIF = async (req, res, next) => {
 
 
 module.exports = {
-<<<<<<< HEAD
     listarClientes,
     obterClienteByID,
     obterClienteByNif,
     criarCliente,
     atualizarCliente,
     eliminarClienteById
-=======
-  listarTodosClientes,
-  criarCliente,
-  obterClientePorId,
-  atualizarCliente,
-  eliminarCliente,
-  obterClientePorNIF
->>>>>>> 27675fc4444e5b89983d48557e236d01c5e5feea
 };

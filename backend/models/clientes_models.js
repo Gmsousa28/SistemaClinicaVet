@@ -59,10 +59,5 @@ module.exports = {
     obterClienteByNifBD,
     criarClienteBD,
     atualizarClienteBD,
-<<<<<<< HEAD
     eliminarClienteByIdBD
-=======
-    eliminarClienteBD,
-    obterClientePorNIFBD
->>>>>>> 27675fc4444e5b89983d48557e236d01c5e5feea
 };
