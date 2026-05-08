@@ -16,6 +16,12 @@ const veterinariosRouter = require('./backend/routes/veterinarios_rotas.js');
 const examesRouter = require('./backend/routes/exame_rotas.js');
 const consultasRouter = require('./backend/routes/consultas_rotas.js');
 const horariosClinicaRouter = require('./backend/routes/horario_clinica_rotas.js');
+const adocoesRouter = require('./backend/routes/adocoes_rotas.js');
+const faturasRouter = require('./backend/routes/faturas_rotas.js');
+const servicosRouter = require('./backend/routes/servicos_rotas.js');
+const loginsClienteRouter = require('./backend/routes/logins_cliente_rotas.js');
+const loginsColaboradorRouter = require('./backend/routes/logins_colaborador_rotas.js');
+const ocorrenciasLaboraisRouter = require('./backend/routes/ocorrencias_laborais_rotas.js');
 
 // 2. Middleware para o servidor entender JSON (Obrigatório para POST/PUT)
 server.use(express.json());
@@ -28,6 +34,12 @@ server.use("/api", veterinariosRouter);
 server.use("/api", examesRouter);
 server.use("/api", consultasRouter);
 server.use("/api", horariosClinicaRouter);
+server.use("/api", adocoesRouter);
+server.use("/api", faturasRouter);
+server.use("/api", servicosRouter);
+server.use("/api", loginsClienteRouter);
+server.use("/api", loginsColaboradorRouter);
+server.use("/api", ocorrenciasLaboraisRouter);
 
 //Importar router de customers
 //const customersRouter = require('./backend/routes/customersRoutes.js');

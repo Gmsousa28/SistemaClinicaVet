@@ -1,0 +1,40 @@
+const pool = require('../config/db.js');
+
+const listarAdocoesBD = async () => {
+    const result = await pool.query('SELECT * FROM adocao ORDER BY data_adocao DESC');
+    return result.rows;
+};
+
+const criarAdocaoBD = async (id_animal, id_cliente, data_adocao) => {
+    const query = `
+        INSERT INTO adocao (id_animal, id_cliente, data_adocao) 
+        VALUES ($1, $2, $3) 
+        RETURNING *;
+    `;
+    const values = [id_animal, id_cliente, data_adocao];
+    const result = await pool.query(query, values);
+    return result.rows[0];
+};
+
+const obterAdocaoPorIdAnimalBD = async (id_animal) => {
+    const result = await pool.query('SELECT * FROM adocao WHERE id_adocao = $1', [id_animal]);
+    return result.rows[0];
+};
+
+const obterAdocaoPorIdBD = async (id_adocao) => {
+    const result = await pool.query('SELECT * FROM adocao WHERE id_adocao = $1', [id_adocao]);
+    return result.rows[0];
+};
+
+const eliminarAdocaoBD = async (id_adocao) => {
+    const result = await pool.query('DELETE FROM adocao WHERE id_adocao = $1 RETURNING *', [id_adocao]);
+    return result.rows[0];
+};
+
+module.exports = {
+    listarAdocoesBD,
+    criarAdocaoBD,
+    obterAdocaoPorIdAnimalBD,
+    obterAdocaoPorIdBD,
+    eliminarAdocaoBD
+};
