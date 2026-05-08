@@ -14,6 +14,7 @@ const clientesRouter = require('./backend/routes/clientes_rotas.js');
 const funcionariosRouter = require('./backend/routes/funcionarios_rotas.js');
 const veterinariosRouter = require('./backend/routes/veterinarios_rotas.js');
 const examesRouter = require('./backend/routes/exame_rotas.js');
+const consultasRouter = require('./backend/routes/consultas_rotas.js');
 
 // 2. Middleware para o servidor entender JSON (Obrigatório para POST/PUT)
 server.use(express.json());
@@ -24,6 +25,7 @@ server.use("/api", clientesRouter);
 server.use("/api", funcionariosRouter);
 server.use("/api", veterinariosRouter);
 server.use("/api", examesRouter);
+server.use("/api", consultasRouter);
 
 //Importar router de customers
 //const customersRouter = require('./backend/routes/customersRoutes.js');
