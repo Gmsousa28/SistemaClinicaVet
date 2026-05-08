@@ -9,10 +9,17 @@ const port = 8008;
 server.use(express.static(path.join(__dirname, 'frontend')));
 
 // 1. Importa o router (ajusta o caminho se necessário)
+<<<<<<< HEAD
 const animaisRouter = require('./backend/routes/animais_rotas.js');
 const clientesRouter = require('./backend/routes/clientes_rotas.js');
 const examesRouter = require('./backend/routes/exame_rotas.js');
 
+=======
+const animaisRouter = require('./backend/routes/animais_rotas.js'); 
+const clientesRouter = require('./backend/routes/clientes_rotas.js');
+const funcionariosRouter = require('./backend/routes/funcionarios_rotas.js');
+const veterinariosRouter = require('./backend/routes/veterinarios_rotas.js');
+>>>>>>> 9690dfb8861bfba0970fdb617f1d9847a93a2335
 
 // 2. Middleware para o servidor entender JSON (Obrigatório para POST/PUT)
 server.use(express.json());
@@ -20,7 +27,12 @@ server.use(express.json());
 // 3. Diz ao servidor para usar as rotas de animais com o prefixo /api
 server.use("/api", animaisRouter);
 server.use("/api", clientesRouter);
+<<<<<<< HEAD
 server.use("/api", examesRouter);
+=======
+server.use("/api", funcionariosRouter);
+server.use("/api", veterinariosRouter);
+>>>>>>> 9690dfb8861bfba0970fdb617f1d9847a93a2335
 
 //Importar router de customers
 //const customersRouter = require('./backend/routes/customersRoutes.js');
