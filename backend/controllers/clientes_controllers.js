@@ -3,7 +3,8 @@ const {
   criarClienteBD,
   obterClientePorIdBD,
   atualizarClienteBD,
-  eliminarClienteBD
+  eliminarClienteBD,
+  obterClientePorNIFBD
 } = require("../models/clientes_models.js");
 
 const handleResponse = (res, status, message, data = null) => {
@@ -61,10 +62,28 @@ const eliminarCliente = async (req, res, next) => {
   }
 };
 
+
+const obterClientePorNIF = async (req, res, next) => {
+  try {
+    // O nome do parâmetro aqui deve ser igual ao que definires na rota (:NIF)
+    const cliente = await obterClientePorNIFBD(req.params.NIF);
+    
+    if (!cliente) {
+        return handleResponse(res, 404, "Não existe nenhum cliente registado com esse NIF");
+    }
+    
+    handleResponse(res, 200, "Cliente encontrado com sucesso", cliente);
+  } catch (err) {
+    next(err);
+  }
+};
+
+
 module.exports = {
   listarTodosClientes,
   criarCliente,
   obterClientePorId,
   atualizarCliente,
-  eliminarCliente
+  eliminarCliente,
+  obterClientePorNIF
 };

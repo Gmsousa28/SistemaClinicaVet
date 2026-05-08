@@ -5,7 +5,8 @@ const {
   obterClientePorId,
   criarCliente,
   atualizarCliente,
-  eliminarCliente
+  eliminarCliente,
+  obterClientePorNIF
 } = require("../controllers/clientes_controllers.js");
 
 const router = express.Router();
@@ -15,5 +16,6 @@ router.get("/clientes/:id", obterClientePorId);
 router.post("/clientes", criarCliente);
 router.put("/clientes/:id", atualizarCliente);
 router.delete("/clientes/:id", eliminarCliente);
+router.get("/clientes/nif/:NIF", obterClientePorNIF);
 
 module.exports = router;
