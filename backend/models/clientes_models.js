@@ -47,11 +47,22 @@ const eliminarClienteByIdBD = async (id_cliente) => {
     return result.rows[0];
 };
 
+// Procura um cliente pelo NIF
+const obterClientePorNIFBD = async (nif) => {
+    const result = await pool.query('SELECT * FROM cliente WHERE nif = $1', [nif]);
+    return result.rows[0];
+};
+
 module.exports = {
     listarClientesBD,
     obterClienteByIDBD,
     obterClienteByNifBD,
     criarClienteBD,
     atualizarClienteBD,
+<<<<<<< HEAD
     eliminarClienteByIdBD
+=======
+    eliminarClienteBD,
+    obterClientePorNIFBD
+>>>>>>> 27675fc4444e5b89983d48557e236d01c5e5feea
 };
