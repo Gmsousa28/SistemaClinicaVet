@@ -1,0 +1,79 @@
+Criar regras para Verificar datas
+--Nascimento animal só no presente ou passado FEITO
+ALTER TABLE public.animal 
+ADD CONSTRAINT chk_data_nascimento_valida 
+CHECK (data_nascimento <= CURRENT_DATE);
+
+--Fazer igual mas nas Consultas
+
+CREATE OR REPLACE FUNCTION public.validar_data_consulta()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- Só verificamos a "viagem no tempo" se for uma NOVA marcação (INSERT) 
+    -- OU se alguém estiver a tentar mudar a data de uma consulta que já existe (UPDATE)
+    IF (TG_OP = 'INSERT') OR (TG_OP = 'UPDATE' AND NEW.data_consulta <> OLD.data_consulta) THEN
+        IF NEW.data_consulta < CURRENT_TIMESTAMP THEN
+            RAISE EXCEPTION 'Operação bloqueada: Não é possível marcar ou reagendar consultas para o passado (%).', NEW.data_consulta;
+        END IF;
+    END IF;
+    
+    -- Se for apenas o veterinário a preencher o diagnóstico ou a mudar o estado, deixa passar normalmente!
+    RETURN NEW;
+END;
+$$;
+
+-- 2. O Gatilho (O que liga a função à tabela)
+CREATE TRIGGER trg_validar_data_consulta
+BEFORE INSERT OR UPDATE ON public.consulta
+FOR EACH ROW
+EXECUTE FUNCTION public.validar_data_consulta();
+
+
+INSERT INTO public.consulta (id_animal, id_veterinario, data_consulta, motivo) 
+VALUES (1, 1, '2020-01-01 10:00:00', 'Vacina');
+
+
+--Fazer nos Serviços também
+
+-- mesmo para os servicos
+CREATE OR REPLACE FUNCTION public.validar_data_servicos()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- Verifica se é um novo serviço (INSERT) ou se estão a alterar a data de um já existente (UPDATE)
+    IF (TG_OP = 'INSERT') OR (TG_OP = 'UPDATE' AND NEW.data_servicos <> OLD.data_servicos) THEN
+        IF NEW.data_servicos < CURRENT_TIMESTAMP THEN
+            RAISE EXCEPTION 'Operação bloqueada: Não é possível marcar ou reagendar serviços para o passado (%).', NEW.data_servicos;
+        END IF;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$;
+
+-- 2. O Gatilho
+CREATE TRIGGER trg_validar_data_servicos
+BEFORE INSERT OR UPDATE ON public.servicos
+FOR EACH ROW
+EXECUTE FUNCTION public.validar_data_servicos();
+
+-- Tem de falhar
+INSERT INTO public.servicos (id_animal, id_funcionario, data_servicos, tipo_servico, preco) 
+VALUES (1, 1, '2020-01-01 10:00:00', 'Banho', 25.00);
+
+select *
+from public.servicos
+
+
+
+
+--Nos resgates também 
+--Adoçoes também
+
+
+ID login é FIXO e gerado automaticamente quando é registada uma conta este ID é oq é diretamente associado a um colaborador/cliente
+PENSAR NA FUNCAO Q FAZ A LIGACAO API-->BD que vai ter de ter esta passagem
+Funçao q associa o ID do determinado animal ao determinado cliente
