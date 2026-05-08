@@ -9,13 +9,18 @@ const port = 8008;
 server.use(express.static(path.join(__dirname, 'frontend')));
 
 // 1. Importa o router (ajusta o caminho se necessário)
-const animaisRouter = require('./backend/routes/animais_rotas.js'); 
+const animaisRouter = require('./backend/routes/animais_rotas.js');
+const clientesRouter = require('./backend/routes/clientes_rotas.js');
+const examesRouter = require('./backend/routes/exame_rotas.js');
+
 
 // 2. Middleware para o servidor entender JSON (Obrigatório para POST/PUT)
 server.use(express.json());
 
 // 3. Diz ao servidor para usar as rotas de animais com o prefixo /api
 server.use("/api", animaisRouter);
+server.use("/api", clientesRouter);
+server.use("/api", examesRouter);
 
 //Importar router de customers
 //const customersRouter = require('./backend/routes/customersRoutes.js');
@@ -33,18 +38,16 @@ server.use("/api", animaisRouter);
 //Error handling
 //server.use(errorHandling);
 
-
-//Testing postgres connection
 server.get("/", async(req,res)=>
 {
-  const result = await pool.query("SELECT current_database()");
-  res.send("The database name is: " + result.rows[0].current_database);
+const result = await pool.query("SELECT current_database()");
+res.send("The database name is: " + result.rows[0].current_database);
 });
 
 server.get("/", (req, res) => {
-  res.send("Hello World!");
+res.send("Hello World!");
 });
 
 server.listen(port, () => {
-  console.log(`Servidor a correr em http://localhost:${port}`);
+console.log(`Servidor a correr em http://localhost:${port}`);
 });
