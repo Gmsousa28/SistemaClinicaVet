@@ -68,10 +68,27 @@ select *
 from public.servicos
 
 
-
-
 --Nos resgates também 
+ALTER TABLE public.resgate 
+ADD CONSTRAINT chk_data_resgate_valida 
+CHECK (data_resgate <= CURRENT_DATE);
+
+--tem de dar erro
+INSERT INTO public.resgate (id_animal, id_funcionario, data_resgate, idade) 
+VALUES (1, 1, '2027-01-01', 'Jovem');
+
+
+
 --Adoçoes também
+ALTER TABLE public.adocao 
+ADD CONSTRAINT chk_data_adocao_valida 
+CHECK (data_adocao <= CURRENT_DATE);
+
+INSERT INTO public.adocao (id_animal, id_funcionario, data_adocao) 
+VALUES (1, 1, '2026-12-25');
+
+
+
 
 
 ID login é FIXO e gerado automaticamente quando é registada uma conta este ID é oq é diretamente associado a um colaborador/cliente
