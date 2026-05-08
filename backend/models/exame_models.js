@@ -1,7 +1,7 @@
 const pool = require('../config/db.js');
 
 const listarExamesBD = async () => {
-    const result = await pool.query('SELECT * FROM exame ORDER BY data_exame DESC');
+    const result = await pool.query('SELECT * FROM exame ORDER BY id_exame DESC');
     return result.rows;
 };
 
