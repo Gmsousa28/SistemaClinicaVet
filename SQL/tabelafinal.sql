@@ -7,7 +7,11 @@ CREATE TYPE cargo_log_col AS ENUM('Veterinário','Funcionário','Admin');
 CREATE TYPE idade_aprox AS ENUM('Bebé','Juvenil','Adulto','Velho');
 CREATE TYPE tipo_ocorrencia AS ENUM('Falta','Atraso','Folgas','Ferias');
 CREATE TYPE dia_semana AS ENUM ('Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo');
-CREATE TYPE servico AS ENUM ('Banho', 'Tosquia');
+CREATE TYPE servico AS ENUM ('Banho', 'Tosquia', 'Banho e Tosquia');
+CREATE TYPE estado_consulta AS ENUM ('Agendada', 'Realizada', 'Cancelada');
+CREATE TYPE estado_servico AS ENUM ('Agendado', 'Realizado', 'Cancelado');
+
+
 -- ****************************************************************************
 -- 1. TABELAS INDEPENDENTES (Não dependem de outras tabelas - Sem Foreign Keys)
 -- ****************************************************************************
@@ -40,8 +44,11 @@ CREATE TABLE public.login_cliente(
 CREATE TABLE public.medicamento(
     id_medicamento SERIAL UNIQUE,
     nome VARCHAR(150) NOT NULL,
+	valor_cobrado NUMERIC(10,2) NOT NULL
     CONSTRAINT medic_pk PRIMARY KEY(id_medicamento)
 );
+
+
 
 CREATE TABLE public.exame(
     id_exame SERIAL UNIQUE,
@@ -59,6 +66,8 @@ CREATE TABLE public.funcionario (
     cargo VARCHAR(150) NOT NULL,
     CONSTRAINT funci_pk PRIMARY KEY (id_funcionario)
 );
+
+
 
 CREATE TABLE public.veterinario (
     id_veterinario SERIAL UNIQUE,
@@ -159,6 +168,13 @@ CREATE TABLE public.animal(
     CONSTRAINT ani_pk PRIMARY KEY(id_animal),
     CONSTRAINT ani_cli_fk FOREIGN KEY (id_cliente) REFERENCES public.cliente(id_cliente)
 );
+ALTER TABLE public.animal 
+ADD CONSTRAINT chk_data_nascimento_valida 
+CHECK (data_nascimento <= CURRENT_DATE);
+
+
+INSERT INTO public.animal (id_cliente, nome, especie, raca, sexo, data_nascimento, estado) 
+VALUES (1, 'Viajante do Tempo', 'Cão', 'Rafeiro', 'M', '2027-01-01', 'Domestico');
 
 CREATE TABLE public.resgate(
     id_resgate SERIAL UNIQUE,
@@ -171,6 +187,20 @@ CREATE TABLE public.resgate(
     CONSTRAINT resg_func_fk FOREIGN KEY (id_funcionario) REFERENCES public.funcionario(id_funcionario)
 );
 
+ALTER TABLE public.resgate 
+ADD CONSTRAINT chk_data_resgate_valida 
+CHECK (data_resgate <= CURRENT_DATE);
+
+--tem de dar erro
+INSERT INTO public.resgate (id_animal, id_funcionario, data_resgate, idade) 
+VALUES (1, 1, '2027-01-01', 'Jovem');
+
+
+select *
+from public.resgate
+
+
+
 CREATE TABLE public.adocao(
     id_adocao SERIAL UNIQUE,
     id_animal INT NOT NULL, 
@@ -181,16 +211,34 @@ CREATE TABLE public.adocao(
     CONSTRAINT ado_func_fk FOREIGN KEY (id_funcionario) REFERENCES public.funcionario(id_funcionario)
 );
 
+ALTER TABLE public.adocao 
+ADD CONSTRAINT chk_data_adocao_valida 
+CHECK (data_adocao <= CURRENT_DATE);
+
+
+INSERT INTO public.adocao (id_animal, id_funcionario, data_adocao) 
+VALUES (1, 1, '2026-12-25');
+
+
+
 CREATE TABLE public.consulta(
     id_consulta SERIAL UNIQUE,
     id_animal INT NOT NULL, 
     id_veterinario INT NOT NULL, 
     data_consulta TIMESTAMP NOT NULL,
     motivo VARCHAR(150) NOT NULL,
+	estado estado_servico DEFAULT 'Agendado',
+	preco NUMERIC(10,2) DEFAULT 35.00
+	diagnostico VARCHAR,
     CONSTRAINT cons_pk PRIMARY KEY(id_consulta),
     CONSTRAINT cons_ani_fk FOREIGN KEY (id_animal) REFERENCES public.animal(id_animal),
     CONSTRAINT cons_vet_fk FOREIGN KEY (id_veterinario) REFERENCES public.veterinario(id_veterinario)
 );
+
+
+select *
+from public.consulta
+
 
 CREATE TABLE public.servicos(
 	id_servicos SERIAL UNIQUE,
@@ -198,10 +246,14 @@ CREATE TABLE public.servicos(
 	id_funcionario INT NOT NULL,
 	data_servicos TIMESTAMP NOT NULL,
 	tipo_servico servico NOT NULL,
+	estado estado_servico DEFAULT 'Agendado',
+	preco NUMERIC(10,2) NOT NULL
 	CONSTRAINT serv_pk PRIMARY KEY(id_servicos),
 	CONSTRAINT serv_ani_fk FOREIGN KEY(id_animal) REFERENCES public.animal(id_animal),
 	CONSTRAINT serv_func_fk FOREIGN KEY(id_funcionario) REFERENCES public.funcionario(id_funcionario)
 );
+
+
 
 CREATE TABLE public.fatura(
     id_fatura SERIAL UNIQUE,
@@ -237,8 +289,8 @@ CREATE TABLE public.orienta(
     CONSTRAINT orien_exame_fk FOREIGN KEY (id_exame) REFERENCES public.exame(id_exame)
 );
 
-
-
+select *
+from public.prescreve
 
 
 

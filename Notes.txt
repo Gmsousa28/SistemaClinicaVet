@@ -94,3 +94,9 @@ VALUES (1, 1, '2026-12-25');
 ID login é FIXO e gerado automaticamente quando é registada uma conta este ID é oq é diretamente associado a um colaborador/cliente
 PENSAR NA FUNCAO Q FAZ A LIGACAO API-->BD que vai ter de ter esta passagem
 Funçao q associa o ID do determinado animal ao determinado cliente
+
+
+EM RELACAO AOS UPDATES O SITE ENVIA TODOS OS DADOS OS QUE ATUALIZOU E OS QUE NAO ATUALIZOU
+UPDATE CLIENTE NA BD
+Se for o Cliente no Site: O teu código nunca pede ao cliente para digitar o seu ID. O código vai buscar o ID do cliente silenciosamente à "sessão/login" dele e injeta-o na nossa função da base de dados. Assim, é impossível ele atualizar o perfil do vizinho.
+Se for o Rececionista na Clínica: O teu código sabe que aquele utilizador tem o nível de "Funcionário". Por isso, apresenta-lhe uma lista de todos os clientes. Quando o rececionista escolhe o cliente 5 para editar, o código envia o ID 5 para a nossa mesma função.
