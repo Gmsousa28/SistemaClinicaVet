@@ -1,269 +1,299 @@
-/* ===================== */
-/* DASHBOARD BASE */
-/* ===================== */
+/* ========================================================================== */
+/* 1. ESTRUTURA BASE E LAYOUT                                                 */
+/* ========================================================================== */
 
-.dashboard{
-margin-left:240px;
-padding:30px;
-display:flex;
-flex-direction:column;
-gap:30px;
+.dashboard {
+    margin-left: 240px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
 
-/* ===================== */
-/* CARDS (dashboard) */
-/* ===================== */
-
-.cards{
-display:grid;
-grid-template-columns: repeat(4, 1fr);
-gap:20px;
+.titulo-dashboard {
+    color: white;
 }
 
-.card{
-background:#2ea89c;
-color:white;
-padding:18px;
-border-radius:12px;
-display:flex;
-flex-direction:column;
-justify-content:center;
-box-shadow:0 10px 25px rgba(0,0,0,0.3);
-transition:0.3s;
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 600px));
+    gap: 25px;
+    justify-content: center; /* centra tudo */
 }
 
-.card:hover{
-transform:translateY(-5px);
+
+/* ========================================================================== */
+/* 2. CARTÕES SUPERIORES (ESTATÍSTICAS)                                       */
+/* ========================================================================== */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
 }
 
-.card h4{
-font-size:14px;
-opacity:0.8;
+.card {
+    background: #2ea89c;
+    color: white;
+    padding: 18px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    transition: 0.3s;
+    text-decoration: none; /* Garante que não há sublinhados se for um link */
 }
 
-.card p{
-font-size:18px;
-font-weight:bold;
+/* Garante que a cor da letra fica branca mesmo sendo link (tag <a>) */
+.cards a.card {
+    color: white; 
 }
 
-/* ===================== */
-/* BLOCOS (dashboard) */
-/* ===================== */
-
-.dashboard-grid{
-display:grid;
-grid-template-columns: repeat(auto-fit, minmax(400px, 600px));
-gap:25px;
-justify-content:center; /* 👈 centra tudo */
+.card:hover {
+    transform: translateY(-5px);
 }
 
-.bloco{
-background:white;
-padding:25px;
-border-radius:16px;
-box-shadow:0 8px 20px rgba(0,0,0,0.2);
-transition:0.3s;
-width: 100%;
+.card h4 {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-bottom: 5px;
 }
 
-.bloco:hover{
-transform:translateY(-3px);
+.card p {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
 }
 
-.bloco h3{
-color:#2ea89c;
-margin-bottom:10px;
+
+/* ========================================================================== */
+/* 3. BLOCOS DE CONTEÚDO (Consultas e Animais no Dashboard)                   */
+/* ========================================================================== */
+
+.bloco {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    transition: 0.3s;
+    width: 100%;
 }
 
-.item{
-margin-bottom:10px; /* 👈 espaço entre blocos (Rex / Mimi) */
+.bloco:hover {
+    transform: translateY(-3px);
 }
 
-.item p{
-margin:2px 0;
+.bloco h3 {
+    color: #2ea89c;
+    margin-bottom: 10px;
 }
 
-.nome{
-font-weight:600;
-font-size:15px;
-}
-/* ===================== */
-/* LISTA CONSULTAS / HISTÓRICO */
-/* ===================== */
-
-.lista-consultas{
-display:grid;
-grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
-gap:25px;
-width: 100%;
+.item {
+    margin-bottom: 10px; /* espaço entre blocos (ex: Rex / Mimi) */
 }
 
-/* ===================== */
-/* CARD CONSULTA */
-/* ===================== */
-
-.consulta{
-background:white;
-padding:16px 18px;
-min-height: 90px;
-border-radius:12px;
-border-left:5px solid #2ea89c;
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:15px;
-box-shadow:0 8px 20px rgba(0,0,0,0.2);
-transition:0.3s;
+.item p {
+    margin: 2px 0;
 }
 
-.consulta:hover{
-transform:translateY(-3px);
+
+/* ========================================================================== */
+/* 4. PÁGINA DE CONSULTAS E HISTÓRICO                                         */
+/* ========================================================================== */
+
+.lista-consultas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    gap: 25px;
+    width: 100%;
 }
 
-/* HISTÓRICO (ligeiramente diferente) */
-
-.historico{
-background:#f5f5f5;
+.consulta {
+    background: white;
+    padding: 16px 18px;
+    min-height: 90px;
+    border-radius: 12px;
+    border-left: 5px solid #2ea89c;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    transition: 0.3s;
 }
 
-/* INFO */
-
-.info{
-display:flex;
-flex-direction:column;
-gap:3px;
+.consulta:hover {
+    transform: translateY(-3px);
 }
 
-.nome{
-font-size:20px;
-font-weight:600;
-color:#2c3e50;
+.historico {
+    background: #f5f5f5;
 }
 
-.info p{
-font-size:18px;
-opacity:0.9;
+.info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 }
 
-/* ===================== */
-/* STATUS */
-/* ===================== */
-
-.status{
-background:#2ea89c;
-color:white;
-padding:5px 10px;
-border-radius:8px;
-font-size:12px;
-width:fit-content;
-margin-top:5px;
+.info p {
+    font-size: 18px;
+    opacity: 0.9;
+    margin: 0;
 }
 
-/* ===================== */
-/* AÇÕES */
-/* ===================== */
-
-.acoes{
-display:flex;
-gap:8px;
+.nome {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e50;
 }
 
-/* ===================== */
-/* BOTÕES */
-/* ===================== */
-
-.btn{
-border:none;
-padding:6px 10px;
-border-radius:8px;
-cursor:pointer;
-font-size:17px;
-color:white;
-transition:0.2s;
+.status {
+    background: #2ea89c;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    width: fit-content;
+    margin-top: 5px;
 }
 
-.btn-detalhes{
-background:#2c3e50;
+.filtros {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-.btn-detalhes:hover{
-background:#1f2b38;
+.filtros button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    background: #e0e0e0;
+    font-size: 13px;
+    transition: 0.2s;
 }
 
-.btn-editar{
-background:#3498db;
+.filtros button:hover {
+    background: #d5d5d5;
 }
 
-.btn-editar:hover{
-background:#2c80b4;
+.filtros .ativo {
+    background: #2ea89c;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-.btn-cancelar{
-background:#e74c3c;
+
+/* ========================================================================== */
+/* 5. ESTADOS VAZIOS (Empty States)                                           */
+/* ========================================================================== */
+
+.estado-vazio {
+    text-align: center;
+    padding: 30px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
-.btn-cancelar:hover{
-background:#c0392b;
+.icone-vazio {
+    background: rgba(46, 168, 156, 0.1); 
+    color: #2ea89c;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 5px;
 }
 
-.btn-repetir{
-background:#2ea89c;
+.estado-vazio h4 {
+    color: #333;
+    font-size: 17px;
+    margin: 0;
+    font-weight: bold;
 }
 
-.btn-repetir:hover{
-background:#249186;
+.estado-vazio p {
+    color: #777;
+    font-size: 13px;
+    margin: 0;
+    line-height: 1.5;
+    max-width: 90%;
 }
 
-/* ===================== */
-/* FILTROS */
-/* ===================== */
 
-.filtros{
-display:flex;
-gap:10px;
-margin-bottom:20px;
+/* ========================================================================== */
+/* 6. BOTÕES E AÇÕES GERAIS                                                   */
+/* ========================================================================== */
+
+.acoes {
+    display: flex;
+    gap: 8px;
 }
 
-.filtros button{
-padding:8px 16px;
-border:none;
-border-radius:20px;
-cursor:pointer;
-background:#e0e0e0;
-font-size:13px;
-transition:0.2s;
+.btn {
+    border: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 17px;
+    color: white;
+    transition: 0.2s;
 }
 
-.filtros button:hover{
-background:#d5d5d5;
+.btn-detalhes { background: #2c3e50; }
+.btn-detalhes:hover { background: #1f2b38; }
+
+.btn-editar { background: #3498db; }
+.btn-editar:hover { background: #2c80b4; }
+
+.btn-cancelar { background: #e74c3c; }
+.btn-cancelar:hover { background: #c0392b; }
+
+.btn-repetir { background: #2ea89c; }
+.btn-repetir:hover { background: #249186; }
+
+/* Botão principal de Nova Consulta */
+.nova-consulta {
+    background: #2ea89c;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
 }
 
-.filtros .ativo{
-background:#2ea89c;
-color:white;
-box-shadow:0 4px 10px rgba(0,0,0,0.2);
+.nova-consulta:hover {
+    background: #249186;
 }
 
-/* ===================== */
-/* BOTÃO PRINCIPAL */
-/* ===================== */
-
-.nova-consulta{
-background:#2ea89c;
-color:white;
-border:none;
-padding:10px 18px;
-border-radius:10px;
-cursor:pointer;
-font-weight:bold;
-transition:0.3s;
+/* Botão do Estado Vazio */
+.btn-vazio {
+    margin-top: 15px;
+    background: transparent;
+    color: #2ea89c;
+    border: 2px solid #2ea89c;
+    padding: 8px 24px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
 }
 
-.nova-consulta:hover{
-background:#249186;
-}
-
-/*Titulo Dashboard*/
-.titulo-dashboard{
-color:white;
+.btn-vazio:hover {
+    background: #2ea89c;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(46, 168, 156, 0.3);
 }

@@ -10,6 +10,9 @@
 --FUNCAO sobreposicao de horario
 --FUNCAO de Validação da Escala
 
+CREATE OR REPLACE FUNCTION public.bloquear_alteracao_faturas
+RETU
+
 
 --FUNCAO
 --Bloquear Operações em Animais Mortos
@@ -1088,3 +1091,45 @@ BEGIN
 	RETURN FOUND;
 END;
 $$;
+
+
+
+-- função para eliminar uma consulta
+CREATE OR REPLACE FUNCTION public.eliminar_consulta(p_id_consulta INT)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_fatura_existe BOOLEAN;
+    v_linhas_afetadas INT;
+BEGIN
+    -- 1. Regra de Segurança Fiscal: Tem fatura?
+    SELECT EXISTS (
+        SELECT 1 FROM public.fatura WHERE id_consulta = p_id_consulta
+    ) INTO v_fatura_existe;
+
+    IF v_fatura_existe THEN
+        RAISE EXCEPTION 'Operação bloqueada (Segurança Fiscal): Não é possível eliminar uma consulta que já tem uma fatura emitida (ID %). Apenas pode ser cancelada antes da faturação.', p_id_consulta;
+    END IF;
+
+    -- 2. Limpar o histórico clínico (Tabelas Associativas N:M)
+    -- Apagamos primeiro os filhos para o PostgreSQL não dar erro de Foreign Key
+    DELETE FROM public.prescreve WHERE id_consulta = p_id_consulta;
+    DELETE FROM public.orienta WHERE id_consulta = p_id_consulta;
+
+    -- 3. Eliminar a Consulta (Tabela Pai)
+    DELETE FROM public.consulta WHERE id_consulta = p_id_consulta;
+
+    -- 4. Verificar se a consulta realmente existia e foi apagada
+    GET DIAGNOSTICS v_linhas_afetadas = ROW_COUNT;
+
+    IF v_linhas_afetadas = 0 THEN
+        RAISE EXCEPTION 'Erro: A consulta com o ID % não existe ou já foi eliminada.', p_id_consulta;
+    END IF;
+
+    RETURN TRUE;
+END;
+$$;
+
+
+SELECT public.eliminar_consulta(1);

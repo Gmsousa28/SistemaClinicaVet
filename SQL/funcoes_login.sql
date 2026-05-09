@@ -39,7 +39,7 @@ BEGIN
         RETURN;
     END IF;
 
-    -- 4. NOVO: Verificar se a conta está ativa antes de deixar entrar
+    -- 4. Verificar se a conta está ativa antes de deixar entrar
     IF v_conta_ativa = FALSE THEN
         RAISE EXCEPTION 'Acesso negado: A conta deste colaborador encontra-se suspensa ou desativada.';
     END IF;
