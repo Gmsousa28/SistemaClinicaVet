@@ -66,6 +66,10 @@ function acaoEditar(nome, tipo) {
     const modal = document.getElementById('modalEdicao');
     if (modal) {
         modal.style.display = 'flex';
+        
+        // TRUQUE PARA CONGELAR O FUNDO AQUI:
+        document.body.style.overflow = 'hidden'; 
+        
         document.getElementById('tituloEdicao').innerText = `Editar ${tipo}`;
         
         const inputNome = document.getElementById('editNome');
@@ -78,7 +82,12 @@ function acaoEditar(nome, tipo) {
 
 function fecharModalEdicao() {
     const modal = document.getElementById('modalEdicao');
-    if (modal) modal.style.display = 'none';
+    if (modal) {
+        modal.style.display = 'none';
+        
+        // TRUQUE PARA DESCONGELAR O FUNDO AQUI:
+        document.body.style.overflow = ''; 
+    }
 }
 
 function salvarEdicao() {
@@ -108,15 +117,8 @@ window.editarCliente = function(nif) {
         document.getElementById('editMorada').value = '';
     } else {
         titulo.innerText = "Editar Cliente";
-        const cliente = clientesBD.find(c => c.nif === nif);
-        
-        if (cliente) {
-            document.getElementById('editNome').value = cliente.nome;
-            document.getElementById('editNif').value = cliente.nif; // Caixa preenchida e livre
-            document.getElementById('editEmail').value = cliente.email;
-            document.getElementById('editContacto').value = cliente.contacto;
-            document.getElementById('editMorada').value = cliente.morada;
-        }
+        // Simulando a busca
+        // const cliente = clientesBD.find(c => c.nif === nif);
     }
 
     // E aqui garantimos que, caso o HTML tenha ficado trancado por engano, ele destranca!
@@ -128,48 +130,46 @@ window.editarCliente = function(nif) {
     }
 
     document.getElementById('modalEdicao').style.display = 'flex';
+    
+    // TRUQUE PARA CONGELAR O FUNDO TAMBÉM NOS CLIENTES:
+    document.body.style.overflow = 'hidden';
 };
 
 // =======================================================
-// CÁLCULO AUTOMÁTICO DE DURAÇÃO DE MARCAÇÕES
+// CÁLCULO AUTOMÁTICO DE DURAÇÃO DE MARCAÇÕES (VERSÃO NOVA)
 // =======================================================
 function calcularHoraFim() {
-    // 1. Vai buscar os valores das caixas
-    const horaInicio = document.getElementById('editHoraMarcacao').value;
-    const tipoServico = document.getElementById('editTipoMarcacao').value;
+    const horaInicioInput = document.getElementById('editHoraMarcacao');
     const inputHoraFim = document.getElementById('editHoraFim');
-
-    // Se ainda não houver hora ou tipo preenchido, não faz nada
-    if (!horaInicio || !tipoServico || !inputHoraFim) return;
-
-    // 2. Define os minutos com base no serviço escolhido
-    let minutosAdicionais = 0;
     
-    if (tipoServico === 'Vacinação') {
-        minutosAdicionais = 30; // Vacinas demoram 30 min
-    } 
-    else if (tipoServico === 'Consulta Geral' || tipoServico === 'Banho e Tosquia') {
-        minutosAdicionais = 60; // Consultas e Banhos demoram 1 hora (60 min)
+    // Vai procurar todas as caixas de seleção verdes que marcaste
+    const checkboxesMarcadas = document.querySelectorAll('input[name="servico"]:checked');
+
+    if (!horaInicioInput || !inputHoraFim) return;
+
+    const horaInicio = horaInicioInput.value;
+
+    // Se não há hora inicial ou não há serviços, limpa a caixa
+    if (!horaInicio || checkboxesMarcadas.length === 0) {
+        inputHoraFim.value = "";
+        return;
     }
 
-    // 3. Faz a matemática das horas
-    const partesTempo = horaInicio.split(':');
-    const horas = parseInt(partesTempo[0], 10);
-    const minutos = parseInt(partesTempo[1], 10);
+    // Soma 30 minutos por cada serviço marcado
+    let minutosTotais = checkboxesMarcadas.length * 30;
 
-    // Usa o objeto de Data do Javascript para somar o tempo sem errar
+    const [strHoras, strMinutos] = horaInicio.split(':');
+    const horas = parseInt(strHoras, 10);
+    const minutos = parseInt(strMinutos, 10);
+
+    // Usa o objeto Date para somar sem errar (ex: 11:45 + 30m = 12:15)
     let dataCalculo = new Date();
-    dataCalculo.setHours(horas, minutos + minutosAdicionais, 0);
+    dataCalculo.setHours(horas, minutos + minutosTotais, 0);
 
-    // Formata o resultado para ficar bonitinho (ex: 09:05 em vez de 9:5)
     const horasFinal = String(dataCalculo.getHours()).padStart(2, '0');
     const minutosFinal = String(dataCalculo.getMinutes()).padStart(2, '0');
     
-    // 4. Escreve o resultado na caixa verde bloqueada
     inputHoraFim.value = `${horasFinal}:${minutosFinal}`;
 }
-
-
-
 
 window.onload = carregarDados;
