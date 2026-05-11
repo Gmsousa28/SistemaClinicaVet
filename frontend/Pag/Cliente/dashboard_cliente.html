@@ -12,13 +12,16 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     </head>
 
-    <section class="top-header">
-        <h1>Painel do Dashboard</h1>
-    </section>
+    <header>
+            <div class="header-texto">
+                <h1>Painel</h1> 
+                <p>Painel do Dashboard</p>
+            </div>
+    </header>
 
     <body class="com-sidebar">
         <section class="sidebar">
-            <a href="../../frontend/Pag_principal.html" class="logo">
+            <a href="../../Pag_principal.html" class="logo">
                 <img src="../../img/Logo_vet.png" alt="Logótipo Clínica Miacãomigo">
             </a>
             <hr>
@@ -77,17 +80,16 @@
                 </section>
 
                 <section class="bloco animais">
-                    <h3>Meus Animais</h3>
-                    <section class="item">
-                        <p><strong>Rex</strong></p>
-                        <p>Cão • 3 anos</p>
-                    </section>
-                    <hr>
-                    <section class="item">
-                        <p><strong>Mimi</strong></p>
-                        <p>Gato • 2 anos</p>
-                    </section>
-                    <hr>
+                   <h3>Meus Animais</h3>
+                    
+                    <!-- ESTADO VAZIO: Sem animais registados -->
+                    <div class="estado-vazio">
+                        <div class="icone-vazio"><i class="fa fa-paw"></i></div>
+                        <h4>Nenhum animal registado</h4>
+                        <p>Ainda não adicionou nenhum companheiro. Registe o seu primeiro animal no seu perfil.</p>
+                        <a href="perfil_cliente.html" class="btn-vazio">Adicionar Animal</a>
+                    </div>
+                    
                 </section>
             </section>
 

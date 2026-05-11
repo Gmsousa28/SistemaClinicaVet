@@ -8,60 +8,51 @@
         <link rel="stylesheet" href="../../CSS/PaginaSite.css">
         <link rel="stylesheet" href="../../CSS/css_cliente/cliente.css">
         <link rel="stylesheet" href="../../CSS/css_cliente/header_cliente.css">
-
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     </head>
 
-    
-
     <body class="com-sidebar">
 
-        <section class="top-header">
-            <h1>Painel de Consultas</h1>
-        </section>
+        <header>
+            <div class="header-texto">
+                <h1>Consultas</h1> 
+                <p>Gestão de Marcações</p>
+            </div>
+        </header>
 
         <section class="sidebar">
-            <a href="#" class="logo">
-                <img src="../../img/Logo_vet.png">
+            <a href="../../Pag_principal.html" class="logo">
+                <img src="../../img/Logo_vet.png" alt="Logótipo">
             </a>
-
             <hr>
-
             <nav class="menu">
                 <a href="dashboard_cliente.html"><i class="fa-solid fa-home"></i> Dashboard</a>
                 <a href="perfil_cliente.html"><i class="fa-solid fa-user"></i> Perfil</a>
                 <a href="consultas_cliente.html" class="active"><i class="fa-solid fa-calendar"></i> Consultas</a>
                 <a href="historico_cliente.html"><i class="fa-solid fa-clock"></i> Histórico</a>
                 <a href="#"><i class="fa-solid fa-gear"></i> Definições</a>
-
                 <hr>
-
                 <a href="#"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>
             </nav>
         </section>
 
-        <!-- CONTEÚDO -->
         <section class="dashboard">
 
-            <!-- HEADER -->
             <h2>Consultas 📅</h2>
 
-            <!-- BOTÃO -->
-            <button class="nova-consulta">
-                <i class="fa-solid fa-plus"></i> Marcar Consulta
+            <button class="nova-consulta btn-marcar-topo" id="btn-abrir-modal-consulta">
+                <i class="fa-solid fa-plus"></i> Marcar Nova Consulta
             </button>
 
-            <!-- FILTROS -->
             <section class="filtros">
-                <button class="ativo">Todas</button>
-                <button>Futuras</button>
-                <button>Passadas</button>
+                <button class="filtro-btn ativo" data-filtro="todas">Todas</button>
+                <button class="filtro-btn" data-filtro="futura">Futuras</button>
+                <button class="filtro-btn" data-filtro="passada">Passadas</button>
             </section>
 
-            <!-- LISTA -->
             <section class="lista-consultas">
 
-                <section class="consulta">
+                <section class="consulta" data-status="futura">
                    <div class="info">
                         <p class="nome">🐾 Rex</p>
                         <p>📅 25 Março - 14:30</p>
@@ -74,7 +65,7 @@
                     </div>
                 </section>
 
-                <section class="consulta">
+                <section class="consulta" data-status="passada">
                     <div class="info">
                          <p class="nome">🐱 Mimi</p>
                         <p>📅 20 Março - 10:00</p>
@@ -82,14 +73,69 @@
                     </div>
                     <div class="acoes">
                         <button class="btn btn-detalhes">Ver</button>
-                        <button class="btn btn-editar">Remarcar</button>
-                        <button class="btn btn-cancelar">Cancelar</button>
+                        <button class="btn btn-repetir">Repetir</button>
                     </div>
                 </section>
 
             </section>
-
         </section>
 
+        <div id="modal-nova-consulta" class="modal-overlay">
+            <div class="modal-content">
+                <span class="fechar-modal-consulta"><i class="fa fa-times"></i></span>
+                <h2 class="modal-titulo">Marcar Consulta</h2>
+                
+                <div class="campo-modal">
+                    <label>Qual animal?</label>
+                    <select id="select-animal" class="input-modal">
+                        <option value="rex">Rex (Cão)</option>
+                        <option value="mimi">Mimi (Gato)</option>
+                    </select>
+                </div>
+
+                <div class="campo-modal">
+                    <label>Motivo da Consulta</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa fa-stethoscope"></i>
+                        <input type="text" class="input-modal input-com-icone" placeholder="Ex: Vacina, Check-up...">
+                    </div>
+                </div>
+
+                <div class="campo-modal-final">
+                    <label>Data Preferencial</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa fa-calendar"></i>
+                        <input type="date" class="input-modal input-com-icone">
+                    </div>
+                </div>
+
+                <button id="btn-confirmar-consulta" class="btn-confirmar-modal">Confirmar Marcação</button>
+            </div>
+        </div>
+
+        <div id="modal-detalhes-consulta" class="modal-overlay">
+            <div class="modal-content">
+                <span class="fechar-modal-detalhes"><i class="fa fa-times"></i></span>
+                <h2 class="modal-titulo">Ficha da Consulta</h2>
+                
+                <div class="detalhes-info">
+                    <p><strong>Animal:</strong> <span id="detalhe-nome">...</span></p>
+                    <p><strong>Data e Hora:</strong> <span id="detalhe-data">...</span></p>
+                    <p><strong>Motivo:</strong> <span id="detalhe-motivo">...</span></p>
+                    
+                    <hr class="divisor-modal">
+                    
+                    <p><strong>Médico(a) Veterinário(a):</strong> A atribuir</p>
+                    <p><strong>Observações da Clínica:</strong> Trazer o boletim de vacinas atualizado. O animal deve estar em jejum se for realizar análises.</p>
+                </div>
+
+                <div class="acoes acoes-modal">
+                    <button class="btn btn-editar btn-bloco">Remarcar</button>
+                    <button class="btn btn-cancelar btn-bloco">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <script src="../../../JS/js_cliente/cliente_consultas.js"></script>
     </body>
 </html>
