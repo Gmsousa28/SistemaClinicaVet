@@ -2,100 +2,108 @@
 // GESTÃO DE ASSIDUIDADE - Clínica Miacãomigo
 // =======================================================
 
-// 1. BASE DE DADOS SIMULADA (Pronto para receber da API)
-const equipaMedicaBD = [
-    { id: 1, nome: "Dr. Rui Silva", especialidade: "Cirurgia Geral", foto: "https://cdn-icons-png.flaticon.com/512/387/387561.png" },
-    { id: 2, nome: "Dra. Ana Costa", especialidade: "Animais Exóticos", foto: "https://cdn-icons-png.flaticon.com/512/387/387569.png" },
-    { id: 3, nome: "Dr. João Mendes", especialidade: "Clínica Geral", foto: "https://cdn-icons-png.flaticon.com/512/387/387561.png" }
-    // Podes adicionar quantos quiseres aqui!
-];
-
-// 2. INICIALIZAÇÃO DA PÁGINA
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // A. Renderizar a lista de veterinários no ecrã
     const containerVets = document.getElementById('container-veterinarios');
+    
+    // 1. Carregar os dados reais da API
     if (containerVets) {
-        renderizarVeterinarios(containerVets, equipaMedicaBD);
+        carregarVetsDaAPI(containerVets);
     }
 
-    // B. Listener Delegado para os botões "Registar Falta" e "Registar Atraso"
-    // Colocamos o evento no container pai. É mais rápido e eficiente!
+    // 2. Listener Delegado para os botões de falta/atraso
     if (containerVets) {
         containerVets.addEventListener('click', (evento) => {
-            // Verifica se o elemento clicado é um botão de ponto
             if (evento.target.classList.contains('btn-ponto')) {
-                // Vai buscar os dados que guardámos nos atributos HTML do botão
                 const nomeVet = evento.target.getAttribute('data-nome');
                 const tipoRegisto = evento.target.getAttribute('data-tipo');
-                abrirModalRegisto(nomeVet, tipoRegisto);
+                const idVet = evento.target.getAttribute('data-id');
+                abrirModalRegisto(nomeVet, tipoRegisto, idVet);
             }
         });
     }
 
-    // C. Listeners para os botões do Modal
-    const btnCancelar = document.getElementById('btn-cancelar-registo');
-    if (btnCancelar) {
-        btnCancelar.addEventListener('click', fecharModalRegisto);
-    }
-
-    const btnGuardar = document.getElementById('btn-guardar-registo');
-    if (btnGuardar) {
-        btnGuardar.addEventListener('click', guardarRegisto);
-    }
+    // Listeners do Modal
+    document.getElementById('btn-cancelar-registo')?.addEventListener('click', fecharModalRegisto);
+    document.getElementById('btn-guardar-registo')?.addEventListener('click', guardarRegisto);
 });
 
 // =======================================================
-// FUNÇÕES DE INTERFACE E LÓGICA
+// COMUNICAÇÃO COM O BACKEND
 // =======================================================
 
-// 3. Função para desenhar o HTML de cada veterinário
+async function carregarVetsDaAPI(container) {
+    try {
+        // Chamada à tua API na porta 8008
+        const resposta = await fetch('http://localhost:8008/api/veterinarios');
+        const resultado = await resposta.json();
+
+        console.log("Dados recebidos da API:", resultado); // Para debug no F12
+
+        if (resultado.status === 200) {
+            renderizarVeterinarios(container, resultado.data);
+        } else {
+            container.innerHTML = `<p>Erro: ${resultado.message}</p>`;
+        }
+    } catch (erro) {
+        console.error("Erro ao ligar à API:", erro);
+        container.innerHTML = "<p style='color: gray;'>Não foi possível carregar a equipa médica. Verifica se o servidor está ativo.</p>";
+    }
+}
+
 function renderizarVeterinarios(container, listaVets) {
-    container.innerHTML = ''; // Limpa o container
+    container.innerHTML = ''; 
     
     listaVets.forEach(vet => {
-        // Criamos a estrutura HTML exata que tinhas originalmente
+        // Criamos o cartão usando as tuas classes CSS e os dados do Postgres
         const cartaoHTML = `
             <div class="cartao-vet">
-                <img src="${vet.foto}" alt="Foto ${vet.nome}" class="foto-vet">
+                <div class="icone-foto">
+                    <i class="fa fa-user-doctor" style="font-size: 3.5rem; color: #2ea89c;"></i>
+                </div>
                 <h3>${vet.nome}</h3>
-                <p class="especialidade">${vet.especialidade}</p>
+                <p class="especialidade">${vet.especialidade || 'Clínica Geral'}</p>
                 
                 <div class="acoes-ponto">
-                    <button class="btn-ponto falta" data-nome="${vet.nome}" data-tipo="Falta">Registar Falta</button>
-                    <button class="btn-ponto atraso" data-nome="${vet.nome}" data-tipo="Atraso">Registar Atraso</button>
+                    <button class="btn-ponto falta" 
+                            data-nome="${vet.nome}" 
+                            data-tipo="Falta" 
+                            data-id="${vet.id_veterinario}">Registar Falta</button>
+                    <button class="btn-ponto atraso" 
+                            data-nome="${vet.nome}" 
+                            data-tipo="Atraso" 
+                            data-id="${vet.id_veterinario}">Registar Atraso</button>
                 </div>
             </div>
         `;
-        // Adiciona o cartão à grelha
         container.innerHTML += cartaoHTML;
     });
 }
 
-// 4. Lógica do Modal
-function abrirModalRegisto(nome, tipo) {
+// =======================================================
+// LÓGICA DO MODAL
+// =======================================================
+
+function abrirModalRegisto(nome, tipo, id) {
     const modal = document.getElementById('modal-registo-ponto');
     
-    // Preenche os campos automáticos do formulário
     document.getElementById('registo_vet_nome').value = nome;
     document.getElementById('registo_tipo').value = tipo;
-    
-    // Define a data de hoje como padrão na caixa de data
     document.getElementById('registo_data').valueAsDate = new Date();
-    document.getElementById('registo_obs').value = ''; // Limpa as observações antigas
+    document.getElementById('registo_obs').value = '';
 
-    // Mostra o modal
+    // Guardamos o ID do veterinário no modal para o envio final
+    modal.dataset.idSelecionado = id;
+
     modal.style.display = 'flex';
 }
 
 function fecharModalRegisto() {
-    const modal = document.getElementById('modal-registo-ponto');
-    modal.style.display = 'none';
+    document.getElementById('modal-registo-ponto').style.display = 'none';
 }
 
-// 5. Simular o envio para a API
-function guardarRegisto() {
-    const nome = document.getElementById('registo_vet_nome').value;
+async function guardarRegisto() {
+    const modal = document.getElementById('modal-registo-ponto');
+    const id_vet = modal.dataset.idSelecionado;
     const tipo = document.getElementById('registo_tipo').value;
     const data = document.getElementById('registo_data').value;
     const obs = document.getElementById('registo_obs').value;
@@ -105,16 +113,18 @@ function guardarRegisto() {
         return;
     }
 
-    // Aqui no futuro farás um fetch() ou axios.post() para a API
-    const dadosParaEnviar = {
-        funcionario: nome,
-        ocorrencia: tipo,
+    // Este é o objeto que vais enviar para a tua futura rota de assiduidade
+    const dadosRegisto = {
+        id_veterinario: id_vet,
+        tipo: tipo,
         data: data,
         observacoes: obs
     };
 
-    console.log("Dados prontos para a API:", dadosParaEnviar);
-    alert(`${tipo} registado(a) com sucesso para ${nome}!`);
+    console.log("Pronto para gravar na BD:", dadosRegisto);
+    
+    // Por enquanto, apenas confirmamos o sucesso visualmente
+    alert(`${tipo} registada com sucesso para o Dr(a). ${document.getElementById('registo_vet_nome').value}`);
     
     fecharModalRegisto();
 }
