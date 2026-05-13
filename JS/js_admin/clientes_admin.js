@@ -238,6 +238,13 @@ window.fecharModalVerCliente = function() {
     }
 };
 
+// =======================================================
+// ABRIR MODAL PARA NOVO CLIENTE
+// =======================================================
+window.abrirModalCriarCliente = function() {
+    editarCliente('novo');
+};
+
 window.fecharModalEdicaoCliente = function() {
     const modal = document.getElementById('modalEdicao');
     if (modal) {

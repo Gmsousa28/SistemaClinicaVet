@@ -11,8 +11,10 @@ const {
 
 const router = express.Router();
 
-console.log('Router de clientes carregado!');
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3687e218a05ef9e7aeea0f984a5548e845bcd321
 // CORREÇÃO 2: Usar essas funções limpas em cada rota
 router.get("/clientes", listarClientes);
 router.get("/clientes/id/:id", obterClienteByID);

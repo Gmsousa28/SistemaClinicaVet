@@ -22,6 +22,10 @@ server.use(express.urlencoded({ extended: true }));
 
 // Servir ficheiros estáticos
 server.use(express.static(path.join(__dirname, 'frontend')));
+server.use(cors()); // Habilita CORS para todas as rotas
+
+
+
 
 /* ======================================================
    IMPORTAÇÃO DAS ROTAS

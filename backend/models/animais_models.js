@@ -40,10 +40,28 @@ const eliminarAnimalBD = async (id_animal) => {
     return result.rows[0];
 };
 
+// Procura animais filtrando pelo ID do cliente
+const listarAnimaisPorDonoBD = async (nif) => {
+    // Usamos INNER JOIN para cruzar as tabelas 'animal' e 'cliente'
+    const query = `
+        SELECT 
+            animal.* FROM animal
+        INNER JOIN cliente ON animal.id_cliente = cliente.id_cliente
+        WHERE cliente.nif = $1
+        ORDER BY animal.nome ASC;
+    `;
+    
+    const result = await pool.query(query, [nif]);
+    return result.rows;
+};
+
+
 module.exports = {
     listarAnimaisBD,
     criarAnimalBD,
     obterAnimalPorIdBD,
     atualizarAnimalBD,
-    eliminarAnimalBD
+    eliminarAnimalBD,
+    listarAnimaisPorDonoBD,
+    
 };
