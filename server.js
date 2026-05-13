@@ -11,7 +11,6 @@ server.use(cors()); // Habilita CORS para todas as rotas
 
 
 
-server.use(cors()); // Habilita CORS para todas as rotas
 
 // 1. Importa o router (ajusta o caminho se necessário)
 const animaisRouter = require('./backend/routes/animais_rotas.js'); 
@@ -60,7 +59,7 @@ server.use("/api", ocorrenciasLaboraisRouter);
 //server.use("/api", customersRouter);
 
 //Error handling
-//server.use(errorHandling);
+server.use(errorHandling);
 
 
 //Testing postgres connection
@@ -68,10 +67,6 @@ server.get("/", async(req,res)=>
 {
   const result = await pool.query("SELECT current_database()");
   res.send("The database name is: " + result.rows[0].current_database);
-});
-
-server.get("/", (req, res) => {
-  res.send("Hello World!");
 });
 
 server.listen(port, () => {

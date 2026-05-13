@@ -103,7 +103,6 @@ const criarConsultaBD = async (id_animal, id_veterinario, data_consulta, motivo)
     return result.rows[0]; 
 };
 
-
 const obterConsultaByIdBD = async (id_consulta) => {
     const result = await pool.query('SELECT * FROM consulta WHERE id_consulta = $1', [id_consulta]);
     return result.rows[0];
@@ -126,10 +125,43 @@ const eliminarConsultaBD = async (id_consulta) => {
     return result.rows[0];
 };
 
+// ==========================================
+// NOVAS FUNÇÕES PARA A TABELA DE SERVIÇOS
+// ==========================================
+
+// Procura um funcionário aleatório que NÃO seja veterinário
+const obterFuncionarioServicoAleatorioBD = async () => {
+    const query = `
+        SELECT id_funcionario 
+        FROM public.funcionario 
+        WHERE cargo NOT ILIKE '%Veterinário%' 
+          AND cargo NOT ILIKE '%Veterinario%'
+        ORDER BY RANDOM() 
+        LIMIT 1;
+    `;
+    const result = await pool.query(query);
+    return result.rows[0]; 
+};
+
+// Insere o banho ou tosquia na tabela SERVICOS
+const criarServicoBD = async (id_animal, id_funcionario, data_servicos, tipo_servico, preco) => {
+    const query = `
+        INSERT INTO public.servicos 
+        (id_animal, id_funcionario, data_servicos, tipo_servico, preco) 
+        VALUES ($1, $2, $3, $4, $5) 
+        RETURNING *;
+    `;
+    const values = [id_animal, id_funcionario, data_servicos, tipo_servico, preco];
+    const result = await pool.query(query, values);
+    return result.rows[0];
+};
+
 module.exports = {
     listarConsultasBD,
     criarConsultaBD,
     obterConsultaByIdBD,
     atualizarConsultaBD,
-    eliminarConsultaBD
+    eliminarConsultaBD,
+    obterFuncionarioServicoAleatorioBD, // Exportada para o Controller usar
+    criarServicoBD                      // Exportada para o Controller usar
 };

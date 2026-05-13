@@ -3,8 +3,10 @@ const {
     criarConsultaBD,
     obterConsultaByIdBD,
     atualizarConsultaBD,
-    eliminarConsultaBD
-}= require('../models/consultas_models');
+    eliminarConsultaBD,
+    obterFuncionarioServicoAleatorioBD, // <-- IMPORTADO DO NOVO MODEL
+    criarServicoBD                      // <-- IMPORTADO DO NOVO MODEL
+} = require('../models/consultas_models');
 
 const handleResponse = (res, status, message, data = null) => {
     res.status(status).json({ status, message, data });
@@ -20,29 +22,71 @@ const listarConsultas = async (req, res, next) => {
 };
 
 const criarConsulta = async (req, res) => {
-    // 1. Só extraímos os 4 campos que a base de dados agora pede
+    // 1. Extraímos os 4 campos do frontend
     const { id_animal, id_veterinario, data_consulta, motivo } = req.body;
     
     try {
-        const novaConsulta = await criarConsultaBD(id_animal, id_veterinario, data_consulta, motivo);
-        handleResponse(res, 201, "Nova consulta criada com sucesso", novaConsulta);
+        // 2. Transformar a string "consulta, banho" numa lista: ['consulta', 'banho']
+        const motivosArray = motivo.split(',').map(m => m.trim().toLowerCase());
+        
+        const temConsulta = motivosArray.includes('consulta');
+        const outrosServicos = motivosArray.filter(m => m !== 'consulta'); // Isola banhos e tosquias
+
+        let resposta = { consulta: null, servicos: [] };
+
+        // ==========================================
+        // ROTA A: É PARA A TABELA DE CONSULTAS
+        // ==========================================
+        if (temConsulta) {
+            // Usa a tua função com as regras da professora (Bloco DO $$)
+            resposta.consulta = await criarConsultaBD(id_animal, id_veterinario, data_consulta, 'Consulta');
+        }
+
+        // ==========================================
+        // ROTA B: É PARA A TABELA DE SERVIÇOS
+        // ==========================================
+        if (outrosServicos.length > 0) {
+            // 1. Vai pescar um funcionário à sorte que NÃO seja Médico
+            const funcionario = await obterFuncionarioServicoAleatorioBD();
+            
+            if (!funcionario) {
+                return handleResponse(res, 400, "Erro: Não há auxiliares/banhistas registados para fazer o serviço.");
+            }
+
+            // 2. Faz o INSERT para cada serviço extra (banho, tosquia, etc.)
+            for (const tipo of outrosServicos) {
+                // Primeira letra maiúscula para o ENUM da base de dados aceitar (ex: 'Banho', 'Tosquia')
+                const tipoEnum = tipo.charAt(0).toUpperCase() + tipo.slice(1);
+                
+                // Preço base obrigatório (já que a tua tabela não tem DEFAULT para preço)
+                const precoServico = tipo === 'tosquia' ? 25.00 : 20.00;
+
+                const novoServico = await criarServicoBD(
+                    id_animal, 
+                    funcionario.id_funcionario, 
+                    data_consulta, 
+                    tipoEnum, 
+                    precoServico
+                );
+                resposta.servicos.push(novoServico);
+            }
+        }
+
+        // 3. Tudo correu bem!
+        return handleResponse(res, 201, "Marcação efetuada com sucesso e distribuída pelas tabelas!", resposta);
         
     } catch (err) {
-        // 2. Isto vai imprimir o erro limpo no teu terminal
-        console.error(">>> ERRO A GRAVAR NA BD:", err.message);
+        console.error(">>> ERRO A GRAVAR MARCAÇÃO:", err.message);
 
-        // 3. Se o erro for uma das regras da tua professora (Bloco DO $$)
+        // Apanha as mensagens da tua professora do Bloco DO $$
         if (err.message && err.message.includes('Operação bloqueada')) {
-            // Mandamos um erro 400 (Bad Request) e o texto da base de dados!
             return handleResponse(res, 400, err.message);
         }
 
-        // 4. Se for um erro diferente (tipo servidor abaixo ou colunas erradas)
+        // Se for um erro diferente (tipo servidor abaixo ou colunas erradas)
         return handleResponse(res, 500, "Erro interno no servidor: " + err.message);
     }
 };
-
-
 
 const obterConsultaById = async (req, res, next) => {
     try {
