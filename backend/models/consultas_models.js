@@ -125,35 +125,19 @@ const eliminarConsultaBD = async (id_consulta) => {
     return result.rows[0];
 };
 
-// ==========================================
-// NOVAS FUNÇÕES PARA A TABELA DE SERVIÇOS
-// ==========================================
-
-// Procura um funcionário aleatório que NÃO seja veterinário
-const obterFuncionarioServicoAleatorioBD = async () => {
-    const query = `
-        SELECT id_funcionario 
-        FROM public.funcionario 
-        WHERE cargo NOT ILIKE '%Veterinário%' 
-          AND cargo NOT ILIKE '%Veterinario%'
-        ORDER BY RANDOM() 
-        LIMIT 1;
-    `;
-    const result = await pool.query(query);
-    return result.rows[0]; 
-};
-
-// Insere o banho ou tosquia na tabela SERVICOS
-const criarServicoBD = async (id_animal, id_funcionario, data_servicos, tipo_servico, preco) => {
-    const query = `
-        INSERT INTO public.servicos 
-        (id_animal, id_funcionario, data_servicos, tipo_servico, preco) 
-        VALUES ($1, $2, $3, $4, $5) 
-        RETURNING *;
-    `;
-    const values = [id_animal, id_funcionario, data_servicos, tipo_servico, preco];
-    const result = await pool.query(query, values);
-    return result.rows[0];
+const listarConsultasDoVeterinarioBD = async (id_veterinario) => {
+    // Usa crases (`) para permitir as quebras de linha
+    const result = await pool.query(`
+        SELECT c.data_consulta, c.motivo, cl.nome, a.animal, a.especie, a.raca
+        FROM public.veterinario v 
+        INNER JOIN public.consulta c ON v.id_veterinario = c.id_veterinario
+        INNER JOIN public.animal a ON c.id_animal = a.id_animal
+        INNER JOIN public.cliente cl ON a.id_cliente = cl.id_cliente
+        WHERE v.id_veterinario = $1 
+        ORDER BY c.data_consulta DESC;
+    `, [id_veterinario]); // O $1 ali em cima vai ser substituído por este id_veterinario
+    
+    return result.rows;
 };
 
 module.exports = {
@@ -162,6 +146,5 @@ module.exports = {
     obterConsultaByIdBD,
     atualizarConsultaBD,
     eliminarConsultaBD,
-    obterFuncionarioServicoAleatorioBD, // Exportada para o Controller usar
-    criarServicoBD                      // Exportada para o Controller usar
+    listarConsultasDoVeterinarioBD
 };
