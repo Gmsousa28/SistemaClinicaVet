@@ -2,6 +2,7 @@ const express = require('express');
 const path = require("path");
 const cors = require('cors'); //npm install cors e serve para dar permissoes ao chrome e etc para aceder
 const pool = require('./backend/config/db.js');
+const errorHandling = require('./backend/middlewares/errorHandler.js');
 const server = express();
 const port = 8008;
 
