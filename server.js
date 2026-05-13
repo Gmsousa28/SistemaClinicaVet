@@ -11,6 +11,8 @@ server.use(cors()); // Habilita CORS para todas as rotas
 
 
 
+server.use(cors()); // Habilita CORS para todas as rotas
+
 // 1. Importa o router (ajusta o caminho se necessário)
 const animaisRouter = require('./backend/routes/animais_rotas.js'); 
 const clientesRouter = require('./backend/routes/clientes_rotas.js');

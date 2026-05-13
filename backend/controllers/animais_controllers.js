@@ -3,7 +3,8 @@ const {
   criarAnimalBD,
   obterAnimalPorIdBD,
   atualizarAnimalBD,
-  eliminarAnimalBD
+  eliminarAnimalBD,
+  listarAnimaisPorDonoBD
 } = require("../models/animais_models.js");
 
 const handleResponse = (res, status, message, data = null) => {
@@ -61,10 +62,22 @@ const eliminarAnimal = async (req, res, next) => {
   }
 };
 
+const listarAnimaisPorDono = async (req, res, next) => {
+  try {
+    const animais = await listarAnimaisPorDonoBD(req.params.nif);
+    res.status(200).json({ status: 200, data: animais });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+
 module.exports = {
   listarTodosAnimais,
   criarAnimal,
   obterAnimalPorId,
   atualizarAnimal,
-  eliminarAnimal
+  eliminarAnimal,
+  listarAnimaisPorDono
 };

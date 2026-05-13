@@ -297,3 +297,195 @@
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(46, 168, 156, 0.3);
 }
+
+/* ========================================================================== */
+/* 7. JANELA MODAL (MARCAR CONSULTA)                                          */
+/* ========================================================================== */
+
+/* Fundo escuro que bloqueia o ecrã e esconde a janela por defeito */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+/* Quando o JS adiciona a classe .ativo, a janela aparece */
+.modal-overlay.ativo {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* A caixa branca bonita no meio do ecrã */
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.ativo .modal-content {
+    transform: translateY(0);
+}
+
+/* Título e Botão de Fechar (o 'X') */
+.modal-titulo {
+    color: #2ea89c;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.fechar-modal-consulta {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 20px;
+    color: #888;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.fechar-modal-consulta:hover {
+    color: #e74c3c;
+}
+
+/* Campos do Formulário */
+.campo-modal, .campo-modal-final {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.campo-modal-final {
+    margin-bottom: 25px;
+}
+
+.campo-modal label, .campo-modal-final label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* Caixas de texto e select */
+.input-modal {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box; 
+    color: #333;
+}
+
+/* Ícones dentro das caixas de texto */
+.input-icon-wrapper {
+    position: relative;
+}
+
+.input-icon-wrapper i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+}
+
+.input-com-icone {
+    padding-left: 35px;
+}
+
+/* Botão Verde Grande de Confirmar */
+.btn-confirmar-modal {
+    width: 100%;
+    background: #2ea89c;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-confirmar-modal:hover {
+    background: #249186;
+}
+
+/* Impede o fundo da página de rolar quando a janela está aberta */
+body.no-scroll {
+    overflow: hidden;
+}
+
+/* ========================================================================== */
+/* 8. JANELA MODAL (DETALHES DA CONSULTA)                                     */
+/* ========================================================================== */
+
+/* Botão de Fechar específico para o Modal de Detalhes */
+.fechar-modal-detalhes {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 20px;
+    color: #888;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.fechar-modal-detalhes:hover {
+    color: #e74c3c;
+}
+
+/* Formatação do texto de informação (Animal, Data, Motivo) */
+.detalhes-info {
+    font-size: 15px;
+    color: #444;
+    line-height: 1.8;
+}
+
+/* Linha fina que separa os dados principais das observações */
+.divisor-modal {
+    margin: 15px 0;
+    border: 0;
+    border-top: 1px solid #ddd;
+}
+
+/* Organização dos botões no fundo da janela (Remarcar e Cancelar) */
+.acoes-modal {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Dá espaço entre os dois botões */
+}
+
+/* Faz com que cada botão ocupe 100% do seu espaço disponível (metade-metade) */
+.btn-bloco {
+    width: 100%;
+}
+
+/* ========================================================================== */
+/* 9. AJUSTES EXTRAS                                                          */
+/* ========================================================================== */
+
+/* Botão Nova Consulta (para não ocupar o ecrã todo e ter bordas redondas) */
+.btn-marcar-topo {
+    width: max-content;
+    padding: 12px 24px;
+    border-radius: 30px;
+}
