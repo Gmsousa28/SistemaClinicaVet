@@ -7,6 +7,9 @@ const port = 8008;
 
 // Serve ficheiros estáticos (HTML, CSS, JS)
 server.use(express.static(path.join(__dirname, 'frontend')));
+server.use(cors()); // Habilita CORS para todas as rotas
+
+
 
 // 1. Importa o router (ajusta o caminho se necessário)
 const animaisRouter = require('./backend/routes/animais_rotas.js'); 

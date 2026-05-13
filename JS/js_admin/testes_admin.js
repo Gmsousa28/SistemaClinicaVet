@@ -172,4 +172,23 @@ function calcularHoraFim() {
     inputHoraFim.value = `${horasFinal}:${minutosFinal}`;
 }
 
+
+// =======================================================
+// ABRIR MODAL PARA NOVO FUNCIONÁRIO
+// =======================================================
+function abrirModalNovoFuncionario() {
+
+    document.getElementById('tituloEdicao').innerText = 'Adicionar Funcionário';
+
+    document.getElementById('editNome').value = '';
+    document.getElementById('editCargo').value = '';
+    document.getElementById('editEmail').value = '';
+    document.getElementById('editContacto').value = '';
+    document.getElementById('editNif').value = '';
+    document.getElementById('editMorada').value = '';
+
+    document.getElementById('modalEdicao').style.display = 'flex';
+
+    document.body.style.overflow = 'hidden';
+}
 window.onload = carregarDados;

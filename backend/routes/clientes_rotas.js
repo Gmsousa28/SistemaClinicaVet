@@ -11,7 +11,6 @@ const {
 
 const router = express.Router();
 
-console.log('Router de clientes carregado!');
 
 // CORREÇÃO 2: Usar essas funções limpas em cada rota
 router.get("/clientes", listarClientes);
