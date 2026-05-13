@@ -52,10 +52,26 @@ const eliminarConsultaBD = async (id_consulta) => {
     return result.rows[0];
 };
 
+const listarConsultasDoVeterinarioBD = async (id_veterinario) => {
+    // Usa crases (`) para permitir as quebras de linha
+    const result = await pool.query(`
+        SELECT c.data_consulta, c.motivo, cl.nome, a.animal, a.especie, a.raca
+        FROM public.veterinario v 
+        INNER JOIN public.consulta c ON v.id_veterinario = c.id_veterinario
+        INNER JOIN public.animal a ON c.id_animal = a.id_animal
+        INNER JOIN public.cliente cl ON a.id_cliente = cl.id_cliente
+        WHERE v.id_veterinario = $1 
+        ORDER BY c.data_consulta DESC;
+    `, [id_veterinario]); // O $1 ali em cima vai ser substituído por este id_veterinario
+    
+    return result.rows;
+};
+
 module.exports = {
     listarConsultasBD,
     criarConsultaBD,
     obterConsultaByIdBD,
     atualizarConsultaBD,
-    eliminarConsultaBD
+    eliminarConsultaBD,
+    listarConsultasDoVeterinarioBD
 };
