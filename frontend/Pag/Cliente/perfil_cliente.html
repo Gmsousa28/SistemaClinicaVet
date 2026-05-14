@@ -15,6 +15,7 @@
         <div id="alerta-sucesso">
             <i class="fa fa-check-circle"></i> Perfil atualizado com sucesso!
         </div>
+        
         <header>
             <div class="header-texto">
                 <h1>Perfil</h1> 
@@ -23,8 +24,8 @@
         </header>
 
         <section class="sidebar">
-            <a href="#" class="logo">
-                <img src="../../img/Logo_vet.png">
+             <a href="../../Pag_principal.html" class="logo">
+                <img src="../../img/Logo_vet.png" alt="Logótipo Clínica Miacãomigo">
             </a>
             <hr>
             <nav class="menu">
@@ -42,19 +43,17 @@
             <section class="dashboard">
                 <section class="grid">
 
-                    <section class="perfil">
+                   <section class="perfil">
                         <section class="foto-container">
                             <img src="../../img/imagemdefault.png" alt="Foto de perfil padrão" id="foto-perfil">
-                            
-                            <input type="file" id="input-foto" accept="image/*" style="display: none;">
-                            
+                            <input type="file" id="input-foto" accept="image/*" class="input-escondido">
                             <label for="input-foto" class="overlay-foto">
                                 <i class="fa fa-camera"></i>
                                 <span>Alterar</span>
                             </label>
                         </section>
-                        <h3>João Silva</h3>
-                        <p class="user">@joao</p>
+                        <h3 id="nome-lateral">...</h3> 
+                        <p class="user" id="user-lateral">@...</p>
                         <section class="perfil-bottom">
                             <button class="editar">Editar Perfil</button>
                             <br><small>Cliente desde 2025</small>
@@ -69,69 +68,44 @@
                                 <section class="campo">
                                     <label>Nome</label>
                                     <div class="input-icon"><i class="fa fa-user"></i>
-                                        <input type="text" value="João">
-                                    </div>
+                                        <input type="text" id="input-nome"> </div>
                                 </section>
                                 <section class="campo">
                                     <label>Apelido</label>
                                     <div class="input-icon"><i class="fa fa-user"></i>
-                                        <input type="text" value="Silva">
-                                    </div>
+                                        <input type="text" id="input-apelido"> </div>
                                 </section>
                                 <section class="campo">
                                     <label>Email</label>
                                     <div class="input-icon"><i class="fa fa-envelope"></i>
-                                        <input type="email" value="joao@gmail.com">
-                                    </div>
+                                        <input type="email" id="input-email"> </div>
                                 </section>
                                 <section class="campo">
                                     <label>NIF</label>
                                     <div class="input-icon"><i class="fa fa-id-card"></i>
-                                        <input type="text" value="123456789">
-                                    </div>
+                                        <input type="text" id="input-nif"> </div>
                                 </section>
                                 <section class="campo">
                                     <label>Telefone</label>
                                     <div class="input-icon"><i class="fa fa-phone"></i>
-                                        <input type="text" value="912345678">
-                                    </div>
+                                        <input type="text" id="input-contacto"> </div>
                                 </section>
                                 <section class="campo">
                                     <label>Morada</label>
                                     <div class="input-icon"><i class="fa fa-location-dot"></i>
-                                        <input type="text" value="Rua Exemplo, Lisboa">
-                                    </div>
+                                        <input type="text" id="input-morada"> </div>
                                 </section>
                             </section>
+
+                            <button id="btn-guardar-perfil" class="nova-consulta btn-bloco espaco-topo">
+                                <i class="fa fa-save"></i> Guardar Alterações
+                            </button>
                         </section>
 
                         <div class="linha-inferior">
                             <section class="meus-animais">
                                 <h3>Os Meus Animais</h3>
                                 <div class="animais-lista">
-                                    <div class="animal-card">
-                                        <div class="foto-animal-wrapper">
-                                            <img src="../../img/icone_cao.jpg">
-                                            <div class="acoes-animal">
-                                                <button class="btn-editar-animal" title="Editar"><i class="fa fa-pencil"></i></button>
-                                                <button class="btn-apagar-animal" title="Remover"><i class="fa fa-trash"></i></button>
-                                            </div>
-                                        </div>
-                                        <p class="nome-animal-texto">Rex</p>
-                                        <small class="especie-animal-texto">Cão</small>
-                                    </div>
-                                    <div class="animal-card">
-                                        <div class="foto-animal-wrapper">
-                                            <img src="../../img/icone_gato.jpg">
-                                            <div class="acoes-animal">
-                                                <button class="btn-editar-animal" title="Editar"><i class="fa fa-pencil"></i></button>
-                                                <button class="btn-apagar-animal" title="Remover"><i class="fa fa-trash"></i></button>
-                                            </div>
-                                        </div>
-                                        <p class="nome-animal-texto">Mimi</p>
-                                        <small class="especie-animal-texto">Gato</small>
-                                    </div>
-                                    
                                     <div class="animal-card adicionar">
                                         <div class="circulo-add"><i class="fa fa-plus"></i></div>
                                         <p>Adicionar</p>
@@ -181,13 +155,13 @@
                 
                 <div class="foto-animal-upload">
                     <img src="../../img/imagemdefault.png" alt="Foto do Novo Animal" id="preview-novo-animal">
-                    <input type="file" id="input-foto-animal" accept="image/*" style="display: none;">
+                    <input type="file" id="input-foto-animal" accept="image/*" class="input-escondido">
                     <label for="input-foto-animal" class="btn-escolher-foto">
                         <i class="fa fa-camera"></i> Escolher Foto
                     </label>
                 </div>
                 
-                <div class="campo" style="margin-bottom: 15px;">
+                <div class="campo espaco-fundo">
                     <label>Nome do Animal</label>
                     <div class="input-icon"><i class="fa fa-paw"></i>
                         <input type="text" id="novo-nome" placeholder="Ex: Bobby">
@@ -212,13 +186,13 @@
 
                 <div class="foto-animal-upload">
                     <img src="" alt="Foto do Animal" id="preview-edit-animal">
-                    <input type="file" id="input-foto-edit" accept="image/*" style="display: none;">
+                    <input type="file" id="input-foto-edit" accept="image/*" class="input-escondido">
                     <label for="input-foto-edit" class="btn-escolher-foto">
                         <i class="fa fa-camera"></i> Mudar Foto
                     </label>
                 </div>
                 
-                <div class="campo" style="margin-bottom: 15px;">
+                <div class="campo espaco-fundo">
                     <label>Nome do Animal</label>
                     <div class="input-icon"><i class="fa fa-paw"></i>
                         <input type="text" id="edit-nome">

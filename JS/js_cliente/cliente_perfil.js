@@ -1,6 +1,100 @@
 document.addEventListener('DOMContentLoaded', function() {
+
+    // ==========================================================================
+    // --- CONFIGURAÇÃO DAS APIs ---
+    // ==========================================================================
+    const idClienteAtual = 1; 
+    const urlApiClientes = `http://localhost:8008/api/clientes`; 
+    const urlApiAnimais = `http://localhost:8008/api/animais`; 
+
+    // ==========================================================================
+    // --- 1. DADOS DO PERFIL (LER E GUARDAR) ---
+    // ==========================================================================
     
-    // --- 1. FOTO DE PERFIL PRINCIPAL ---
+    // Ler Dados do Perfil
+    async function carregarPerfil() {
+        console.log("Iniciando carregamento do perfil...");
+        try {
+            const resposta = await fetch(`${urlApiClientes}/id/${idClienteAtual}`);
+            const resultado = await resposta.json();
+
+            if (resultado.status === 200) {
+                const cliente = resultado.data;
+
+                const partesNome = (cliente.nome || "").split(' ');
+                const primeiroNome = partesNome[0] || "";
+                const apelido = partesNome.length > 1 ? partesNome.slice(1).join(' ') : "";
+
+                if(document.getElementById('input-nome')) document.getElementById('input-nome').value = primeiroNome;
+                if(document.getElementById('input-apelido')) document.getElementById('input-apelido').value = apelido;
+                if(document.getElementById('input-email')) document.getElementById('input-email').value = cliente.email || "";
+                if(document.getElementById('input-nif')) document.getElementById('input-nif').value = cliente.nif || "";
+                if(document.getElementById('input-contacto')) document.getElementById('input-contacto').value = cliente.contacto || "";
+                if(document.getElementById('input-morada')) document.getElementById('input-morada').value = cliente.morada || "";
+                
+                if(document.getElementById('nome-lateral')) document.getElementById('nome-lateral').innerText = cliente.nome;
+                if(document.getElementById('user-lateral')) document.getElementById('user-lateral').innerText = `@${primeiroNome.toLowerCase()}`; 
+                               
+                console.log("Perfil preenchido com sucesso!");
+            } else {
+                console.error("Erro na resposta do servidor:", resultado.message);
+            }
+        } catch (erro) {
+            console.error("ERRO CRÍTICO ao ligar à API de Clientes.", erro);
+        }
+    }
+
+    carregarPerfil();
+
+    // Guardar Dados do Perfil
+    const btnGuardarPerfil = document.getElementById('btn-guardar-perfil');
+    const alertaSucesso = document.getElementById('alerta-sucesso'); 
+
+    if (btnGuardarPerfil) {
+        btnGuardarPerfil.addEventListener('click', async () => {
+            const nomeInput = document.getElementById('input-nome').value.trim();
+            const apelidoInput = document.getElementById('input-apelido').value.trim();
+            const nomeCompleto = nomeInput + (apelidoInput ? " " + apelidoInput : "");
+
+            const dadosAtualizados = {
+                nome: nomeCompleto,
+                email: document.getElementById('input-email').value,
+                nif: document.getElementById('input-nif').value,
+                contacto: document.getElementById('input-contacto').value,
+                morada: document.getElementById('input-morada').value
+            };
+
+            try {
+                const resposta = await fetch(`${urlApiClientes}/${idClienteAtual}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dadosAtualizados)
+                });
+
+                const resultado = await resposta.json();
+
+                if (resultado.status === 200) {
+                    if(alertaSucesso) {
+                        alertaSucesso.classList.add('mostrar');
+                        setTimeout(() => { alertaSucesso.classList.remove('mostrar'); }, 3000);
+                    }
+                    const perfilNome = document.getElementById('nome-lateral');
+                    const perfilUser = document.getElementById('user-lateral');
+                    if(perfilNome) perfilNome.innerText = nomeCompleto;
+                    if(perfilUser) perfilUser.innerText = `@${nomeInput.toLowerCase()}`;
+                } else {
+                    alert("Erro ao atualizar: " + resultado.message);
+                }
+            } catch (erro) {
+                console.error("Erro ao guardar perfil:", erro);
+                alert("Erro de comunicação com o servidor.");
+            }
+        });
+    }
+
+    // ==========================================================================
+    // --- 2. FOTO DE PERFIL (Pré-visualização) ---
+    // ==========================================================================
     const inputFoto = document.getElementById('input-foto');
     const fotoPerfil = document.getElementById('foto-perfil');
     if (inputFoto && fotoPerfil) {
@@ -14,179 +108,157 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- 2. ALERTA SUCESSO ---
-    const btnEditar = document.querySelector('.editar'); 
-    const alertaSucesso = document.getElementById('alerta-sucesso'); 
-    if (btnEditar && alertaSucesso) {
-        btnEditar.addEventListener('click', function() {
-            alertaSucesso.classList.add('mostrar');
-            setTimeout(function() { alertaSucesso.classList.remove('mostrar'); }, 3000);
+    // ==========================================================================
+    // --- 3. GESTÃO DE ANIMAIS (API LIGADA) ---
+    // ==========================================================================
+    const listaAnimais = document.querySelector('.animais-lista');
+    const modalAdd = document.getElementById('modal-animal');
+    const btnAdicionarNovo = document.querySelector('.animal-card.adicionar');
+    const btnGuardarNovo = document.getElementById('btn-guardar-animal');
+
+    // Ler Animais da BD
+    async function carregarAnimais() {
+        if (!listaAnimais) return;
+
+        try {
+            const resposta = await fetch(urlApiAnimais);
+            const resultado = await resposta.json();
+
+            if (resultado.status === 200) {
+                const meusAnimais = resultado.data.filter(a => a.id_cliente === idClienteAtual);
+                listaAnimais.innerHTML = '';
+
+                meusAnimais.forEach(animal => {
+                    let fotoSrc = animal.especie.toLowerCase() === 'gato' ? '../../img/icone_gato.jpg' : '../../img/icone_cao.jpg';
+                    const cartao = document.createElement('div');
+                    cartao.className = 'animal-card';
+                    cartao.innerHTML = `
+                        <div class="foto-animal-wrapper">
+                            <img src="${fotoSrc}" alt="${animal.nome}">
+                            <div class="acoes-animal">
+                                <button class="btn-editar-animal" title="Editar"><i class="fa fa-pencil"></i></button>
+                                <button class="btn-apagar-animal" data-id="${animal.id_animal}" title="Remover"><i class="fa fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <p class="nome-animal-texto">${animal.nome}</p>
+                        <small class="especie-animal-texto">${animal.especie}</small>
+                    `;
+                    listaAnimais.appendChild(cartao);
+                });
+
+                if(btnAdicionarNovo) listaAnimais.appendChild(btnAdicionarNovo);
+            }
+        } catch (erro) {
+            console.error("Erro ao carregar animais:", erro);
+        }
+    }
+
+    carregarAnimais();
+
+    // Guardar Novo Animal na BD
+    if (btnAdicionarNovo && modalAdd && btnGuardarNovo) {
+        
+        // Modal Upload Foto Preview
+        const inputFotoAnimal = document.getElementById('input-foto-animal');
+        const previewNovoAnimal = document.getElementById('preview-novo-animal');
+        if (inputFotoAnimal && previewNovoAnimal) {
+            inputFotoAnimal.addEventListener('change', function(evento) {
+                const ficheiro = evento.target.files[0];
+                if (ficheiro) {
+                    const leitor = new FileReader();
+                    leitor.onload = function(e) { previewNovoAnimal.src = e.target.result; }
+                    leitor.readAsDataURL(ficheiro);
+                }
+            });
+        }
+
+        btnAdicionarNovo.addEventListener('click', () => {
+            modalAdd.classList.add('ativo');
+            document.body.classList.add('no-scroll');
+        });
+        
+        modalAdd.querySelector('.fechar-modal').addEventListener('click', () => {
+            modalAdd.classList.remove('ativo');
+            document.body.classList.remove('no-scroll');
+        });
+
+        btnGuardarNovo.addEventListener('click', async function() {
+            const nomeInput = document.getElementById('novo-nome').value.trim();
+            const especieInput = document.getElementById('nova-especie').value.trim();
+
+            if (nomeInput !== '' && especieInput !== '') {
+                const novoAnimalDados = {
+                    id_cliente: idClienteAtual,
+                    nome: nomeInput,
+                    especie: especieInput,
+                    raca: "Não definida",
+                    sexo: "Desconhecido",
+                    data_nascimento: null,
+                    estado: "Ativo"
+                };
+
+                try {
+                    const resposta = await fetch(urlApiAnimais, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(novoAnimalDados)
+                    });
+                    
+                    const resultado = await resposta.json();
+
+                    if (resultado.status === 201) {
+                        carregarAnimais();
+                        document.getElementById('novo-nome').value = '';
+                        document.getElementById('nova-especie').value = '';
+                        if (previewNovoAnimal) previewNovoAnimal.src = '../../img/imagemdefault.png';
+                        modalAdd.classList.remove('ativo');
+                        document.body.classList.remove('no-scroll');
+                    } else {
+                        alert("Erro ao criar animal: " + resultado.message);
+                    }
+                } catch (erro) {
+                    console.error("Erro no POST do animal:", erro);
+                }
+            } else {
+                alert("Preencha o nome e a espécie do animal!");
+            }
         });
     }
 
-    // --- 3. GESTÃO DE ANIMAIS (Adicionar, Editar e Remover) ---
-    const listaAnimais = document.querySelector('.animais-lista');
-    
-    // Modais
-    const modalAdd = document.getElementById('modal-animal');
-    const modalEdit = document.getElementById('modal-editar-animal');
-    
-    // Botões
-    const btnAdicionarNovo = document.querySelector('.animal-card.adicionar');
-    const btnGuardarNovo = document.getElementById('btn-guardar-animal');
-    const btnSalvarEdicao = document.getElementById('btn-salvar-edicao');
-    
-    let cartaoEmEdicao = null; 
-
+    // Apagar Animal da BD
     if (listaAnimais) {
-        // --- A. ADICIONAR NOVO ANIMAL ---
-        if (btnAdicionarNovo && modalAdd) {
+        listaAnimais.addEventListener('click', async function(e) {
+            const btnApagar = e.target.closest('.btn-apagar-animal');
             
-            const inputFotoAnimal = document.getElementById('input-foto-animal');
-            const previewNovoAnimal = document.getElementById('preview-novo-animal');
+            if (btnApagar) {
+                const idParaApagar = btnApagar.getAttribute('data-id');
+                const cartao = btnApagar.closest('.animal-card');
+                const nomeAnimal = cartao.querySelector('.nome-animal-texto').innerText;
 
-            if (inputFotoAnimal && previewNovoAnimal) {
-                inputFotoAnimal.addEventListener('change', function(evento) {
-                    const ficheiro = evento.target.files[0];
-                    if (ficheiro) {
-                        const leitor = new FileReader();
-                        leitor.onload = function(e) { previewNovoAnimal.src = e.target.result; }
-                        leitor.readAsDataURL(ficheiro);
+                if (confirm(`Tem a certeza que deseja remover o(a) ${nomeAnimal}?`)) {
+                    try {
+                        const resposta = await fetch(`${urlApiAnimais}/${idParaApagar}`, {
+                            method: 'DELETE'
+                        });
+                        
+                        const resultado = await resposta.json();
+
+                        if (resultado.status === 200) {
+                            cartao.remove(); 
+                        } else {
+                            alert("Erro ao remover: " + resultado.message);
+                        }
+                    } catch (erro) {
+                        console.error("Erro no DELETE:", erro);
                     }
-                });
+                }
             }
-
-            // ABRIR MODAL
-            btnAdicionarNovo.addEventListener('click', () => {
-                modalAdd.classList.add('ativo');
-                document.body.classList.add('no-scroll'); // Bloqueia o fundo!
-            });
-            
-            // FECHAR MODAL (X ou fora)
-            modalAdd.querySelector('.fechar-modal').addEventListener('click', () => {
-                modalAdd.classList.remove('ativo');
-                document.body.classList.remove('no-scroll'); // Desbloqueia o fundo!
-            });
-            modalAdd.addEventListener('click', (e) => { 
-                if(e.target === modalAdd) {
-                    modalAdd.classList.remove('ativo');
-                    document.body.classList.remove('no-scroll'); // Desbloqueia o fundo!
-                }
-            });
-
-            // GUARDAR NOVO ANIMAL
-            btnGuardarNovo.addEventListener('click', function() {
-                const nome = document.getElementById('novo-nome').value;
-                const especie = document.getElementById('nova-especie').value;
-                
-                let fotoEscolhida = "../../img/imagemdefault.png";
-                if (previewNovoAnimal) { fotoEscolhida = previewNovoAnimal.src; }
-
-                if (nome !== '' && especie !== '') {
-                    const novoCartao = document.createElement('div');
-                    novoCartao.className = 'animal-card';
-                    
-                    novoCartao.innerHTML = `
-                        <div class="foto-animal-wrapper">
-                            <img src="${fotoEscolhida}" alt="${nome}">
-                            <div class="acoes-animal">
-                                <button class="btn-editar-animal" title="Editar"><i class="fa fa-pencil"></i></button>
-                                <button class="btn-apagar-animal" title="Remover"><i class="fa fa-trash"></i></button>
-                            </div>
-                        </div>
-                        <p class="nome-animal-texto">${nome}</p>
-                        <small class="especie-animal-texto">${especie}</small>
-                    `;
-                    
-                    listaAnimais.insertBefore(novoCartao, btnAdicionarNovo);
-                    
-                    document.getElementById('novo-nome').value = '';
-                    document.getElementById('nova-especie').value = '';
-                    if (previewNovoAnimal) { previewNovoAnimal.src = '../../img/imagemdefault.png'; }
-                    
-                    modalAdd.classList.remove('ativo');
-                    document.body.classList.remove('no-scroll'); // Desbloqueia o fundo!
-                } else {
-                    alert("Preencha o nome e espécie!");
-                }
-            });
-        }
-
-        // --- B. EDITAR E REMOVER ANIMAIS ---
-        if (modalEdit) {
-            const inputFotoEdit = document.getElementById('input-foto-edit');
-            const previewEditAnimal = document.getElementById('preview-edit-animal');
-
-            if (inputFotoEdit && previewEditAnimal) {
-                inputFotoEdit.addEventListener('change', function(evento) {
-                    const ficheiro = evento.target.files[0];
-                    if (ficheiro) {
-                        const leitor = new FileReader();
-                        leitor.onload = function(e) { previewEditAnimal.src = e.target.result; }
-                        leitor.readAsDataURL(ficheiro);
-                    }
-                });
-            }
-
-            // FECHAR MODAL EDIÇÃO (X ou fora)
-            modalEdit.querySelector('.fechar-modal').addEventListener('click', () => {
-                modalEdit.classList.remove('ativo');
-                document.body.classList.remove('no-scroll'); // Desbloqueia o fundo!
-            });
-            modalEdit.addEventListener('click', (e) => { 
-                if(e.target === modalEdit) {
-                    modalEdit.classList.remove('ativo');
-                    document.body.classList.remove('no-scroll'); // Desbloqueia o fundo!
-                }
-            });
-
-            listaAnimais.addEventListener('click', function(e) {
-                
-                const btnApagar = e.target.closest('.btn-apagar-animal');
-                if (btnApagar) {
-                    const cartao = btnApagar.closest('.animal-card');
-                    const nome = cartao.querySelector('.nome-animal-texto').innerText;
-                    if (confirm(`Tem a certeza que deseja remover o(a) ${nome}?`)) {
-                        cartao.remove(); 
-                    }
-                }
-
-                // ABRIR MODAL DE EDIÇÃO (Clicar no Lápis)
-                const btnEditarAnimal = e.target.closest('.btn-editar-animal');
-                if (btnEditarAnimal) {
-                    cartaoEmEdicao = btnEditarAnimal.closest('.animal-card');
-                    const nomeAtual = cartaoEmEdicao.querySelector('.nome-animal-texto').innerText;
-                    const especieAtual = cartaoEmEdicao.querySelector('.especie-animal-texto').innerText;
-                    const fotoAtual = cartaoEmEdicao.querySelector('.foto-animal-wrapper img').src;
-
-                    document.getElementById('edit-nome').value = nomeAtual;
-                    document.getElementById('edit-especie').value = especieAtual;
-                    if (previewEditAnimal) { previewEditAnimal.src = fotoAtual; }
-                    
-                    modalEdit.classList.add('ativo');
-                    document.body.classList.add('no-scroll'); // Bloqueia o fundo!
-                }
-            });
-
-            // GUARDAR EDIÇÃO
-            btnSalvarEdicao.addEventListener('click', function() {
-                const novoNome = document.getElementById('edit-nome').value;
-                const novaEspecie = document.getElementById('edit-especie').value;
-                const fotoEditada = document.getElementById('preview-edit-animal').src;
-
-                if (novoNome !== '' && novaEspecie !== '' && cartaoEmEdicao) {
-                    cartaoEmEdicao.querySelector('.nome-animal-texto').innerText = novoNome;
-                    cartaoEmEdicao.querySelector('.especie-animal-texto').innerText = novaEspecie;
-                    cartaoEmEdicao.querySelector('.foto-animal-wrapper img').src = fotoEditada;
-
-                    modalEdit.classList.remove('ativo');
-                    document.body.classList.remove('no-scroll'); // Desbloqueia o fundo!
-                }
-            });
-        }
+        });
     }
 
+    // ==========================================================================
     // --- 4. GESTÃO DE AVISOS INTERATIVOS ---
+    // ==========================================================================
     const secAvisos = document.querySelector('.avisos');
     
     if (secAvisos) {
@@ -210,6 +282,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }, 300);
             }
+        });
+    }
+
+    // ==========================================================================
+    // --- 5. BOTÃO "EDITAR PERFIL" (Cartão Lateral) ---
+    // ==========================================================================
+    const btnEditarPerfilLateral = document.querySelector('.editar');
+    const inputPrimeiroNome = document.getElementById('input-nome');
+
+    if (btnEditarPerfilLateral && inputPrimeiroNome) {
+        btnEditarPerfilLateral.addEventListener('click', () => {
+            inputPrimeiroNome.focus();
         });
     }
 

@@ -1,16 +1,9 @@
-
 /* ========================================================================== */
-/* BLOQUEAR SCROLL DA PÁGINA (Quando o modal está aberto)                     */
+/* 1. LAYOUT GERAL E GRELHA                                                   */
 /* ========================================================================== */
-body.no-scroll {
-    overflow: hidden;
-}
-/* ================================= */
-/* GRELHA PRINCIPAL DE 2 COLUNAS     */
-/* ================================= */
 main {
-    max-width: 75% !important; /* O !important dá prioridade máxima e ignora os 1000px do outro ficheiro */
-    padding-right: 250px !important; /* Espaço extra à esquerda para não colar ao menu */
+    max-width: 75% !important; 
+    padding-right: 250px !important; 
 }
 
 .grid {
@@ -22,27 +15,22 @@ main {
     margin-left: 150px; 
 }
 
-/* Colunas flexíveis para empilhar o conteúdo com espaço entre eles */
-.coluna-esquerda, .coluna-direita {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    width: 100%;
+body.no-scroll {
+    overflow: hidden; /* Bloqueia o ecrã quando o modal abre */
 }
 
 /* ========================================================================== */
-/* ESTILOS EXCLUSIVOS DA PÁGINA DE PERFIL                                     */
+/* 2. CARTÃO DE PERFIL (Lateral Esquerda)                                     */
 /* ========================================================================== */
-
-/* 1. CARTÃO DE PERFIL (Lado Esquerdo) */
 .perfil {
-    background: white; padding: 30px; border-radius: 18px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center;
+    background: white; 
+    padding: 30px; 
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+    text-align: center;
     height: auto;
 }
 
-/* CAIXA DA FOTO (Precisa de ser relative para o botão não fugir) */
-/* CAIXA DA FOTO */
 .foto-container {
     position: relative;
     display: inline-block;
@@ -51,7 +39,7 @@ main {
     margin-bottom: 15px;
     border-radius: 50%;
     border: 6px solid #2ea89c;
-    overflow: hidden; /* Isto garante que o efeito escuro não sai fora da roda */
+    overflow: hidden; 
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
@@ -62,59 +50,79 @@ main {
     display: block;
 }
 
-/* O EFEITO MÁGICO (Invisível por padrão) */
 .overlay-foto {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.6); /* Fundo escuro semi-transparente */
+    background: rgba(0, 0, 0, 0.6); 
     color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    opacity: 0; /* Começa invisível */
+    opacity: 0; 
     cursor: pointer;
-    transition: opacity 0.3s ease; /* Transição suave */
+    transition: opacity 0.3s ease; 
 }
 
-/* Quando o rato passa por cima da caixa, o efeito aparece */
 .foto-container:hover .overlay-foto {
     opacity: 1;
 }
 
+.overlay-foto i { font-size: 28px; margin-bottom: 5px; }
+.overlay-foto span { font-size: 13px; font-weight: bold; letter-spacing: 1px; }
 
-
-.overlay-foto i {
-    font-size: 28px;
-    margin-bottom: 5px;
-}
-
-.overlay-foto span {
-    font-size: 13px;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
-
-/* Resto do perfil... */
 .user { color: #888; margin-bottom: 20px; }
-.editar {
-    background: #2ea89c; color: white; border: none; padding: 10px 26px;
-    border-radius: 25px; font-weight: bold; cursor: pointer; transition: 0.3s;
+
+/* ========================================================================== */
+/* BOTÃO "EDITAR PERFIL" (Estilo Igual ao Guardar Alterações)                 */
+/* ========================================================================== */
+
+.perfil .editar {
+    background: linear-gradient(135deg, #2ea89c, #1f7d73); /* Mesmo gradiente */
+    color: white; 
+    border: none; 
+    padding: 12px 16px; /* Ligeiramente mais fino para a barra lateral */
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 10px; /* Mesmos cantos redondos */
+    cursor: pointer;
+    transition: all 0.3s ease; 
+    margin-bottom: 12px; 
+    width: 80%; /* Mantém a proporção na caixa da foto */
+    box-shadow: 0 4px 10px rgba(46, 168, 156, 0.3); /* Mesma sombra */
+    letter-spacing: 0.5px;
 }
-.editar:hover { background: #249186; transform: translateY(-2px); }
 
+/* Efeito quando passas o rato por cima */
+.perfil .editar:hover {
+    background: linear-gradient(135deg, #35c2b4, #249488); 
+    box-shadow: 0 6px 15px rgba(46, 168, 156, 0.4); 
+    transform: translateY(-2px); 
+}
 
-/* ================================= */
-/* 2. DADOS DA CONTA                 */
-/* ================================= */
+/* Efeito ao clicar */
+.perfil .editar:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 5px rgba(46, 168, 156, 0.3);
+}
+
+/* ========================================================================== */
+/* 3. DADOS DA CONTA (Inputs e Formulário)                                    */
+/* ========================================================================== */
 .conta {
-    background: #ffffff; padding: 35px; border-radius: 18px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.05); border: 1px solid #eaeaea; width: 100%;
+    background: #ffffff; 
+    padding: 35px; 
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05); 
+    border: 1px solid #eaeaea; 
+    width: 100%;
 }
+
 .titulo-conta { color: #2ea89c; font-size: 24px; margin-bottom: 25px; }
 .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .campo { display: flex; flex-direction: column; text-align: left; }
 .campo label { font-size: 13px; color: #555; margin-bottom: 8px; font-weight: 600; }
+
 .input-icon { position: relative; display: flex; align-items: center; }
 .input-icon i { position: absolute; left: 15px; color: #2ea89c; z-index: 2; }
 .input-icon input {
@@ -123,342 +131,171 @@ main {
 }
 .input-icon input:focus { border-color: #2ea89c; background: #fff; }
 
+/* Botão "Guardar Alterações" (Estilo Gradiente Moderno) */
+#btn-guardar-perfil {
+    background: linear-gradient(135deg, #2ea89c, #1f7d73);
+    color: white; border: none; padding: 14px 20px;
+    font-size: 16px; font-weight: 600; border-radius: 10px; 
+    cursor: pointer; box-shadow: 0 4px 10px rgba(46, 168, 156, 0.3); 
+    transition: all 0.3s ease; 
+    display: flex; justify-content: center; align-items: center;
+    gap: 10px; letter-spacing: 0.5px;
+}
 
-/* ================================= */
-/* 3. OS MEUS ANIMAIS                */
-/* ================================= */
+#btn-guardar-perfil:hover {
+    background: linear-gradient(135deg, #35c2b4, #249488); 
+    box-shadow: 0 6px 15px rgba(46, 168, 156, 0.4); 
+    transform: translateY(-2px); 
+}
+
+#btn-guardar-perfil:active {
+    transform: translateY(1px); 
+    box-shadow: 0 2px 5px rgba(46, 168, 156, 0.3);
+}
+
+/* ========================================================================== */
+/* 4. OS MEUS ANIMAIS                                                         */
+/* ========================================================================== */
 .meus-animais {
     background: #ffffff; padding: 35px; border-radius: 18px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.05); border: 1px solid #eaeaea; width: 100%;
 }
+
 .meus-animais h3 { color: #2ea89c; font-size: 24px; margin-bottom: 25px; }
 .animais-lista { display: flex; gap: 40px; flex-wrap: wrap; justify-content: flex-start; }
+
 .animal-card { 
-display: flex; 
-flex-direction: column; 
-align-items: center; 
-text-align: center;  
-transition: transform 0.3s ease;
-cursor: pointer; }
+    display: flex; flex-direction: column; align-items: center; 
+    text-align: center; transition: transform 0.3s ease; cursor: pointer; 
+}
+.animal-card:hover { transform: translateY(-5px); }
 
-.animal-card:hover {
-transform: translateY(-5px);
-}
-.animal-card img {
-width: 80px; 
-height: 80px; 
-border-radius: 50%; 
-object-fit: cover;
-border: 3px solid #2ea89c; 
-margin-bottom: 10px;
-}
-.animal-card p { 
-font-weight: 700; 
-color: #333; 
-margin: 0; 
-}
-.animal-card small { 
-color: #777; 
-font-size: 13px; 
-}
-.animal-card.adicionar { 
-cursor: pointer; 
-}
-.circulo-add {
-width: 80px; 
-height: 80px; 
-border-radius: 50%;
-border: 3px dashed #ccc;
-display: flex; 
-align-items: center; 
-justify-content: center; 
-margin-bottom: 10px;
-}
-.circulo-add i { 
-font-size: 24px; 
-color: #ccc;
-}
+.animal-card p { font-weight: 700; color: #333; margin: 0; }
+.animal-card small { color: #777; font-size: 13px; }
 
-
-/* ================================= */
-/* 4. PREFERÊNCIAS                   */
-/* ================================= */
-.preferencias {
-background: #ffffff; 
-padding: 30px; 
-border-radius: 18px;
-box-shadow: 0 8px 25px rgba(0,0,0,0.05); 
-border: 1px solid #eaeaea; 
-width: 100%;
-}
-.preferencias h3 { color: #2ea89c; font-size: 22px; margin-bottom: 20px; }
-.toggle-box { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
-.toggle-box:last-child { border-bottom: none; padding-bottom: 0; }
-.toggle-info { display: flex; align-items: center; gap: 10px; color: #444; font-weight: 500; }
-.toggle-info i { color: #2ea89c; width: 20px; text-align: center; }
-
-/* Botões do tipo Toggle */
-.switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-input:checked + .slider { background-color: #2ea89c; }
-input:checked + .slider:before { transform: translateX(20px); }
-
-
-/* ========================================================================== */
-/* AVISOS INTERATIVOS - DESIGN PREMIUM                                        */
-/* ========================================================================== */
-
-/* O contentor principal */
-.avisos {
-    background: #ffffff;
-    padding: 30px;
-    border-radius: 20px; /* Cantos ligeiramente mais redondos */
-    box-shadow: 0 10px 30px rgba(0,0,0,0.06); /* Sombra maior mas muito mais suave */
-    border: none; /* Sem linha de borda, fica mais limpo */
-    width: 100%;
-}
-
-.avisos h3 { 
-    color: #2ea89c; 
-    font-size: 22px; 
-    margin-bottom: 25px; 
-}
-
-/* As caixas de notificação individuais */
-.aviso {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 20px; /* Mais espaço interior para "respirar" */
-    margin-bottom: 15px;
-    background-color: #ffffff;
-    border: 1px solid #f2f2f2; /* Borda hiper suave a toda a volta */
-    border-left: 5px solid #2ea89c; /* Barra esquerda um pouco mais grossa */
-    border-radius: 12px; /* Cantos arredondados na própria notificação */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.02); /* Sombra individual subtil */
-    transition: all 0.3s ease;
-}
-
-.aviso:hover { 
-    transform: translateY(-2px); /* Em vez de ir para o lado, levanta um bocadinho */
-    box-shadow: 0 8px 20px rgba(0,0,0,0.06); /* A sombra aumenta ao passar o rato */
-}
-
-/* Aviso Vermelho/Urgente */
-.aviso-importante {
-    border-left-color: #e74c3c;
-    background-color: #fffaf9; /* Fundo com um tom super suave de vermelho */
-    border-color: #fceceb;
-}
-
-.aviso-texto {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: #333;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-/* Ícones */
-.aviso-texto i { 
-    font-size: 18px; 
-    color: #2ea89c; /* O ícone normal ganha a cor verde da clínica */
-}
-.aviso-importante .aviso-texto i { 
-    color: #e74c3c; 
-}
-
-/* Botão de Ação Rápida (Ex: Marcar agora) */
-.link-acao {
-    margin-left: 12px;
-    background-color: #e74c3c;
-    color: white;
-    padding: 6px 16px;
-    border-radius: 20px; /* Formato pílula moderna */
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); /* Brilho vermelho à volta do botão */
-    transition: all 0.2s ease;
-}
-
-.link-acao:hover { 
-    background-color: #c0392b; 
-    transform: scale(1.05); /* Aumenta ligeiramente */
-    box-shadow: 0 6px 14px rgba(231, 76, 60, 0.4);
-}
-
-/* Botão do X (Fechar) */
-.btn-fechar-aviso {
-    background: transparent;
-    border: none;
-    color: #c0c0c0;
-    cursor: pointer;
-    font-size: 14px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%; /* Quando passas o rato, cria um fundo redondo perfeito */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-}
-
-.btn-fechar-aviso:hover { 
-    color: #e74c3c; 
-    background-color: #f5f5f5; /* Fundo cinza claro */
-}
-/* ========================================================================== */
-/* ALERTA DE SUCESSO (Notificação Flutuante)                                  */
-/* ========================================================================== */
-#alerta-sucesso {
-    position: fixed;
-    top: -100px; /* Começa escondido lá em cima, fora do ecrã */
-    left: 50%;
-    transform: translateX(-50%); /* Garante que fica perfeitamente centrado */
-    background-color: #2ea89c;
-    color: white;
-    padding: 15px 30px;
-    border-radius: 30px;
-    box-shadow: 0 10px 30px rgba(46, 168, 156, 0.4);
-    font-weight: bold;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    z-index: 9999; /* Fica por cima de TUDO (menus, barras, etc) */
-    
-    /* A animação suave com um ligeiro efeito de "mola" no final */
-    transition: top 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
-}
-
-/* Quando o JavaScript adicionar esta classe, o aviso desce! */
-#alerta-sucesso.mostrar {
-    top: 40px; 
-}
-
-/* ========================================================================== */
-/* MODAL (Pop-up Adicionar Animal)                                            */
-/* ========================================================================== */
-.modal-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.6); /* Fundo escuro */
-    display: flex; align-items: center; justify-content: center;
-    z-index: 10000;
-    
-    /* Escondido por defeito */
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-}
-
-/* Quando o JavaScript ativa o modal */
-.modal-overlay.ativo {
-    opacity: 1;
-    visibility: visible;
-}
-
-.modal-content {
-    background: white; padding: 40px; border-radius: 20px;
-    width: 400px; max-width: 90%;
-    position: relative;
-    transform: translateY(-30px); /* Começa um pouco mais acima */
-    transition: transform 0.3s ease;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-}
-
-.modal-overlay.ativo .modal-content {
-    transform: translateY(0); /* Desliza para o centro */
-}
-
-/* O botão do 'X' para fechar */
-.fechar-modal {
-    position: absolute; top: 20px; right: 20px;
-    font-size: 20px; color: #888; cursor: pointer; transition: 0.2s;
-}
-.fechar-modal:hover { color: #e74c3c; }
-
-.modal-content h2 { color: #2ea89c; margin-bottom: 25px; text-align: center; font-size: 22px; }
-
-.btn-guardar {
-    width: 100%; background: #2ea89c; color: white; border: none; padding: 12px;
-    border-radius: 10px; font-weight: bold; font-size: 16px;
-    cursor: pointer; margin-top: 25px; transition: 0.3s;
-}
-.btn-guardar:hover { background: #249186; }
-/* ========================================================================== */
-/* AÇÕES DOS ANIMAIS (Hover - Editar / Apagar)                                */
-/* ========================================================================== */
+/* Ações (Foto Animal) */
 .foto-animal-wrapper {
-    position: relative;
-    width: 80px; height: 80px;
-    margin-bottom: 10px;
-    border-radius: 50%;
-    overflow: hidden; /* Mantém o escuro dentro da roda */
-    border: 3px solid #2ea89c;
+    position: relative; width: 80px; height: 80px; margin-bottom: 10px;
+    border-radius: 50%; overflow: hidden; border: 3px solid #2ea89c;
 }
+.foto-animal-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-.foto-animal-wrapper img {
-    width: 100%; height: 100%; object-fit: cover; display: block; border: none; margin: 0;
-}
-
-/* O menu de ações escondido */
 .acoes-animal {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    opacity: 0; /* Começa invisível */
-    transition: opacity 0.3s ease;
+    background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; gap: 10px;
+    opacity: 0; transition: opacity 0.3s ease;
 }
-
-/* Fica visível ao passar o rato */
 .foto-animal-wrapper:hover .acoes-animal { opacity: 1; }
 
 .acoes-animal button {
     background: none; border: none; color: white;
     font-size: 18px; cursor: pointer; transition: transform 0.2s, color 0.2s;
 }
-
-/* Cores quando passas o rato em cima do lápis ou lixo */
 .btn-editar-animal:hover { color: #3498db; transform: scale(1.2); }
 .btn-apagar-animal:hover { color: #e74c3c; transform: scale(1.2); }
 
+/* Card de Adicionar Novo */
+.animal-card.adicionar { cursor: pointer; }
+.circulo-add {
+    width: 80px; height: 80px; border-radius: 50%; border: 3px dashed #ccc;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 10px;
+}
+.circulo-add i { font-size: 24px; color: #ccc; }
+
 /* ========================================================================== */
-/* UPLOAD FOTO MODAL ANIMAIS (Adicionar e Editar)                            */
+/* 5. AVISOS INTERATIVOS                                                      */
 /* ========================================================================== */
-.foto-animal-upload {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 25px;
+.avisos {
+    background: #ffffff; padding: 30px; border-radius: 20px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06); width: 100%;
+}
+.avisos h3 { color: #2ea89c; font-size: 22px; margin-bottom: 25px; }
+
+.aviso {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 20px; margin-bottom: 15px; background-color: #ffffff;
+    border: 1px solid #f2f2f2; border-left: 5px solid #2ea89c; border-radius: 12px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02); transition: all 0.3s ease;
+}
+.aviso:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+
+.aviso-importante {
+    border-left-color: #e74c3c; background-color: #fffaf9; border-color: #fceceb;
 }
 
-/* Aplica o estilo ao preview de 'Adicionar' e 'Editar' */
+.aviso-texto { display: flex; align-items: center; gap: 12px; color: #333; font-size: 14px; font-weight: 500; }
+.aviso-texto i { font-size: 18px; color: #2ea89c; }
+.aviso-importante .aviso-texto i { color: #e74c3c; }
+
+.link-acao {
+    margin-left: 12px; background-color: #e74c3c; color: white; padding: 6px 16px;
+    border-radius: 20px; text-decoration: none; font-size: 12px; font-weight: 700;
+    box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); transition: all 0.2s ease;
+}
+.link-acao:hover { background-color: #c0392b; transform: scale(1.05); box-shadow: 0 6px 14px rgba(231, 76, 60, 0.4); }
+
+.btn-fechar-aviso {
+    background: transparent; border: none; color: #c0c0c0; cursor: pointer;
+    font-size: 14px; width: 32px; height: 32px; border-radius: 50%; 
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;
+}
+.btn-fechar-aviso:hover { color: #e74c3c; background-color: #f5f5f5; }
+
+/* ========================================================================== */
+/* 6. ALERTA DE SUCESSO E MODAIS                                              */
+/* ========================================================================== */
+#alerta-sucesso {
+    position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+    background-color: #2ea89c; color: white; padding: 15px 30px; border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(46, 168, 156, 0.4); font-weight: bold; font-size: 16px;
+    display: flex; align-items: center; gap: 10px; z-index: 9999; 
+    transition: top 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+}
+#alerta-sucesso.mostrar { top: 40px; }
+
+/* Overlay e Content do Modal */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center;
+    z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+}
+.modal-overlay.ativo { opacity: 1; visibility: visible; }
+
+.modal-content {
+    background: white; padding: 40px; border-radius: 20px; width: 400px; max-width: 90%;
+    position: relative; transform: translateY(-30px); transition: transform 0.3s ease;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+}
+.modal-overlay.ativo .modal-content { transform: translateY(0); }
+
+.fechar-modal {
+    position: absolute; top: 20px; right: 20px; font-size: 20px; color: #888; cursor: pointer; transition: 0.2s;
+}
+.fechar-modal:hover { color: #e74c3c; }
+.modal-content h2 { color: #2ea89c; margin-bottom: 25px; text-align: center; font-size: 22px; }
+
+.btn-guardar {
+    width: 100%; background: #2ea89c; color: white; border: none; padding: 12px;
+    border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 25px; transition: 0.3s;
+}
+.btn-guardar:hover { background: #249186; }
+
+/* Fotos nos Modais */
+.foto-animal-upload { display: flex; flex-direction: column; align-items: center; margin-bottom: 25px; }
 #preview-novo-animal, #preview-edit-animal {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #2ea89c;
-    margin-bottom: 12px;
+    width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid #2ea89c; margin-bottom: 12px;
 }
-
 .btn-escolher-foto {
-    background-color: #f0f0f0;
-    color: #555;
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: bold;
-    transition: background-color 0.2s;
+    background-color: #f0f0f0; color: #555; padding: 8px 16px; border-radius: 20px;
+    cursor: pointer; font-size: 13px; font-weight: bold; transition: background-color 0.2s;
 }
+.btn-escolher-foto:hover { background-color: #e0e0e0; }
 
-.btn-escolher-foto:hover {
-    background-color: #e0e0e0;
-}
+/* ========================================================================== */
+/* 7. CLASSES UTILITÁRIAS                                                     */
+/* ========================================================================== */
+.input-escondido { display: none; }
+.espaco-topo { margin-top: 20px; }
+.espaco-fundo { margin-bottom: 15px; }
+.campo-largo { grid-column: 1 / -1; }
+.btn-bloco { width: 100%; }

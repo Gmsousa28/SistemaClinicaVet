@@ -16,4 +16,5 @@ router.post("/animais", criarAnimal);
 router.put("/animais/:id", atualizarAnimal);
 router.delete("/animais/:id", eliminarAnimal);
 
+
 module.exports = router;

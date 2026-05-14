@@ -5,7 +5,16 @@ const pool = require('./backend/config/db.js');
 const server = express();
 const port = 8008;
 
-// Serve ficheiros estáticos (HTML, CSS, JS)
+
+// ===================================================================
+// 1. MIDDLEWARES - Têm de vir PRIMEIRO (A "Porta de Segurança")
+// ===================================================================
+server.use(cors()); // Dá permissão ao navegador imediatamente!
+server.use(express.json()); // Permite ler dados dos formulários
+
+// ===================================================================
+// 2. FICHEIROS ESTÁTICOS
+// ===================================================================
 server.use(express.static(path.join(__dirname, 'frontend')));
 
 // 1. Importa o router (ajusta o caminho se necessário)
@@ -45,10 +54,6 @@ server.use("/api", ocorrenciasLaboraisRouter);
 //const customersRouter = require('./backend/routes/customersRoutes.js');
 //const errorHandlinºg = require('./backend/middlewares/errorHandler.js');
 
-//Middlewares
-// Middleware para processar JSON
-//server.use(express.json());
-//server.use(cors());
 
 //Routes
 // Todas as rotas que começam por /api são tratadas em routes/customersRoutes.js
