@@ -1,10 +1,14 @@
 const express = require('express');
-const path = require("path");
-const cors = require('cors'); //npm install cors e serve para dar permissoes ao chrome e etc para aceder
+const path = require('path');
+const cors = require('cors');
+
 const pool = require('./backend/config/db.js');
+const errorHandling = require('./backend/middlewares/errorHandler.js');
+
 const server = express();
 const port = 8008;
 
+<<<<<<< HEAD
 
 // ===================================================================
 // 1. MIDDLEWARES - Têm de vir PRIMEIRO (A "Porta de Segurança")
@@ -16,9 +20,33 @@ server.use(express.json()); // Permite ler dados dos formulários
 // 2. FICHEIROS ESTÁTICOS
 // ===================================================================
 server.use(express.static(path.join(__dirname, 'frontend')));
+=======
+/* ======================================================
+   MIDDLEWARES
+====================================================== */
+>>>>>>> 3508c422a194b658334107fc3e56c76e591b2fc4
 
-// 1. Importa o router (ajusta o caminho se necessário)
-const animaisRouter = require('./backend/routes/animais_rotas.js'); 
+// Permitir pedidos do frontend
+server.use(cors());
+
+// Permitir JSON no body das requisições
+server.use(express.json());
+
+// Permitir formulários
+server.use(express.urlencoded({ extended: true }));
+
+// Servir ficheiros estáticos
+server.use(express.static(path.join(__dirname, 'frontend')));
+server.use(cors()); // Habilita CORS para todas as rotas
+
+
+
+
+/* ======================================================
+   IMPORTAÇÃO DAS ROTAS
+====================================================== */
+
+const animaisRouter = require('./backend/routes/animais_rotas.js');
 const clientesRouter = require('./backend/routes/clientes_rotas.js');
 const funcionariosRouter = require('./backend/routes/funcionarios_rotas.js');
 const veterinariosRouter = require('./backend/routes/veterinarios_rotas.js');
@@ -32,48 +60,68 @@ const loginsClienteRouter = require('./backend/routes/logins_cliente_rotas.js');
 const loginsColaboradorRouter = require('./backend/routes/logins_colaborador_rotas.js');
 const ocorrenciasLaboraisRouter = require('./backend/routes/ocorrencias_laborais_rotas.js');
 
-// 2. Middleware para o servidor entender JSON (Obrigatório para POST/PUT)
-server.use(express.json());
+/* ======================================================
+   ROTAS API
+====================================================== */
 
-// 3. Diz ao servidor para usar as rotas de animais com o prefixo /api
-server.use("/api", animaisRouter);
-server.use("/api", clientesRouter);
-server.use("/api", funcionariosRouter);
-server.use("/api", veterinariosRouter);
-server.use("/api", examesRouter);
-server.use("/api", consultasRouter);
-server.use("/api", horariosClinicaRouter);
-server.use("/api", adocoesRouter);
-server.use("/api", faturasRouter);
-server.use("/api", servicosRouter);
-server.use("/api", loginsClienteRouter);
-server.use("/api", loginsColaboradorRouter);
-server.use("/api", ocorrenciasLaboraisRouter);
+server.use('/api', animaisRouter);
+server.use('/api', clientesRouter);
+server.use('/api', funcionariosRouter);
+server.use('/api', veterinariosRouter);
+server.use('/api', examesRouter);
+server.use('/api', consultasRouter);
+server.use('/api', horariosClinicaRouter);
+server.use('/api', adocoesRouter);
+server.use('/api', faturasRouter);
+server.use('/api', servicosRouter);
+server.use('/api', loginsClienteRouter);
+server.use('/api', loginsColaboradorRouter);
+server.use('/api', ocorrenciasLaboraisRouter);
 
-//Importar router de customers
-//const customersRouter = require('./backend/routes/customersRoutes.js');
-//const errorHandlinºg = require('./backend/middlewares/errorHandler.js');
+/* ======================================================
+   TESTE DA BASE DE DADOS
+====================================================== */
 
+<<<<<<< HEAD
+=======
+server.get('/', async (req, res) => {
+    try {
+>>>>>>> 3508c422a194b658334107fc3e56c76e591b2fc4
 
-//Routes
-// Todas as rotas que começam por /api são tratadas em routes/customersRoutes.js
-//server.use("/api", customersRouter);
+        const result = await pool.query(
+            'SELECT current_database()'
+        );
 
-//Error handling
-//server.use(errorHandling);
+        res.send(
+            `Base de dados ligada: ${result.rows[0].current_database}`
+        );
 
+    } catch (err) {
 
-//Testing postgres connection
-server.get("/", async(req,res)=>
-{
-  const result = await pool.query("SELECT current_database()");
-  res.send("The database name is: " + result.rows[0].current_database);
+        console.error('Erro na ligação à BD:', err);
+
+        res.status(500).send('Erro na ligação à base de dados.');
+    }
 });
 
-server.get("/", (req, res) => {
-  res.send("Hello World!");
+/* ======================================================
+   TRATAMENTO DE ERROS
+====================================================== */
+
+server.use((err, req, res, next) => {
+
+    console.error(err.stack);
+
+    res.status(500).json({
+        status: 500,
+        message: 'Erro interno do servidor.'
+    });
 });
+
+/* ======================================================
+   INICIAR SERVIDOR
+====================================================== */
 
 server.listen(port, () => {
-  console.log(`Servidor a correr em http://localhost:${port}`);
+    console.log(`Servidor a correr em http://localhost:${port}`);
 });

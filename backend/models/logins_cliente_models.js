@@ -5,6 +5,26 @@ const listarLoginsClientesBD = async () => {
     return result.rows;
 };
 
+const verificarLoginClienteBD = async (email) => {
+    // Atenção: Usa as crases (`) para poderes ter várias linhas
+    const result = await pool.query(`
+        SELECT 
+            c.id_cliente, 
+            lc.email, 
+            lc.palavra_passe
+        FROM 
+            public.cliente c
+        INNER JOIN 
+            public.login_cliente lc ON c.id_login_cliente = lc.id_login_cliente
+        WHERE 
+            lc.email = $1 AND lc.conta_ativa = TRUE;
+    `, [email]);
+    
+    // Devolve o cliente se o encontrar
+    return result.rows[0]; 
+};
+
 module.exports = {
     listarLoginsClientesBD,
+    verificarLoginClienteBD
 };

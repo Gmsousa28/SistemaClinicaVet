@@ -1,59 +1,55 @@
-document.addEventListener("DOMContentLoaded", () => {
-
-    carregarConsultasDaAPI();
-
-    const btnFecharX = document.getElementById('btn-fechar-x-motivo');
-    if (btnFecharX) {
-        btnFecharX.addEventListener('click', fecharPopupInfo);
-    }
-
-    const popupMotivo = document.getElementById('popup-motivo');
-    if (popupMotivo) {
-        popupMotivo.addEventListener('click', function(event) {
-            if (event.target === this) {
-                fecharPopupInfo();
-            }
-        });
-    }
-});
-
-
-// ==========================================
 async function carregarConsultasDaAPI() {
     const tbody = document.getElementById('corpo-tabela-consultas');
 
     if (!tbody) {
-        console.error("tbody não encontrado!");
+        console.error("tbody não encontrado no HTML!");
         return;
     }
 
     try {
+        // Mostrar uma mensagem de "A carregar" enquanto a API responde
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 20px;">A carregar consultas...</td></tr>`;
 
-        const consultas = [
-            { id: 101, hora: "09:30", nomeAnimal: "Max", tipoIcone: "dog", especie: "Cão", raca: "Labrador", cliente: "João Silva", motivo: "Vómitos e letargia há 2 dias. Suspeita de gastroenterite." },
-            { id: 102, hora: "10:15", nomeAnimal: "Luna", tipoIcone: "cat", especie: "Gato", raca: "Siamês", cliente: "Ana Costa", motivo: "Check-up anual de rotina." }
-        ];
+        // O URL REAL DA TUA API
+        const urlAPI = 'http://localhost:8008/api/consultas'; 
+        
+        // Fazer a chamada à API
+        const resposta = await fetch(urlAPI);
 
+        // Verificar se a resposta foi bem sucedida (status 200-299)
+        if (!resposta.ok) {
+            throw new Error(`Erro na API! Status: ${resposta.status}`);
+        }
+
+        // CORREÇÃO 1: Tratar a resposta da tua API (que vem dentro do .data por causa do teu handleResponse)
+        const respostaDaAPI = await resposta.json();
+        const consultas = respostaDaAPI.data || respostaDaAPI;
+
+        // Limpar o "A carregar..."
         tbody.innerHTML = "";
 
-        if (consultas.length === 0) {
+        // Se a lista vier vazia ou for indefinida
+        if (!consultas || consultas.length === 0) {
             tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 20px;">Não há consultas agendadas para hoje.</td></tr>`;
             return;
         }
 
+        // Construir as linhas da tabela
         consultas.forEach(consulta => {
-
             const tr = document.createElement('tr');
 
-            // ⚠️ evitar problemas com aspas no texto
-            const motivoSeguro = consulta.motivo.replace(/'/g, "\\'");
+            // Garantir que o motivo existe antes de fazer replace para evitar erros
+            const motivoTexto = consulta.motivo || "Nenhum motivo especificado.";
+            const motivoSeguro = motivoTexto.replace(/'/g, "\\'");
 
+            // CUIDADO AQUI: Garante que os nomes (consulta.hora, consulta.nomeAnimal) 
+            // batem certo com as colunas que vêm da tua base de dados!
             tr.innerHTML = `
-                <td>${consulta.hora}</td>
-                <td><i class="fa fa-${consulta.tipoIcone}" style="color: #7f8c8d; margin-right: 8px;"></i> ${consulta.nomeAnimal}</td>
-                <td>${consulta.especie}</td>
-                <td>${consulta.raca}</td>
-                <td>${consulta.cliente}</td>
+                <td>${consulta.data_consulta || '--:--'}</td> 
+                <td><i class="fa fa-paw"></i> ${consulta.nome}</td>
+                <td>${consulta.especie }</td> 
+                <td>${consulta.raca }</td>
+                <td>${consulta.nome_cliente }</td> 
                 
                 <td style="text-align: center;">
                     <button 
@@ -69,7 +65,7 @@ async function carregarConsultasDaAPI() {
                 <td style="text-align: center;">
                     <button 
                         type="button"
-                        onclick="irParaConsulta(${consulta.id})"
+                        onclick="irParaConsulta(${consulta.id_consulta || consulta.id})"
                         style="background-color: #2ea89c; color: white; border: none; border-radius: 8px; padding: 6px 15px; cursor: pointer;"
                     >
                         <i class="fa fa-play"></i> Iniciar
@@ -81,31 +77,34 @@ async function carregarConsultasDaAPI() {
         });
 
     } catch (erro) {
-        console.error("Erro ao carregar:", erro);
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Erro ao carregar os dados.</td></tr>`;
+        console.error("Erro ao carregar dados da API:", erro);
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Erro ao carregar os dados. Confirma a ligação à API ou se o servidor está ligado.</td></tr>`;
     }
 }
 
-
-// ==========================================
+// Redirecionamento
 function irParaConsulta(id) {
-    // ✔️ redirecionamento limpo
     window.location.href = `momento_consulta.html?id=${id}`;
 }
-
-
+ 
 // ==========================================
+// Popups
 function fecharPopupInfo() {
     const popup = document.getElementById('popup-motivo');
     if (popup) popup.style.display = 'none';
 }
-
+    
 function abrirPopupInfo(textoMotivo) {
     const spanTexto = document.getElementById('texto-motivo-dinamico');
     if (spanTexto) {
         spanTexto.textContent = textoMotivo;
     }
-
+    
     const popup = document.getElementById('popup-motivo');
     if (popup) popup.style.display = 'flex';
 }
+
+// CORREÇÃO 2: Este é o "motor de arranque". Manda a função correr assim que a página carrega!
+document.addEventListener('DOMContentLoaded', () => {
+    carregarConsultasDaAPI();
+});

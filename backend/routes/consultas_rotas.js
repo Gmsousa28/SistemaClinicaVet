@@ -5,7 +5,8 @@ const {
   criarConsulta,
   obterConsultaById,
   atualizarConsulta,
-  eliminarConsulta
+  eliminarConsulta,
+  listarConsultasDoVeterinario
 } = require("../controllers/consultas_controllers.js");
 
 const router = express.Router();
@@ -15,5 +16,6 @@ router.get("/consultas/:id", obterConsultaById);
 router.post("/consultas", criarConsulta);
 router.put("/consultas/:id", atualizarConsulta);
 router.delete("/consultas/:id", eliminarConsulta);
+router.get("/consultas/veterinario/:id_veterinario", listarConsultasDoVeterinario);
 
 module.exports = router;
