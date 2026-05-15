@@ -1,198 +1,33 @@
-const {
-    listarOcorrenciasLaboraisBD,
-    criarOcorrenciaLaboralBD,
-    atualizarOcorrenciaLaboralBD,
-    eliminarOcorrenciaLaboralBD
-} = require('../models/ocorrencias_laborais_models.js');
+const { criarOcorrenciaBD } = require('../models/ocorrencias_laborais_models.js');
 
-const handleResponse = (
-    res,
-    status,
-    message,
-    data = null
-) => {
-
-    res.status(status).json({
-        status,
-        message,
-        data
-    });
+const handleResponse = (res, status, message, data = null) => {
+    res.status(status).json({ status, message, data });
 };
 
-// =======================================================
-// LISTAR OCORRÊNCIAS
-// =======================================================
-const listarOcorrenciasLaborais = async (
-    req,
-    res,
-    next
-) => {
-
+const criarOcorrencia = async (req, res, next) => {
+    // O Frontend só nos vai mandar 1 data (data_ocorrencia)
+    const { id_colaborador, data_ocorrencia, tipo, observacoes } = req.body;
+    
     try {
+        // Usamos a mesma data para início e fim para registos de 1 único dia
+        const data_inicio = data_ocorrencia;
+        const data_fim = data_ocorrencia;
 
-        const ocorrencias =
-            await listarOcorrenciasLaboraisBD();
-
-        handleResponse(
-            res,
-            200,
-            "Lista de ocorrências laborais carregada",
-            ocorrencias
-        );
-
+        const novaOcorrencia = await criarOcorrenciaBD(id_colaborador, data_inicio, data_fim, tipo, observacoes);
+        handleResponse(res, 201, "Registo guardado com sucesso!", novaOcorrencia);
     } catch (err) {
-
-        console.error(err);
-
-        res.status(500).json({
-            message: err.message
-        });
-    }
-};
-
-// =======================================================
-// CRIAR OCORRÊNCIA
-// =======================================================
-const criarOcorrenciaLaboral = async (
-    req,
-    res,
-    next
-) => {
-
-    const {
-        id_colaborador,
-        data_inicio,
-        data_fim,
-        tipo,
-        observacoes
-    } = req.body;
-
-    try {
-
-        const novaOcorrencia =
-            await criarOcorrenciaLaboralBD(
-                id_colaborador,
-                data_inicio,
-                data_fim,
-                tipo,
-                observacoes
-            );
-
-        handleResponse(
-            res,
-            201,
-            "Ocorrência criada com sucesso",
-            novaOcorrencia
-        );
-
-    } catch (err) {
-
-        console.error(err);
-
-        res.status(500).json({
-            message: err.message
-        });
-    }
-};
-
-// =======================================================
-// ATUALIZAR OCORRÊNCIA
-// =======================================================
-const atualizarOcorrenciaLaboral = async (
-    req,
-    res,
-    next
-) => {
-
-    const {
-        data_inicio,
-        data_fim,
-        tipo,
-        observacoes
-    } = req.body;
-
-    try {
-
-        const atualizada =
-            await atualizarOcorrenciaLaboralBD(
-                req.params.id,
-                data_inicio,
-                data_fim,
-                tipo,
-                observacoes
-            );
-
-        if (!atualizada) {
-
-            return handleResponse(
-                res,
-                404,
-                "Ocorrência não encontrada"
-            );
+        // 23505 é o erro de violação da Primary Key (já existe registo para esta pessoa neste dia)
+        if (err.code === '23505') {
+            return handleResponse(res, 400, "Erro: Este colaborador já tem um registo de assiduidade nesta data.");
         }
-
-        handleResponse(
-            res,
-            200,
-            "Ocorrência atualizada com sucesso",
-            atualizada
-        );
-
-    } catch (err) {
-
-        console.error(err);
-
-        res.status(500).json({
-            message: err.message
-        });
-    }
-};
-
-// =======================================================
-// ELIMINAR OCORRÊNCIA
-// =======================================================
-const eliminarOcorrenciaLaboral = async (
-    req,
-    res,
-    next
-) => {
-
-    try {
-
-        const eliminada =
-            await eliminarOcorrenciaLaboralBD(
-                req.params.id
-            );
-
-        if (!eliminada) {
-
-            return handleResponse(
-                res,
-                404,
-                "Ocorrência não encontrada"
-            );
+        // Se der erro no ENUM (ex: mandaste 'Falta' mas na BD o enum é 'falta' em minúsculas)
+        if (err.code === '22P02') {
+            return handleResponse(res, 400, "Erro: O tipo de registo não é válido para a base de dados.");
         }
-
-        handleResponse(
-            res,
-            200,
-            "Ocorrência eliminada com sucesso",
-            eliminada
-        );
-
-    } catch (err) {
-
-        console.error(err);
-
-        res.status(500).json({
-            message: err.message
-        });
+        next(err);
     }
 };
 
 module.exports = {
-    listarOcorrenciasLaborais,
-    criarOcorrenciaLaboral,
-    atualizarOcorrenciaLaboral,
-    eliminarOcorrenciaLaboral,
+    criarOcorrencia
 };

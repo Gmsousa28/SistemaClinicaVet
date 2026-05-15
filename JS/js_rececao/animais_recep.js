@@ -1,19 +1,14 @@
 // ==========================================
-// CONFIGURAÇÃO DA API E DADOS TEMPORÁRIOS
+// CONFIGURAÇÃO DA API E DADOS
 // ==========================================
-const API_URL = 'http://localhost:3000/api/animais'; 
-const ID_CLINICA = 1; 
+const API_URL = 'http://localhost:8008/api/animais'; 
+const NIF_CLINICA = "999999999"; // NIF provisório da Clínica Miacaomigo
 
 let animalEmEdicaoId = null;
 let idAnimalParaEliminar = null; 
 
-// Base de Dados Simulada (Remover quando ligares à API real)
-let animaisMock = [
-    { id_animal: 1, nome: "Bobby", especie: "Cão", raca: "Labrador", sexo: "M", id_cliente: 104, estado: "Domestico", data_nascimento: "2020-05-12" },
-    { id_animal: 2, nome: "Mia", especie: "Gato", raca: "Siamês", sexo: "F", id_cliente: 1, estado: "Resgatado", data_nascimento: "2023-08-20" },
-    { id_animal: 3, nome: "Rex", especie: "Cão", raca: "Pastor Alemão", sexo: "M", id_cliente: 301, estado: "Adotado", data_nascimento: "2019-11-05" },
-    { id_animal: 4, nome: "Bolinha", especie: "Hamster", raca: "Sírio", sexo: "M", id_cliente: 104, estado: "Morto", data_nascimento: "2021-02-10" }
-];
+// A nossa nova base de dados global que vem do Backend!
+let animaisGlobais = [];
 
 // ==========================================
 // ELEMENTOS DO DOM E INICIALIZAÇÃO
@@ -30,7 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const formEdicaoAnimal = document.getElementById('form-edicao-animal');
     const tituloEdicao = document.getElementById('tituloEdicao');
     const selectEstado = document.getElementById('editEstado');
-    const inputIdCliente = document.getElementById('editIdCliente');
+    
+    // Agora apontamos para o NIF!
+    const inputNifCliente = document.getElementById('editNifCliente'); 
 
     const btnFecharModalX = document.getElementById('btn-fechar-modal-x');
     const btnFecharModalBaixo = document.getElementById('btn-fechar-modal-baixo');
@@ -40,69 +37,83 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCancelarEliminar = document.getElementById('btn-cancelar-eliminar');
     const btnConfirmarEliminar = document.getElementById('btn-confirmar-eliminar');
 
+    // 1. Carrega os dados reais mal a página abre
     carregarAnimais();
 
     // ==========================================
     // LÓGICA DE NEGÓCIO: ANIMAL RESGATADO
     // ==========================================
-    selectEstado.addEventListener('change', (e) => {
-        if (e.target.value === 'Resgatado') {
-            inputIdCliente.value = ID_CLINICA;
-            inputIdCliente.readOnly = true;
-            inputIdCliente.style.backgroundColor = '#f8f9fa';
-            inputIdCliente.style.cursor = 'not-allowed';
-        } else {
-            inputIdCliente.readOnly = false;
-            inputIdCliente.style.backgroundColor = ''; 
-            inputIdCliente.style.cursor = 'text';
-            
-            if (parseInt(inputIdCliente.value) === ID_CLINICA) {
-                inputIdCliente.value = '';
+    if (selectEstado && inputNifCliente) {
+        selectEstado.addEventListener('change', (e) => {
+            if (e.target.value === 'Resgatado') {
+                inputNifCliente.value = NIF_CLINICA;
+                inputNifCliente.readOnly = true;
+                inputNifCliente.style.backgroundColor = '#f8f9fa';
+                inputNifCliente.style.cursor = 'not-allowed';
+            } else {
+                inputNifCliente.readOnly = false;
+                inputNifCliente.style.backgroundColor = ''; 
+                inputNifCliente.style.cursor = 'text';
+                
+                if (inputNifCliente.value === NIF_CLINICA) {
+                    inputNifCliente.value = '';
+                }
             }
-        }
-    });
+        });
+    }
 
     // ==========================================
     // EVENT LISTENERS
     // ==========================================
-    inputPesquisa.addEventListener('input', (e) => filtrarTabela(e.target.value.toLowerCase()));
+    if(inputPesquisa) inputPesquisa.addEventListener('input', (e) => filtrarTabela(e.target.value.toLowerCase()));
 
-    btnNovoAnimal.addEventListener('click', () => {
+    if(btnNovoAnimal) btnNovoAnimal.addEventListener('click', () => {
         animalEmEdicaoId = null;
         tituloEdicao.textContent = 'Registar Novo Animal';
         formEdicaoAnimal.reset();
         
-        inputIdCliente.readOnly = false;
-        inputIdCliente.style.backgroundColor = ''; 
-        inputIdCliente.style.cursor = 'text';
+        if(inputNifCliente) {
+            inputNifCliente.readOnly = false;
+            inputNifCliente.style.backgroundColor = ''; 
+            inputNifCliente.style.cursor = 'text';
+        }
         
         abrirModal(modalEdicao);
     });
 
-    btnFecharModalX.addEventListener('click', () => fecharModal(modalAnimal));
-    btnFecharModalBaixo.addEventListener('click', () => fecharModal(modalAnimal));
-    btnFecharEdicaoX.addEventListener('click', () => fecharModal(modalEdicao));
-    btnFecharEdicaoBaixo.addEventListener('click', () => fecharModal(modalEdicao));
+    if(btnFecharModalX) btnFecharModalX.addEventListener('click', () => fecharModal(modalAnimal));
+    if(btnFecharModalBaixo) btnFecharModalBaixo.addEventListener('click', () => fecharModal(modalAnimal));
+    if(btnFecharEdicaoX) btnFecharEdicaoX.addEventListener('click', () => fecharModal(modalEdicao));
+    if(btnFecharEdicaoBaixo) btnFecharEdicaoBaixo.addEventListener('click', () => fecharModal(modalEdicao));
 
-    btnCancelarEliminar.addEventListener('click', () => {
+    if(btnCancelarEliminar) btnCancelarEliminar.addEventListener('click', () => {
         idAnimalParaEliminar = null;
         fecharModal(modalConfirmacao);
     });
 
-    formEdicaoAnimal.addEventListener('submit', salvarAnimal);
+    if(formEdicaoAnimal) formEdicaoAnimal.addEventListener('submit', salvarAnimal);
 
-    btnConfirmarEliminar.addEventListener('click', async () => {
+    // ELIMINAR ANIMAL NA BASE DE DADOS
+    if(btnConfirmarEliminar) btnConfirmarEliminar.addEventListener('click', async () => {
         if (!idAnimalParaEliminar) return;
 
         try {
-            // SIMULAÇÃO DE ELIMINAR NA BASE DE DADOS
-            animaisMock = animaisMock.filter(a => a.id_animal !== idAnimalParaEliminar);
-            
-            alert(`Registo do animal #${idAnimalParaEliminar} apagado definitivamente.`);
-            fecharModal(modalConfirmacao);
-            carregarAnimais(); 
+            const response = await fetch(`${API_URL}/${idAnimalParaEliminar}`, {
+                method: 'DELETE'
+            });
+            const result = await response.json();
+
+            if(result.status === 200) {
+                alert(`Registo do animal apagado definitivamente.`);
+                fecharModal(modalConfirmacao);
+                carregarAnimais(); // Recarrega a tabela
+            } else {
+                // Apanha o nosso erro das consultas marcadas e avisa a rececionista!
+                alert("Aviso: " + result.message);
+            }
         } catch (error) {
-            console.error('Erro:', error);
+            console.error('Erro ao eliminar:', error);
+            alert("Falha na comunicação com o servidor.");
         } finally {
             idAnimalParaEliminar = null; 
         }
@@ -112,17 +123,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // FUNÇÕES CRUD PRINCIPAIS
     // ==========================================
 
-    function carregarAnimais() {
-        // Como agora usamos o array global, ele carrega a lista atualizada com as edições/criações
-        renderizarTabela(animaisMock);
+    async function carregarAnimais() {
+        try {
+            const response = await fetch(API_URL);
+            const result = await response.json();
+
+            if (result.status === 200) {
+                animaisGlobais = result.data;
+                renderizarTabela(animaisGlobais);
+            }
+        } catch (error) {
+            console.error("Erro ao carregar animais do backend:", error);
+        }
     }
 
     async function salvarAnimal(e) {
         e.preventDefault();
         
+        // Limpa espaços em branco caso a pessoa digite NIFs mal
+        const nifLimpo = document.getElementById('editNifCliente').value.replace(/\s/g, '');
+
         const dadosAnimal = {
             nome: document.getElementById('editNomeAnimal').value,
-            id_cliente: parseInt(inputIdCliente.value),
+            nif_cliente: nifLimpo, 
             especie: document.getElementById('editEspecie').value,
             raca: document.getElementById('editRaca').value,
             sexo: document.getElementById('editSexo').value,
@@ -131,23 +154,32 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
+            let url = API_URL;
+            let metodo = 'POST';
+
             if (animalEmEdicaoId) {
-                // ATUALIZAR SIMULADO
-                const index = animaisMock.findIndex(a => a.id_animal === animalEmEdicaoId);
-                if(index !== -1) {
-                    animaisMock[index] = { ...animaisMock[index], ...dadosAnimal };
-                }
-            } else {
-                // CRIAR SIMULADO
-                const novoId = animaisMock.length > 0 ? Math.max(...animaisMock.map(a => a.id_animal)) + 1 : 1;
-                animaisMock.push({ id_animal: novoId, ...dadosAnimal });
+                url = `${API_URL}/${animalEmEdicaoId}`;
+                metodo = 'PUT';
             }
 
-            alert(`Registo do animal guardado com sucesso!`);
-            fecharModal(modalEdicao);
-            carregarAnimais();
+            const response = await fetch(url, {
+                method: metodo,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dadosAnimal)
+            });
+
+            const result = await response.json();
+
+            if (result.status === 201 || result.status === 200) {
+                alert(`Registo do animal guardado com sucesso!`);
+                fecharModal(modalEdicao);
+                carregarAnimais();
+            } else {
+                alert("Erro: " + result.message);
+            }
         } catch (error) {
             console.error('Erro ao guardar animal:', error);
+            alert("Erro na comunicação com o servidor.");
         }
     }
 
@@ -157,42 +189,50 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.visualizarAnimal = function(id) {
-        // Agora vai procurar o animal correto ao array em vez de mostrar sempre o "Bobby"
-        const animal = animaisMock.find(a => a.id_animal === id);
-        
+        const animal = animaisGlobais.find(a => a.id_animal === id);
         if(!animal) return alert('Animal não encontrado!');
 
         document.getElementById('ver_id_animal').value = animal.id_animal;
         document.getElementById('ver_nome_animal').value = animal.nome;
         document.getElementById('ver_especie').value = animal.especie;
         document.getElementById('ver_raca').value = animal.raca;
-        document.getElementById('ver_sexo').value = animal.sexo === 'M' ? 'Macho' : 'Fêmea';
+        document.getElementById('ver_sexo').value = animal.sexo === 'M' ? 'Macho' : (animal.sexo === 'F' ? 'Fêmea' : animal.sexo);
         document.getElementById('ver_data_nascimento').value = formatarData(animal.data_nascimento);
         document.getElementById('ver_estado').value = animal.estado;
-        document.getElementById('ver_id_cliente').value = animal.id_cliente;
+        
+        // Verifica se o HTML já foi alterado para ver_nif_cliente, senão tenta o antigo para não crashar
+        const verNif = document.getElementById('ver_nif_cliente') || document.getElementById('ver_id_cliente');
+        if (verNif) verNif.value = animal.nome_cliente ? `${animal.nome_cliente} (NIF: ${animal.nif_cliente || 'Sem registo'})` : `NIF: ${animal.nif_cliente || 'Sem registo'}`;
 
         abrirModal(document.getElementById('modalAnimal'));
     };
 
     window.editarAnimal = function(id) {
-        // Vai procurar o animal correto
-        const animal = animaisMock.find(a => a.id_animal === id);
+        const animal = animaisGlobais.find(a => a.id_animal === id);
         if(!animal) return alert('Animal não encontrado!');
 
         animalEmEdicaoId = animal.id_animal;
         document.getElementById('tituloEdicao').textContent = `Editar Animal #${animal.id_animal}`;
 
         document.getElementById('editNomeAnimal').value = animal.nome;
-        inputIdCliente.value = animal.id_cliente;
+        
+        const inputNif = document.getElementById('editNifCliente');
+        if(inputNif) inputNif.value = animal.nif_cliente || '';
+
         document.getElementById('editEspecie').value = animal.especie;
         document.getElementById('editRaca').value = animal.raca;
         document.getElementById('editSexo').value = animal.sexo;
-        document.getElementById('editDataNascimento').value = new Date(animal.data_nascimento).toISOString().split('T')[0];
         
-        selectEstado.value = animal.estado;
+        if(animal.data_nascimento) {
+            document.getElementById('editDataNascimento').value = new Date(animal.data_nascimento).toISOString().split('T')[0];
+        } else {
+            document.getElementById('editDataNascimento').value = '';
+        }
         
-        // Força o evento 'change' para aplicar logo o bloqueio do ID se o estado for "Resgatado"
-        selectEstado.dispatchEvent(new Event('change')); 
+        if(selectEstado) {
+            selectEstado.value = animal.estado;
+            selectEstado.dispatchEvent(new Event('change')); 
+        }
 
         abrirModal(document.getElementById('modalEdicao'));
     };
@@ -202,6 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
 
     function renderizarTabela(animais) {
+        if(!tabelaAnimais) return;
         tabelaAnimais.innerHTML = '';
 
         if(animais.length === 0) {
@@ -212,12 +253,16 @@ document.addEventListener('DOMContentLoaded', () => {
         animais.forEach(animal => {
             let corEstado;
             switch(animal.estado) {
-                case 'Domestico': corEstado = '#2ecc71'; break;
+                case 'Domestico': 
+                case 'Doméstico': corEstado = '#2ecc71'; break;
                 case 'Adotado': corEstado = '#3498db'; break;
                 case 'Resgatado': corEstado = '#f39c12'; break;
                 case 'Morto': corEstado = '#e74c3c'; break;
                 default: corEstado = '#95a5a6';
             }
+
+            // Exibe o Nome (via JOIN) ou o NIF
+            const donoExibicao = animal.nome_cliente ? animal.nome_cliente : (animal.nif_cliente ? `NIF: ${animal.nif_cliente}` : 'Sem Dono');
 
             const tr = document.createElement('tr');
             tr.style.borderBottom = "1px solid #f1f2f6";
@@ -226,8 +271,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td style="padding: 15px 10px; font-weight: bold;">#${animal.id_animal}</td>
                 <td style="padding: 15px 10px;">${animal.nome}</td>
                 <td style="padding: 15px 10px;">${animal.especie} / ${animal.raca}</td>
-                <td style="padding: 15px 10px;">${animal.sexo === 'M' ? 'Macho' : 'Fêmea'}</td>
-                <td style="padding: 15px 10px;">Cliente #${animal.id_cliente}</td>
+                <td style="padding: 15px 10px;">${animal.sexo === 'M' ? 'Macho' : (animal.sexo === 'F' ? 'Fêmea' : animal.sexo)}</td>
+                <td style="padding: 15px 10px;">${donoExibicao}</td>
                 <td style="padding: 15px 10px;">
                     <span style="background-color: ${corEstado}20; color: ${corEstado}; padding: 5px 10px; border-radius: 15px; font-size: 0.85rem; font-weight: bold;">
                         ${animal.estado}
@@ -250,6 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return new Date(dataString).toLocaleDateString('pt-PT');
     }
     function filtrarTabela(termo) {
+        if(!tabelaAnimais) return;
         const linhas = tabelaAnimais.getElementsByTagName('tr');
         for (let i = 0; i < linhas.length; i++) {
             const textoLinha = linhas[i].textContent.toLowerCase();

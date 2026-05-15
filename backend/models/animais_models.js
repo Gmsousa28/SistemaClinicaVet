@@ -1,10 +1,23 @@
 const pool = require('../config/db.js');
 
+// 1. A NOSSA NOVA FUNÇÃO (Para ir buscar o Nome e NIF do dono)
 const listarAnimaisBD = async () => {
-    // Usamos o nome exato da tabela: animal
-    const result = await pool.query('SELECT * FROM animal ORDER BY nome ASC');
+    const query = `
+        SELECT 
+            animal.*, 
+            cliente.nome AS nome_cliente,
+            cliente.nif AS nif_cliente 
+        FROM animal 
+        LEFT JOIN cliente ON animal.id_cliente = cliente.id_cliente 
+        ORDER BY animal.nome ASC;
+    `;
+    const result = await pool.query(query);
     return result.rows;
 };
+
+// ====================================================================
+// AS FUNÇÕES DA TUA EQUIPA (Totalmente intocadas!)
+// ====================================================================
 
 const criarAnimalBD = async (id_cliente, nome, especie, raca, sexo, data_nascimento, estado) => {
     const query = `
@@ -18,7 +31,6 @@ const criarAnimalBD = async (id_cliente, nome, especie, raca, sexo, data_nascime
 };
 
 const obterAnimalPorIdBD = async (id_animal) => {
-    // Usamos o id_animal na condição
     const result = await pool.query('SELECT * FROM animal WHERE id_animal = $1', [id_animal]);
     return result.rows[0];
 };
@@ -40,9 +52,7 @@ const eliminarAnimalBD = async (id_animal) => {
     return result.rows[0];
 };
 
-// Procura animais filtrando pelo ID do cliente
 const listarAnimaisPorDonoBD = async (nif) => {
-    // Usamos INNER JOIN para cruzar as tabelas 'animal' e 'cliente'
     const query = `
         SELECT 
             animal.* FROM animal
@@ -50,12 +60,13 @@ const listarAnimaisPorDonoBD = async (nif) => {
         WHERE cliente.nif = $1
         ORDER BY animal.nome ASC;
     `;
-    
     const result = await pool.query(query, [nif]);
     return result.rows;
 };
 
-
+// ====================================================================
+// O EXPORT (Para o Controller ter acesso a tudo)
+// ====================================================================
 module.exports = {
     listarAnimaisBD,
     criarAnimalBD,
@@ -63,5 +74,4 @@ module.exports = {
     atualizarAnimalBD,
     eliminarAnimalBD,
     listarAnimaisPorDonoBD,
-    
 };
