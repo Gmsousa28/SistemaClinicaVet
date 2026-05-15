@@ -1,5 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     
+    // Esta variável vai guardar a referência do cartão que o utilizador está a "Ver"
+    // para que as ações dentro do modal de detalhes saibam qual consulta modificar.
+    let cartaoSendoVistoRef;
+
     // ==========================================================================
     // 1. LÓGICA DA JANELA (MODAL) DE MARCAR CONSULTA
     // ==========================================================================
@@ -61,10 +65,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ==========================================================================
-    // 3. AÇÕES DOS BOTÕES DENTRO DOS CARTÕES (Cancelar, Repetir, Remarcar)
+    // 3. AÇÕES DOS BOTÕES DENTRO DOS CARTÕES DA LISTA (Cancelar, Repetir, Remarcar)
     // ==========================================================================
 
-    // CANCELAR
+    // CANCELAR na lista principal
     const botoesCancelar = document.querySelectorAll('.btn-cancelar:not(.btn-bloco)');
     botoesCancelar.forEach(botao => {
         botao.addEventListener('click', function() {
@@ -77,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // REPETIR
+    // REPETIR na lista principal
     const botoesRepetir = document.querySelectorAll('.btn-repetir');
     botoesRepetir.forEach(botao => {
         botao.addEventListener('click', function() {
@@ -88,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // REMARCAR
+    // REMARCAR na lista principal
     const botoesRemarcar = document.querySelectorAll('.btn-editar:not(.btn-bloco)');
     botoesRemarcar.forEach(botao => {
         botao.addEventListener('click', function() {
@@ -97,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ==========================================================================
-    // 4. AÇÃO: VER DETALHES (O Novo Modal)
+    // 4. AÇÃO: VER DETALHES (O Novo Modal e as suas ações internas)
     // ==========================================================================
     const botoesVer = document.querySelectorAll('.btn-detalhes');
     const modalDetalhes = document.getElementById('modal-detalhes-consulta');
@@ -119,25 +123,77 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        // Abrir Modal de Detalhes e preencher
         botoesVer.forEach(botao => {
             botao.addEventListener('click', function() {
                 const cartao = this.closest('.consulta');
-                const infoParagrafos = cartao.querySelectorAll('.info p');
                 
-                // Extrai a informação
+                // --- TRUQUE ---
+                // 1. Guardar a referência deste cartão específico
+                cartaoSendoVistoRef = cartao; 
+                // --------------
+
+                const infoParagrafos = cartao.querySelectorAll('.info p');
                 const nomeAnimal = infoParagrafos[0].innerText;
                 const dataConsulta = infoParagrafos[1].innerText;
                 const motivoConsulta = infoParagrafos[2].innerText;
                 
-                // Injeta no Modal
                 detalheNome.innerText = nomeAnimal;
                 detalheData.innerText = dataConsulta;
                 detalheMotivo.innerText = motivoConsulta;
                 
-                // Abre o Modal
                 modalDetalhes.classList.add('ativo');
                 document.body.classList.add('no-scroll');
             });
         });
+
+        // ==================================================================
+        // 5. NOVA LÓGICA: Ações dos Botões DENTRO do Modal de Detalhes
+        // ==================================================================
+        const btnCancelarNoModal = modalDetalhes.querySelector('.btn-cancelar.btn-bloco');
+        const btnRemarcarNoModal = modalDetalhes.querySelector('.btn-editar.btn-bloco');
+
+        // Ação: CANCELAR dentro do modal de detalhes
+        if (btnCancelarNoModal) {
+            btnCancelarNoModal.addEventListener('click', () => {
+                const confirmacao = confirm("Tem a certeza que deseja cancelar esta consulta?");
+                
+                if (confirmacao && cartaoSendoVistoRef) {
+                    // 1. Fechar o modal de detalhes
+                    modalDetalhes.classList.remove('ativo');
+                    document.body.classList.remove('no-scroll');
+
+                    // 2. Remover o cartão correspondente na lista principal com animação
+                    cartaoSendoVistoRef.style.opacity = '0';
+                    setTimeout(() => { cartaoSendoVistoRef.remove(); }, 300);
+
+                    alert("Consulta cancelada com sucesso!");
+                    
+                    // Limpar referência
+                    cartaoSendoVistoRef = null; 
+                }
+            });
+        }
+
+        // Ação: REMARCAR dentro do modal de detalhes
+        if (btnRemarcarNoModal) {
+            btnRemarcarNoModal.addEventListener('click', () => {
+                if (cartaoSendoVistoRef) {
+                    // 1. Fechar o modal de detalhes
+                    modalDetalhes.classList.remove('ativo');
+                    // Mantemos o no-scroll pois vamos abrir outro modal
+
+                    // 2. Abrir o modal principal de marcação (simulando reagendamento)
+                    if (modalConsulta) {
+                        modalConsulta.classList.add('ativo');
+                        // No futuro, aqui poderíamos preencher o formulário automaticamente 
+                        // com os dados do 'cartaoSendoVistoRef' ;)
+                    }
+
+                    // Limpar referência
+                    cartaoSendoVistoRef = null;
+                }
+            });
+        }
     }
 });

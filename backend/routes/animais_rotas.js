@@ -18,4 +18,5 @@ router.put("/animais/:id", atualizarAnimal);
 router.delete("/animais/:id", eliminarAnimal);
 router.get("/animais/nif/:nif", listarAnimaisPorDono);
 
+
 module.exports = router;

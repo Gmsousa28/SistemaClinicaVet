@@ -1,49 +1,26 @@
 // =======================================================
-// BASE DE DADOS DE TESTE E ESTADO (Pronto para API)
+// BASE DE DADOS GLOBAL (Vem da API)
 // =======================================================
-let clientesBD = [
-    {
-        nif: "123456789",
-        nome: "João Silva",
-        contacto: "912 345 678",
-        email: "joao.silva@email.com",
-        morada: "Rua das Flores, nº 12, Porto",
-        animais: [
-            { nome: "Max", especie: "Cão", raca: "Labrador", dataNasc: "12/05/2018" },
-            { nome: "Luna", especie: "Gato", raca: "Siamês", dataNasc: "04/10/2020" }
-        ]
-    },
-    {
-        nif: "987654321",
-        nome: "Ana Costa",
-        contacto: "965 432 198",
-        email: "ana.costa@email.com",
-        morada: "Avenida da Liberdade, nº 45, Lisboa",
-        animais: [
-            { nome: "Pipo", especie: "Ave", raca: "Papagaio", dataNasc: "01/01/2015" }
-        ]
-    }
-];
-
-let clienteEmEdicao = null;
+let clientesGlobais = []; 
+let clienteEmEdicao = null; 
 
 // =======================================================
 // INICIALIZAÇÃO "MESTRE" E EVENT LISTENERS
 // =======================================================
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // 1. Carregar a Tabela Inicial
-    atualizarTabelaClientes(clientesBD);
+document.addEventListener('DOMContentLoaded', () => {
+
+    // 1. Carregar a Tabela Inicial a partir do Backend
+    carregarClientesBD();
 
     // 2. Listener da Barra de Pesquisa
     const barraPesquisa = document.getElementById('pesquisa_cliente');
     if (barraPesquisa) {
         barraPesquisa.addEventListener('input', function() {
             const termo = this.value.toLowerCase();
-            const clientesFiltrados = clientesBD.filter(cliente => 
+            const clientesFiltrados = clientesGlobais.filter(cliente => 
                 cliente.nome.toLowerCase().includes(termo) || 
-                cliente.nif.includes(termo) || 
-                cliente.contacto.includes(termo)
+                String(cliente.nif).includes(termo) || 
+                String(cliente.contacto).includes(termo)
             );
             atualizarTabelaClientes(clientesFiltrados);
         });
@@ -53,28 +30,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const tbody = document.getElementById('tabelaClientes');
     if (tbody) {
         tbody.addEventListener('click', (evento) => {
-            // Procura se clicámos num botão com a classe específica
             const btnVer = evento.target.closest('.btn-ver-cliente');
             const btnEditar = evento.target.closest('.btn-editar-cliente');
 
             if (btnVer) {
-                const nif = btnVer.getAttribute('data-nif');
-                verCliente(nif);
+                const id = btnVer.getAttribute('data-id');
+                verCliente(Number(id));
             }
             if (btnEditar) {
-                const nif = btnEditar.getAttribute('data-nif');
-                editarCliente(nif);
+                const id = btnEditar.getAttribute('data-id');
+                editarCliente(Number(id));
             }
         });
     }
 
-    // 4. Listeners para os Modais e Formulários (Garante que tens estes IDs no HTML!)
-    
-    // Botão de Adicionar Novo Cliente (na página principal)
+    // 4. Listeners para os Modais
     const btnNovoCliente = document.getElementById('btn-novo-cliente');
     if (btnNovoCliente) btnNovoCliente.addEventListener('click', () => editarCliente('novo'));
 
-    // Botão de Guardar Alterações (no modal de Edição)
     const btnSalvar = document.getElementById('btn-salvar-edicao');
     if (btnSalvar) btnSalvar.addEventListener('click', salvarEdicao);
 
@@ -85,7 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnFecharVerBaixo = document.getElementById('btn-fechar-modal-baixo');
     if (btnFecharVerBaixo) btnFecharVerBaixo.addEventListener('click', fecharModalVerCliente);
 
-    // Botões de fechar o Modal "Editar Cliente" (Estes já estavam certos)
     const btnFecharEdicaoX = document.getElementById('btn-fechar-edicao-x');
     if (btnFecharEdicaoX) btnFecharEdicaoX.addEventListener('click', fecharModalEdicaoCliente);
 
@@ -94,8 +66,27 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // =======================================================
-// LÓGICA DA INTERFACE E FUNÇÕES
+// COMUNICAÇÃO COM O BACKEND E LÓGICA DA INTERFACE
 // =======================================================
+
+// CARREGAR DADOS DO BACKEND
+async function carregarClientesBD() {
+    console.log("A tentar ligar ao servidor para ir buscar os clientes...");
+    try {
+        const response = await fetch('http://localhost:8008/api/clientes'); 
+        
+        const result = await response.json();
+
+        if (result.status === 200) {
+            clientesGlobais = result.data; 
+            atualizarTabelaClientes(clientesGlobais);
+        } else {
+            console.error("Erro do backend:", result.message);
+        }
+    } catch (error) {
+        console.error("Erro CRÍTICO ao carregar clientes da BD:", error);
+    }
+}
 
 // DESENHAR A TABELA DE CLIENTES
 function atualizarTabelaClientes(listaClientes) {
@@ -113,7 +104,6 @@ function atualizarTabelaClientes(listaClientes) {
         const tr = document.createElement('tr');
         tr.style.borderBottom = "1px solid #f1f2f6";
         
-        // Repara: Usamos classes e data-nif em vez de onclick!
         tr.innerHTML = `
             <td style="padding: 15px 10px; font-weight: bold; color: var(--cor-base-escura);">${cliente.nome}</td>
             <td style="padding: 15px 10px;">${cliente.morada}</td>
@@ -122,10 +112,10 @@ function atualizarTabelaClientes(listaClientes) {
             <td style="padding: 15px 10px;">${cliente.contacto}</td>
             <td style="padding: 15px 10px; text-align: center;">
                 <div style="display: flex; gap: 10px; justify-content: center; align-items: center;">
-                    <button class="btn-ver-cliente" data-nif="${cliente.nif}" style="background-color: #f0f2f5; color: #5c636a; border-radius: 20px; padding: 8px 18px; border: none; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem; transition: background 0.2s;">
+                    <button class="btn-ver-cliente" data-id="${cliente.id_cliente}" style="background-color: #f0f2f5; color: #5c636a; border-radius: 20px; padding: 8px 18px; border: none; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem; transition: background 0.2s;">
                         <i class="fa fa-eye"></i> Ver
                     </button>
-                    <button class="btn-editar-cliente" data-nif="${cliente.nif}" style="background-color: #f39c12; color: white; border-radius: 20px; padding: 8px 18px; border: none; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem; transition: background 0.2s;">
+                    <button class="btn-editar-cliente" data-id="${cliente.id_cliente}" style="background-color: #f39c12; color: white; border-radius: 20px; padding: 8px 18px; border: none; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem; transition: background 0.2s;">
                         <i class="fa fa-edit"></i> Editar
                     </button>
                 </div>
@@ -135,72 +125,106 @@ function atualizarTabelaClientes(listaClientes) {
     });
 }
 
-// VER DETALHES DO CLIENTE
-function verCliente(nif) {
-    const cliente = clientesBD.find(c => c.nif === nif);
+// VER DETALHES DO CLIENTE E CARREGAR OS ANIMAIS DELE (COM FLEXBOX)
+async function verCliente(id_cliente) {
+    const cliente = clientesGlobais.find(c => c.id_cliente === id_cliente);
     if (!cliente) return;
 
-    const nifEl = document.getElementById('ver_nif');
-    const nomeEl = document.getElementById('ver_nome');
-    const emailEl = document.getElementById('ver_email');
-    const contactoEl = document.getElementById('ver_contacto');
-    const moradaEl = document.getElementById('ver_morada');
+    // 1. Preencher os campos normais do cliente
+    document.getElementById('ver_nif').value = cliente.nif;
+    document.getElementById('ver_nome').value = cliente.nome;
+    document.getElementById('ver_email').value = cliente.email || 'Não fornecido';
+    document.getElementById('ver_contacto').value = cliente.contacto;
+    document.getElementById('ver_morada').value = cliente.morada || 'Não fornecida';
 
-    if(nifEl) nifEl.value = cliente.nif;
-    if(nomeEl) nomeEl.value = cliente.nome;
-    if(emailEl) emailEl.value = cliente.email || 'Não fornecido';
-    if(contactoEl) contactoEl.value = cliente.contacto;
-    if(moradaEl) moradaEl.value = cliente.morada || 'Não fornecida';
-
-    const listaAnimais = document.getElementById('listaAnimaisVisualizacao');
+    // 2. Preparar a área dos Animais
+    const listaAnimais = document.getElementById('listaAnimaisVisualizacao'); 
+    
     if(listaAnimais) {
-        listaAnimais.innerHTML = ''; 
-
-        if (cliente.animais.length === 0) {
-            listaAnimais.innerHTML = '<p style="color: #7f8c8d; font-style: italic; padding: 10px 0;">Este cliente não tem animais registados.</p>';
-        } else {
-            cliente.animais.forEach(animal => {
-                let iconeUrl = '../../img/icone_cao.jpg'; 
-                if(animal.especie.toLowerCase() === 'gato') {
-                    iconeUrl = '../../img/icone_gato.jpg'; 
-                } else if (animal.especie.toLowerCase() === 'outros') {
-                    iconeUrl = '../../img/icone_outros.jpg'; 
-                }
-
-                listaAnimais.innerHTML += `
-                    <div class="cartao-animal-lista">
-                        <img src="${iconeUrl}" alt="${animal.especie}" style="width: 55px; height: 55px; border-radius: 50%; margin-right: 15px; object-fit: cover">
-                        <div style="display: flex; flex-direction: column;">
-                            <strong style="color: var(--cor-base-escura); font-size: 1.1rem;">${animal.nome}</strong>
-                            <span style="color: #7f8c8d; font-size: 0.85rem; margin-top: 3px;">
-                                ${animal.especie} • ${animal.raca} • Nasc: ${animal.dataNasc}
-                            </span>
-                        </div>
-                    </div>
-                `;
-            });
-        }
+        // Mensagem de loading
+        listaAnimais.innerHTML = '<p style="color: #3498db; font-style: italic; padding: 10px 0;"><i class="fas fa-spinner fa-spin"></i> A procurar animais na base de dados...</p>';
     }
 
+    // 3. Mostrar o modal
     document.getElementById('modalCliente').style.display = 'flex';
     document.body.style.overflow = 'hidden';
+
+    // 4. Ir buscar os animais ao Backend!
+    if(listaAnimais) {
+        try {
+            const response = await fetch(`http://localhost:8008/api/animais/nif/${cliente.nif}`);
+            const result = await response.json();
+
+            if (result.status === 200 && result.data.length > 0) {
+                // Limpar a mensagem de loading
+                listaAnimais.innerHTML = '';
+                
+                // Usar Flexbox na lista (ul) para empilhar os animais na vertical com um espaçamento (gap) perfeito
+                const ul = document.createElement('ul');
+                ul.style.listStyleType = 'none';
+                ul.style.padding = '0';
+                ul.style.margin = '15px 0 0 0';
+                ul.style.display = 'flex';
+                ul.style.flexDirection = 'column';
+                ul.style.gap = '10px'; 
+
+                result.data.forEach(animal => {
+                    const li = document.createElement('li');
+                    
+                    // Flexbox no item (li) para afastar o texto para a esquerda e o estado para a direita!
+                    li.style.display = 'flex';
+                    li.style.justifyContent = 'space-between';
+                    li.style.alignItems = 'center';
+                    li.style.padding = '12px 15px';
+                    li.style.backgroundColor = '#f8f9fa';
+                    li.style.borderLeft = '4px solid #1abc9c';
+                    li.style.borderRadius = '6px';
+                    li.style.fontSize = '0.95rem';
+                    li.style.boxShadow = '0 2px 4px rgba(0,0,0,0.02)'; // Sombra suave
+                    
+                    // Estrutura em duas partes (Esquerda e Direita) e uma badge de cor para o Estado
+                    li.innerHTML = `
+                        <div>
+                            <strong style="color: #2c3e50; font-size: 1.05rem;">${animal.nome}</strong> 
+                            <span style="color: #7f8c8d; margin-left: 5px;">- ${animal.especie} / ${animal.raca}</span>
+                        </div>
+                        <span style="background-color: #e8f8f5; color: #1abc9c; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase;">
+                            ${animal.estado}
+                        </span>
+                    `;
+                    ul.appendChild(li);
+                });
+                
+                listaAnimais.appendChild(ul);
+            } else {
+                listaAnimais.innerHTML = '<p style="color: #7f8c8d; font-style: italic; padding: 10px 0;">Este cliente ainda não tem animais registados.</p>';
+            }
+        } catch (error) {
+            console.error("Erro ao carregar animais do cliente:", error);
+            listaAnimais.innerHTML = '<p style="color: #e74c3c; padding: 10px 0;">Erro ao carregar os animais.</p>';
+        }
+    }
 }
 
-// EDITAR OU CRIAR CLIENTE
-function editarCliente(nif) {
-    clienteEmEdicao = nif; 
+// EDITAR OU CRIAR CLIENTE (PREENCHER MODAL)
+function editarCliente(id_cliente) {
+    clienteEmEdicao = id_cliente; 
     const titulo = document.getElementById('tituloEdicao');
+    const caixaNif = document.getElementById('editNif');
 
-    if (nif === 'novo') {
+    if (id_cliente === 'novo') {
         titulo.innerText = "Registar Novo Cliente";
         document.getElementById('editNome').value = '';
         document.getElementById('editNif').value = ''; 
         document.getElementById('editEmail').value = '';
         document.getElementById('editContacto').value = '';
         document.getElementById('editMorada').value = '';
+        
+        caixaNif.readOnly = false;
+        caixaNif.style.backgroundColor = '#f8f9fa'; 
     } else {
         titulo.innerText = "Editar Cliente";
-        const cliente = clientesBD.find(c => c.nif === nif);
+        const cliente = clientesGlobais.find(c => c.id_cliente === id_cliente);
         
         if (cliente) {
             document.getElementById('editNome').value = cliente.nome;
@@ -208,54 +232,61 @@ function editarCliente(nif) {
             document.getElementById('editEmail').value = cliente.email;
             document.getElementById('editContacto').value = cliente.contacto;
             document.getElementById('editMorada').value = cliente.morada;
+            
+            caixaNif.readOnly = true;
+            caixaNif.style.backgroundColor = '#e9ecef'; 
         }
-    }
-
-    const caixaNif = document.getElementById('editNif');
-    if (caixaNif) {
-        caixaNif.readOnly = false;
-        caixaNif.style.backgroundColor = '#f8f9fa'; 
-        caixaNif.style.cursor = 'text'; 
     }
 
     document.getElementById('modalEdicao').style.display = 'flex';
     document.body.style.overflow = 'hidden';
 }
 
-// GUARDAR ALTERAÇÕES
-function salvarEdicao() {
-    const nifInserido = document.getElementById('editNif').value;
-    
-    if(!nifInserido) return alert("O NIF é obrigatório!");
+// GUARDAR ALTERAÇÕES (MANDA PARA O BACKEND)
+async function salvarEdicao() {
+    // Escudo protetor contra espaços!
+    const nifLimpo = document.getElementById('editNif').value.replace(/\s/g, '');
+    const contactoLimpo = document.getElementById('editContacto').value.replace(/\s/g, '');
+
+    if(!nifLimpo) return alert("O NIF é obrigatório!");
 
     const dadosFormulario = {
-        nif: nifInserido,
         nome: document.getElementById('editNome').value,
-        email: document.getElementById('editEmail').value,
-        contacto: document.getElementById('editContacto').value,
         morada: document.getElementById('editMorada').value,
-        animais: [] 
+        email: document.getElementById('editEmail').value,
+        nif: nifLimpo,
+        contacto: contactoLimpo
     };
 
-    if (clienteEmEdicao === 'novo') {
-        if (clientesBD.some(c => c.nif === nifInserido)) {
-            alert("Erro: Já existe um cliente com esse NIF!");
-            return;
-        }
-        clientesBD.push(dadosFormulario);
-        alert("Cliente registado com sucesso!");
-        
-    } else {
-        const index = clientesBD.findIndex(c => c.nif === clienteEmEdicao);
-        if (index !== -1) {
-            dadosFormulario.animais = clientesBD[index].animais; 
-            clientesBD[index] = dadosFormulario;
-            alert("Dados guardados com sucesso!");
-        }
-    }
+    try {
+        let url = 'http://localhost:8008/api/clientes'; 
+        let metodo = 'POST';
 
-    fecharModalEdicaoCliente();
-    atualizarTabelaClientes(clientesBD);
+        if (clienteEmEdicao !== 'novo') {
+            url = `http://localhost:8008/api/clientes/${clienteEmEdicao}`; 
+            metodo = 'PUT';
+        }
+
+        const response = await fetch(url, {
+            method: metodo,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dadosFormulario)
+        });
+
+        const result = await response.json();
+
+        if (result.status === 201 || result.status === 200) {
+            alert(clienteEmEdicao === 'novo' ? "Cliente registado com sucesso!" : "Cliente atualizado com sucesso!");
+            fecharModalEdicaoCliente();
+            carregarClientesBD(); // Volta a carregar a tabela com o novo registo visível
+        } else {
+            alert("Erro da BD: " + result.message);
+        }
+
+    } catch (error) {
+        console.error("Erro ao guardar cliente:", error);
+        alert("Erro na comunicação com o servidor.");
+    }
 }
 
 // FECHAR MODAIS

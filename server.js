@@ -3,13 +3,22 @@ const path = require('path');
 const cors = require('cors');
 
 const pool = require('./backend/config/db.js');
+const errorHandling = require('./backend/middlewares/errorHandler.js');
 
 const server = express();
 const port = 8008;
 
-/* ======================================================
-   MIDDLEWARES
-====================================================== */
+
+// ===================================================================
+// 1. MIDDLEWARES - Têm de vir PRIMEIRO (A "Porta de Segurança")
+// ===================================================================
+server.use(cors()); // Dá permissão ao navegador imediatamente!
+server.use(express.json()); // Permite ler dados dos formulários
+
+// ===================================================================
+// 2. FICHEIROS ESTÁTICOS
+// ===================================================================
+server.use(express.static(path.join(__dirname, 'frontend')));
 
 // Permitir pedidos do frontend
 server.use(cors());

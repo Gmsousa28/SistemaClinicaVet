@@ -41,9 +41,11 @@ const obterClienteByNif = async (req, res, next) => {
 };
 
 const criarCliente = async (req, res, next) => {
-    const { id_login_cliente, nome, morada, email, nif, contacto } = req.body;
+    // Agora extrai e passa SÓ os 5 campos que vêm do Frontend
+    const { nome, morada, email, nif, contacto } = req.body; 
+    
     try {
-        const novoCliente = await criarClienteBD(id_login_cliente, nome, morada, email, nif, contacto);
+        const novoCliente = await criarClienteBD(nome, morada, email, nif, contacto);
         handleResponse(res, 201, "Novo cliente registado com sucesso", novoCliente);
     } catch (err) {
         next(err);
