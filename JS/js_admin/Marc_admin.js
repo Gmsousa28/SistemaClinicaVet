@@ -157,16 +157,20 @@ function editarMarcacao(id) {
     const hora =
         dataConsulta.toTimeString().slice(0, 5);
 
-    // PREENCHER NOME
+    // =======================================================
+    // PREENCHER NOME BONITO
+    // =======================================================
     if (document.getElementById('editNome')) {
 
         document.getElementById(
             'editNome'
         ).value =
-            `Animal ID: ${marcacao.id_animal}`;
+            `Animal ${marcacao.id_animal}`;
     }
 
+    // =======================================================
     // PREENCHER DATA
+    // =======================================================
     if (document.getElementById('editDataMarcacao')) {
 
         document.getElementById(
@@ -174,7 +178,9 @@ function editarMarcacao(id) {
         ).value = data;
     }
 
+    // =======================================================
     // PREENCHER HORA
+    // =======================================================
     if (document.getElementById('editHoraMarcacao')) {
 
         document.getElementById(

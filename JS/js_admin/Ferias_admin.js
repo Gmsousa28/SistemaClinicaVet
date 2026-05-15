@@ -1,11 +1,12 @@
 // =======================================================
-// LISTA DE FÉRIAS
+// LISTA DE FÉRIAS / FOLGAS
 // =======================================================
 let listaFerias = [];
+
 let idFeriasAtual = null;
 
 // =======================================================
-// CARREGAR FÉRIAS DA API
+// CARREGAR FÉRIAS
 // =======================================================
 async function carregarFerias() {
 
@@ -15,12 +16,16 @@ async function carregarFerias() {
             'http://localhost:8008/api/ocorrencias_laborais'
         );
 
-        const resultado = await resposta.json();
+        const resultado =
+            await resposta.json();
 
-        listaFerias = resultado.data;
+        listaFerias =
+            resultado.data;
 
         const tabela =
-            document.getElementById('tabelaFerias');
+            document.getElementById(
+                'tabelaFerias'
+            );
 
         if (!tabela) return;
 
@@ -32,23 +37,31 @@ async function carregarFerias() {
 
                 <tr>
 
-                    <td>${ferias.id_colaborador}</td>
+                    <td>
+                        ${ferias.id_colaborador}
+                    </td>
 
-                    <td>${ferias.tipo}</td>
+                    <td>
+                        ${ferias.tipo || '-'}
+                    </td>
 
-                    <td>${ferias.data_inicio.split('T')[0]}</td>
+                    <td>
+                        ${ferias.data_inicio
+                            ? ferias.data_inicio.split('T')[0]
+                            : '-'}
+                    </td>
 
-                    <td>${ferias.data_fim.split('T')[0]}</td>
+                    <td>
+                        ${ferias.data_fim
+                            ? ferias.data_fim.split('T')[0]
+                            : '-'}
+                    </td>
 
                     <td>
 
-                        <span class="badge ${
-                            ferias.tipo === 'Aprovado'
-                            ? 'concluido'
-                            : 'pendente'
-                        }">
+                        <span class="badge concluido">
 
-                            ${ferias.tipo}
+                            Ativo
 
                         </span>
 
@@ -56,7 +69,11 @@ async function carregarFerias() {
 
                     <td>
 
-                        <div style="display: flex; gap: 8px; justify-content: center;">
+                        <div style="
+                            display: flex;
+                            gap: 8px;
+                            justify-content: center;
+                        ">
 
                             <button
                                 class="btn-pequeno"
@@ -70,7 +87,12 @@ async function carregarFerias() {
                                 class="btn-pequeno"
                                 onclick="eliminarFerias(${ferias.id_colaborador})"
                                 title="Eliminar"
-                                style="background-color: #e74c3c; color: white; border: none; cursor: pointer;"
+                                style="
+                                    background-color: #e74c3c;
+                                    color: white;
+                                    border: none;
+                                    cursor: pointer;
+                                "
                             >
                                 <i class="fa fa-trash"></i>
                             </button>
@@ -91,7 +113,9 @@ async function carregarFerias() {
             erro
         );
 
-        alert('Erro ao carregar férias.');
+        alert(
+            'Erro ao carregar férias.'
+        );
     }
 }
 
@@ -111,29 +135,37 @@ function editarFerias(id) {
 
     document.getElementById(
         'tituloEdicao'
-    ).innerText = 'Editar Férias';
+    ).innerText =
+        'Editar Férias / Folgas';
 
     document.getElementById(
         'editNome'
-    ).value = ferias.id_colaborador;
+    ).value =
+        ferias.id_colaborador;
 
     document.getElementById(
         'editEstadoFerias'
-    ).value = ferias.tipo;
+    ).value =
+        ferias.tipo || '';
 
     document.getElementById(
         'editDataInicio'
     ).value =
-        ferias.data_inicio.split('T')[0];
+        ferias.data_inicio
+            ? ferias.data_inicio.split('T')[0]
+            : '';
 
     document.getElementById(
         'editDataFim'
     ).value =
-        ferias.data_fim.split('T')[0];
+        ferias.data_fim
+            ? ferias.data_fim.split('T')[0]
+            : '';
 
     document.getElementById(
         'modalEdicao'
-    ).style.display = 'flex';
+    ).style.display =
+        'flex';
 
     document.body.style.overflow =
         'hidden';
@@ -144,27 +176,28 @@ function editarFerias(id) {
 // =======================================================
 async function salvarEdicao() {
 
-    const dados = {
-
-        data_inicio:
-            document.getElementById(
-                'editDataInicio'
-            ).value,
-
-        data_fim:
-            document.getElementById(
-                'editDataFim'
-            ).value,
-
-        tipo:
-            document.getElementById(
-                'editEstadoFerias'
-            ).value,
-
-        observacoes: 'Atualizado'
-    };
-
     try {
+
+        const dados = {
+
+            data_inicio:
+                document.getElementById(
+                    'editDataInicio'
+                ).value,
+
+            data_fim:
+                document.getElementById(
+                    'editDataFim'
+                ).value,
+
+            tipo:
+                document.getElementById(
+                    'editEstadoFerias'
+                ).value,
+
+            observacoes:
+                'Atualizado'
+        };
 
         const resposta = await fetch(
 
@@ -178,7 +211,9 @@ async function salvarEdicao() {
                         'application/json'
                 },
 
-                body: JSON.stringify(dados)
+                body: JSON.stringify(
+                    dados
+                )
             }
         );
 
@@ -186,6 +221,8 @@ async function salvarEdicao() {
             await resposta.json();
 
         if (!resposta.ok) {
+
+            console.error(resultado);
 
             throw new Error(
                 resultado.message
@@ -202,7 +239,10 @@ async function salvarEdicao() {
 
     } catch (erro) {
 
-        console.error(erro);
+        console.error(
+            'Erro ao atualizar férias:',
+            erro
+        );
 
         alert(
             'Erro ao atualizar férias.'
@@ -224,7 +264,9 @@ async function eliminarFerias(id) {
     try {
 
         const resposta = await fetch(
+
             `http://localhost:8008/api/ocorrencias_laborais/${id}`,
+
             {
                 method: 'DELETE'
             }
@@ -265,17 +307,21 @@ async function eliminarFerias(id) {
 function fecharModalEdicao() {
 
     const modal =
-        document.getElementById('modalEdicao');
+        document.getElementById(
+            'modalEdicao'
+        );
 
     if (modal) {
 
-        modal.style.display = 'none';
+        modal.style.display =
+            'none';
 
-        document.body.style.overflow = '';
+        document.body.style.overflow =
+            '';
     }
 }
 
 // =======================================================
-// INICIAR PÁGINA
+// INICIAR
 // =======================================================
 window.onload = carregarFerias;

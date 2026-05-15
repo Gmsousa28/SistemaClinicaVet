@@ -53,6 +53,7 @@ const servicosRouter = require('./backend/routes/servicos_rotas.js');
 const loginsClienteRouter = require('./backend/routes/logins_cliente_rotas.js');
 const loginsColaboradorRouter = require('./backend/routes/logins_colaborador_rotas.js');
 const ocorrenciasLaboraisRouter = require('./backend/routes/ocorrencias_laborais_rotas.js');
+const resgatesRouter = require('./backend/routes/resgates_rotas.js');
 
 /* ======================================================
    ROTAS API
@@ -71,6 +72,7 @@ server.use('/api', servicosRouter);
 server.use('/api', loginsClienteRouter);
 server.use('/api', loginsColaboradorRouter);
 server.use('/api', ocorrenciasLaboraisRouter);
+server.use('/api', resgatesRouter);
 
 /* ======================================================
    TESTE DA BASE DE DADOS
