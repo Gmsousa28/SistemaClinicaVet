@@ -1,32 +1,18 @@
 const express = require('express');
 
+// Importar as DUAS funções do Controller
 const {
     listarOcorrenciasLaborais,
-    criarOcorrenciaLaboral,
-    atualizarOcorrenciaLaboral,
-    eliminarOcorrenciaLaboral
+    criarOcorrenciaLaboral
 } = require("../controllers/ocorrencias_laborais_controllers.js");
 
 const router = express.Router();
 
-router.get(
-    "/ocorrencias_laborais",
-    listarOcorrenciasLaborais
-);
+// Rota para LER as ocorrências (GET)
+router.get("/ocorrencias_laborais", listarOcorrenciasLaborais);
 
-router.post(
-    "/ocorrencias_laborais",
-    criarOcorrenciaLaboral
-);
+// Rota para CRIAR uma nova ocorrência (POST)
+router.post("/ocorrencias_laborais", criarOcorrenciaLaboral);
 
-router.put(
-    "/ocorrencias_laborais/:id",
-    atualizarOcorrenciaLaboral
-);
-
-router.delete(
-    "/ocorrencias_laborais/:id",
-    eliminarOcorrenciaLaboral
-);
-
+// Exportar o router para o server.js
 module.exports = router;
