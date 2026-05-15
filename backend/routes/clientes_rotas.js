@@ -11,11 +11,8 @@ const {
 
 const router = express.Router();
 
-<<<<<<< HEAD
 
 
-=======
->>>>>>> 3508c422a194b658334107fc3e56c76e591b2fc4
 // CORREÇÃO 2: Usar essas funções limpas em cada rota
 router.get("/clientes", listarClientes);
 router.get("/clientes/id/:id", obterClienteByID);

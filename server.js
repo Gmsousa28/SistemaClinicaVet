@@ -8,7 +8,6 @@ const errorHandling = require('./backend/middlewares/errorHandler.js');
 const server = express();
 const port = 8008;
 
-<<<<<<< HEAD
 
 // ===================================================================
 // 1. MIDDLEWARES - Têm de vir PRIMEIRO (A "Porta de Segurança")
@@ -20,11 +19,6 @@ server.use(express.json()); // Permite ler dados dos formulários
 // 2. FICHEIROS ESTÁTICOS
 // ===================================================================
 server.use(express.static(path.join(__dirname, 'frontend')));
-=======
-/* ======================================================
-   MIDDLEWARES
-====================================================== */
->>>>>>> 3508c422a194b658334107fc3e56c76e591b2fc4
 
 // Permitir pedidos do frontend
 server.use(cors());
@@ -82,11 +76,8 @@ server.use('/api', ocorrenciasLaboraisRouter);
    TESTE DA BASE DE DADOS
 ====================================================== */
 
-<<<<<<< HEAD
-=======
 server.get('/', async (req, res) => {
     try {
->>>>>>> 3508c422a194b658334107fc3e56c76e591b2fc4
 
         const result = await pool.query(
             'SELECT current_database()'
