@@ -2,10 +2,31 @@ const express = require('express');
 
 const {
     listarOcorrenciasLaborais,
+    criarOcorrenciaLaboral,
+    atualizarOcorrenciaLaboral,
+    eliminarOcorrenciaLaboral
 } = require("../controllers/ocorrencias_laborais_controllers.js");
 
 const router = express.Router();
 
-router.get("/ocorrencias_laborais", listarOcorrenciasLaborais);
+router.get(
+    "/ocorrencias_laborais",
+    listarOcorrenciasLaborais
+);
+
+router.post(
+    "/ocorrencias_laborais",
+    criarOcorrenciaLaboral
+);
+
+router.put(
+    "/ocorrencias_laborais/:id",
+    atualizarOcorrenciaLaboral
+);
+
+router.delete(
+    "/ocorrencias_laborais/:id",
+    eliminarOcorrenciaLaboral
+);
 
 module.exports = router;
