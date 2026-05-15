@@ -11,18 +11,10 @@ const {
 
 const router = express.Router();
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 3687e218a05ef9e7aeea0f984a5548e845bcd321
-// CORREÇÃO 2: Usar essas funções limpas em cada rota
 router.get("/clientes", listarClientes);
 router.get("/clientes/id/:id", obterClienteByID);
 router.get("/clientes/nif/:nif", obterClienteByNif);
 router.post("/clientes", criarCliente);
-
-// Nos métodos PUT e DELETE não há conflito de palavras, mas se quiseres 
-// manter a consistência com o GET, podes usar "/clientes/id/:id" aqui também!
 router.put("/clientes/:id", atualizarCliente);
 router.delete("/clientes/:id", eliminarClienteById);
 

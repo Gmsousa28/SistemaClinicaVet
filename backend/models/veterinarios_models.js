@@ -38,10 +38,31 @@ const eliminarVeterinarioBD = async (id_veterinario) => {
     return result.rows[0];
 };
 
+const obterPerfilVetBD = async (idColaborador) => {
+    const result = await pool.query(`
+        SELECT 
+            v.nome, 
+            v.morada, 
+            v.email, 
+            v.nif, 
+            v.contacto, 
+            v.especialidade
+        FROM 
+            public.colaborador c
+        INNER JOIN 
+            public.veterinario v ON c.id_veterinario = v.id_veterinario
+        WHERE 
+            c.id_colaborador = $1;
+    `, [idColaborador]);
+    
+    return result.rows[0]; 
+};
+
 module.exports = {
     listarVeterinariosBD,
     criarVeterinarioBD,
     obterVeterinarioPorIdBD,
     atualizarVeterinarioBD,
-    eliminarVeterinarioBD
+    eliminarVeterinarioBD,
+    obterPerfilVetBD
 };
