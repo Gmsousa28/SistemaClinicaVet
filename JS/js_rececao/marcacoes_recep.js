@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // =======================================================
     // PASSO 1: PROCURAR ANIMAIS POR NIF (REAL COM INNER JOIN)
     // =======================================================
+ // =======================================================
+    // PASSO 1: PROCURAR ANIMAIS POR NIF (COM FILTRO DE ÓBITO)
+    // =======================================================
     const inputNif = document.getElementById('nif_cliente');
     const containerAnimais = document.querySelector('.grid-animais-selecao');
 
@@ -23,13 +26,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     const resultado = await resposta.json();
 
                     if(resultado.status === 200 && resultado.data.length > 0) {
-                        this.style.borderColor = "#2ea89c";
-                        this.style.backgroundColor = "#e0f2f1";
-                        renderizarAnimaisDaBD(resultado.data);
+                        
+                        // 🛡️ O NOSSO NOVO FILTRO: Apenas animais que não estão marcados como 'Morto'
+                        const animaisVivos = resultado.data.filter(animal => animal.estado !== 'Morto');
+
+                        if (animaisVivos.length > 0) {
+                            this.style.borderColor = "#2ea89c";
+                            this.style.backgroundColor = "#e0f2f1";
+                            // Mandamos apenas os vivos para o ecrã
+                            renderizarAnimaisDaBD(animaisVivos);
+                        } else {
+                            // O cliente existe, mas todos os animais estão falecidos
+                            this.style.borderColor = "#f39c12"; // Um laranja de aviso
+                            this.style.backgroundColor = "#fef5e7";
+                            containerAnimais.innerHTML = '<p style="color: #e67e22; width: 100%; text-align: center; margin-top: 1rem;"><i class="fa fa-info-circle"></i> O cliente foi encontrado, mas não existem animais vivos elegíveis para marcação.</p>';
+                        }
+
                     } else {
+                        // NIF não existe ou não tem animais nenhuns
                         this.style.borderColor = "#e74c3c";
                         this.style.backgroundColor = "#fadbd8";
-                        containerAnimais.innerHTML = '<p style="color: #e74c3c; width: 100%; text-align: center; margin-top: 1rem;">Nenhum animal encontrado para este NIF.</p>';
+                        containerAnimais.innerHTML = '<p style="color: #e74c3c; width: 100%; text-align: center; margin-top: 1rem;">Nenhum cliente/animal encontrado para este NIF.</p>';
                     }
                 } catch (erro) {
                     console.error("Erro ao ligar ao servidor:", erro);
