@@ -8,7 +8,6 @@ let clienteEmEdicao = null;
 // INICIALIZAÇÃO "MESTRE" E EVENT LISTENERS
 // =======================================================
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("🚨 O ficheiro JS NOVO carregou com sucesso!");
 
     // 1. Carregar a Tabela Inicial a partir do Backend
     carregarClientesBD();
