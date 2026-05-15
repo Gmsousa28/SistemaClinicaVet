@@ -128,3 +128,60 @@ async function guardarRegisto() {
     
     fecharModalRegisto();
 }
+
+// Variável global para guardar o ID de quem estamos a registar
+let idColaboradorAtual = null;
+
+// Função chamada pelos botões "Registrar Falta" ou "Registrar Atraso"
+function abrirModalOcorrencia(idColaborador, nomeColaborador, tipoOcorrencia) {
+    idColaboradorAtual = idColaborador; // Guardamos o ID (ex: 1, 2, 3...)
+    
+    // Preenche o modal
+    document.querySelector('input[placeholder="Dr. João Martins"]').value = nomeColaborador;
+    
+    // Preenche o tipo (Falta ou Atraso) - garante que bate certo com o teu ENUM na BD
+    document.querySelector('input[placeholder="Falta"]').value = tipoOcorrencia; 
+    
+    // Põe a data de hoje por defeito
+    const hoje = new Date().toISOString().split('T')[0];
+    document.querySelector('input[type="date"]').value = hoje;
+    
+    // Limpa observações
+    document.querySelector('input[placeholder="Ex: Trânsito, Consulta médica, etc."]').value = '';
+
+    // Mostra o modal (ajusta o ID consoante o teu HTML)
+    document.getElementById('modalAssiduidade').style.display = 'flex';
+}
+
+// Lógica de Guardar
+document.querySelector('.btn-guardar-registo').addEventListener('click', async () => {
+    // Recolher os dados do formulário
+    const dadosOcorrencia = {
+        id_colaborador: idColaboradorAtual,
+        tipo: document.querySelector('input[placeholder="Falta"]').value, // Ex: 'Falta' ou 'Atraso'
+        data_ocorrencia: document.querySelector('input[type="date"]').value,
+        observacoes: document.querySelector('input[placeholder="Ex: Trânsito, Consulta médica, etc."]').value
+    };
+
+    if (!dadosOcorrencia.data_ocorrencia) return alert("A data é obrigatória!");
+
+    try {
+        const response = await fetch('http://localhost:8008/api/ocorrencias', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dadosOcorrencia)
+        });
+
+        const result = await response.json();
+
+        if (result.status === 201) {
+            alert(result.message);
+            document.getElementById('modalAssiduidade').style.display = 'none';
+        } else {
+            alert(result.message); // Vai mostrar o erro amigável se a pessoa já tiver falta nesse dia
+        }
+    } catch (error) {
+        console.error("Erro:", error);
+        alert("Erro ao comunicar com o servidor.");
+    }
+});

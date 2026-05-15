@@ -6,7 +6,7 @@ let clienteEmEdicao = null;
 
 // =======================================================
 // INICIALIZAÇÃO "MESTRE" E EVENT LISTENERS
-// ===========================================================
+// =======================================================
 document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Carregar a Tabela Inicial a partir do Backend
@@ -75,11 +75,9 @@ async function carregarClientesBD() {
     try {
         const response = await fetch('http://localhost:8008/api/clientes'); 
         
-        console.log("Resposta recebida do servidor:", response);
         const result = await response.json();
 
         if (result.status === 200) {
-            console.log("Clientes recebidos:", result.data);
             clientesGlobais = result.data; 
             atualizarTabelaClientes(clientesGlobais);
         } else {
@@ -127,25 +125,85 @@ function atualizarTabelaClientes(listaClientes) {
     });
 }
 
-// VER DETALHES DO CLIENTE
-function verCliente(id_cliente) {
+// VER DETALHES DO CLIENTE E CARREGAR OS ANIMAIS DELE (COM FLEXBOX)
+async function verCliente(id_cliente) {
     const cliente = clientesGlobais.find(c => c.id_cliente === id_cliente);
     if (!cliente) return;
 
-    // Preencher campos
+    // 1. Preencher os campos normais do cliente
     document.getElementById('ver_nif').value = cliente.nif;
     document.getElementById('ver_nome').value = cliente.nome;
     document.getElementById('ver_email').value = cliente.email || 'Não fornecido';
     document.getElementById('ver_contacto').value = cliente.contacto;
     document.getElementById('ver_morada').value = cliente.morada || 'Não fornecida';
 
-    const listaAnimais = document.getElementById('listaAnimaisVisualizacao');
+    // 2. Preparar a área dos Animais
+    const listaAnimais = document.getElementById('listaAnimaisVisualizacao'); 
+    
     if(listaAnimais) {
-        listaAnimais.innerHTML = '<p style="color: #7f8c8d; font-style: italic; padding: 10px 0;">Animais ainda não carregados da BD.</p>';
+        // Mensagem de loading
+        listaAnimais.innerHTML = '<p style="color: #3498db; font-style: italic; padding: 10px 0;"><i class="fas fa-spinner fa-spin"></i> A procurar animais na base de dados...</p>';
     }
 
+    // 3. Mostrar o modal
     document.getElementById('modalCliente').style.display = 'flex';
     document.body.style.overflow = 'hidden';
+
+    // 4. Ir buscar os animais ao Backend!
+    if(listaAnimais) {
+        try {
+            const response = await fetch(`http://localhost:8008/api/animais/nif/${cliente.nif}`);
+            const result = await response.json();
+
+            if (result.status === 200 && result.data.length > 0) {
+                // Limpar a mensagem de loading
+                listaAnimais.innerHTML = '';
+                
+                // Usar Flexbox na lista (ul) para empilhar os animais na vertical com um espaçamento (gap) perfeito
+                const ul = document.createElement('ul');
+                ul.style.listStyleType = 'none';
+                ul.style.padding = '0';
+                ul.style.margin = '15px 0 0 0';
+                ul.style.display = 'flex';
+                ul.style.flexDirection = 'column';
+                ul.style.gap = '10px'; 
+
+                result.data.forEach(animal => {
+                    const li = document.createElement('li');
+                    
+                    // Flexbox no item (li) para afastar o texto para a esquerda e o estado para a direita!
+                    li.style.display = 'flex';
+                    li.style.justifyContent = 'space-between';
+                    li.style.alignItems = 'center';
+                    li.style.padding = '12px 15px';
+                    li.style.backgroundColor = '#f8f9fa';
+                    li.style.borderLeft = '4px solid #1abc9c';
+                    li.style.borderRadius = '6px';
+                    li.style.fontSize = '0.95rem';
+                    li.style.boxShadow = '0 2px 4px rgba(0,0,0,0.02)'; // Sombra suave
+                    
+                    // Estrutura em duas partes (Esquerda e Direita) e uma badge de cor para o Estado
+                    li.innerHTML = `
+                        <div>
+                            <strong style="color: #2c3e50; font-size: 1.05rem;">${animal.nome}</strong> 
+                            <span style="color: #7f8c8d; margin-left: 5px;">- ${animal.especie} / ${animal.raca}</span>
+                        </div>
+                        <span style="background-color: #e8f8f5; color: #1abc9c; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase;">
+                            ${animal.estado}
+                        </span>
+                    `;
+                    ul.appendChild(li);
+                });
+                
+                listaAnimais.appendChild(ul);
+            } else {
+                listaAnimais.innerHTML = '<p style="color: #7f8c8d; font-style: italic; padding: 10px 0;">Este cliente ainda não tem animais registados.</p>';
+            }
+        } catch (error) {
+            console.error("Erro ao carregar animais do cliente:", error);
+            listaAnimais.innerHTML = '<p style="color: #e74c3c; padding: 10px 0;">Erro ao carregar os animais.</p>';
+        }
+    }
 }
 
 // EDITAR OU CRIAR CLIENTE (PREENCHER MODAL)
@@ -186,16 +244,18 @@ function editarCliente(id_cliente) {
 
 // GUARDAR ALTERAÇÕES (MANDA PARA O BACKEND)
 async function salvarEdicao() {
-    const nifInserido = document.getElementById('editNif').value;
-    if(!nifInserido) return alert("O NIF é obrigatório!");
+    // Escudo protetor contra espaços!
+    const nifLimpo = document.getElementById('editNif').value.replace(/\s/g, '');
+    const contactoLimpo = document.getElementById('editContacto').value.replace(/\s/g, '');
 
-    // Agora enviamos APENAS os dados do cliente. O "id_login_cliente" já lá não mora!
+    if(!nifLimpo) return alert("O NIF é obrigatório!");
+
     const dadosFormulario = {
         nome: document.getElementById('editNome').value,
         morada: document.getElementById('editMorada').value,
         email: document.getElementById('editEmail').value,
-        nif: nifInserido,
-        contacto: document.getElementById('editContacto').value
+        nif: nifLimpo,
+        contacto: contactoLimpo
     };
 
     try {
@@ -206,8 +266,6 @@ async function salvarEdicao() {
             url = `http://localhost:8008/api/clientes/${clienteEmEdicao}`; 
             metodo = 'PUT';
         }
-
-        console.log(`A enviar pedido ${metodo} para ${url}`, dadosFormulario);
 
         const response = await fetch(url, {
             method: metodo,
