@@ -19,10 +19,13 @@ server.use(express.json()); // Permite ler dados dos formulários
 // 2. FICHEIROS ESTÁTICOS
 // ===================================================================
 server.use(express.static(path.join(__dirname, 'frontend')));
+<<<<<<< HEAD
 
 /* ======================================================
    MIDDLEWARES
 ====================================================== */
+=======
+>>>>>>> 1920bf97a7b3af854d1f803d01c8b34ff2c1aa15
 
 // Permitir pedidos do frontend
 server.use(cors());
@@ -57,6 +60,7 @@ const servicosRouter = require('./backend/routes/servicos_rotas.js');
 const loginsClienteRouter = require('./backend/routes/logins_cliente_rotas.js');
 const loginsColaboradorRouter = require('./backend/routes/logins_colaborador_rotas.js');
 const ocorrenciasLaboraisRouter = require('./backend/routes/ocorrencias_laborais_rotas.js');
+const resgatesRouter = require('./backend/routes/resgates_rotas.js');
 
 /* ======================================================
    ROTAS API
@@ -75,13 +79,17 @@ server.use('/api', servicosRouter);
 server.use('/api', loginsClienteRouter);
 server.use('/api', loginsColaboradorRouter);
 server.use('/api', ocorrenciasLaboraisRouter);
+server.use('/api', resgatesRouter);
 
 /* ======================================================
    TESTE DA BASE DE DADOS
 ====================================================== */
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 1920bf97a7b3af854d1f803d01c8b34ff2c1aa15
 server.get('/', async (req, res) => {
     try {
 

@@ -246,6 +246,22 @@ async function eliminarCliente(id) {
 }
 
 // =======================================================
+// FECHAR MODAL EDIÇÃO CLIENTE
+// =======================================================
+function fecharModalEdicaoCliente() {
+
+    const modal =
+        document.getElementById('modalEdicao');
+
+    if (modal) {
+
+        modal.style.display = 'none';
+    }
+
+    document.body.style.overflow = '';
+}
+
+// =======================================================
 // INICIAR
 // =======================================================
 window.onload = carregarClientes;

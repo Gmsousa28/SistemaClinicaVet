@@ -3,7 +3,8 @@ const {
   criarVeterinarioBD,
   obterVeterinarioPorIdBD,
   atualizarVeterinarioBD,
-  eliminarVeterinarioBD
+  eliminarVeterinarioBD,
+  obterPerfilVetBD
 } = require("../models/veterinarios_models.js");
 
 const handleResponse = (res, status, message, data = null) => {
@@ -60,10 +61,42 @@ const eliminarVeterinario = async (req, res, next) => {
   }
 };
 
+const obterPerfilVeterinario = async (req, res) => {
+  try {
+      // Apanha o ID que vem no link (ex: /perfil/1)
+      const idColaborador = req.params.id;
+
+      // Vai à base de dados buscar os dados
+      const perfil = await obterPerfilVetBD(idColaborador);
+
+      if (!perfil) {
+          return res.status(404).json({ 
+              status: 404, 
+              message: "Perfil não encontrado na base de dados." 
+          });
+      }
+
+      // Devolve os dados para o Frontend!
+      return res.status(200).json({ 
+          status: 200, 
+          message: "Perfil carregado com sucesso", 
+          data: perfil 
+      });
+
+  } catch (err) {
+      console.error("Erro ao obter perfil do veterinário:", err);
+      return res.status(500).json({ 
+          status: 500, 
+          message: "Erro interno do servidor." 
+      });
+  }
+};
+
 module.exports = {
   listarTodosVeterinarios,
   criarVeterinario,
   obterVeterinarioPorId,
   atualizarVeterinario,
-  eliminarVeterinario
+  eliminarVeterinario,
+  obterPerfilVeterinario
 };

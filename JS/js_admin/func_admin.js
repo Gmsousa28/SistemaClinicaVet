@@ -1,7 +1,8 @@
 // =======================================================
 // VARIÁVEIS GLOBAIS
 // =======================================================
-let funcionarioEmEdicao = null;
+let funcionarioEmEdicao = 'novo';
+
 let listaFuncionarios = [];
 
 // =======================================================
@@ -86,20 +87,35 @@ function editarFuncionario(id) {
 
     funcionarioEmEdicao = id;
 
-    const funcionario = listaFuncionarios.find(f => f.id_funcionario == id);
+    const funcionario = listaFuncionarios.find(
+        f => f.id_funcionario == id
+    );
 
     if (!funcionario) return;
 
-    document.getElementById('tituloEdicao').innerText = 'Editar Funcionário';
+    document.getElementById('tituloEdicao').innerText =
+        'Editar Funcionário';
 
-    document.getElementById('editNome').value = funcionario.nome || '';
-    document.getElementById('editCargo').value = funcionario.cargo || '';
-    document.getElementById('editEmail').value = funcionario.email || '';
-    document.getElementById('editContacto').value = funcionario.contacto || '';
-    document.getElementById('editNif').value = funcionario.nif || '';
-    document.getElementById('editMorada').value = funcionario.morada || '';
+    document.getElementById('editNome').value =
+        funcionario.nome || '';
 
-    document.getElementById('modalEdicao').style.display = 'flex';
+    document.getElementById('editCargo').value =
+        funcionario.cargo || '';
+
+    document.getElementById('editEmail').value =
+        funcionario.email || '';
+
+    document.getElementById('editContacto').value =
+        funcionario.contacto || '';
+
+    document.getElementById('editNif').value =
+        funcionario.nif || '';
+
+    document.getElementById('editMorada').value =
+        funcionario.morada || '';
+
+    document.getElementById('modalEdicao').style.display =
+        'flex';
 
     document.body.style.overflow = 'hidden';
 }
@@ -109,18 +125,25 @@ function editarFuncionario(id) {
 // =======================================================
 function abrirModalNovoFuncionario() {
 
-    funcionarioEmEdicao = null;
+    funcionarioEmEdicao = 'novo';
 
-    document.getElementById('tituloEdicao').innerText = 'Adicionar Funcionário';
+    document.getElementById('tituloEdicao').innerText =
+        'Adicionar Funcionário';
 
     document.getElementById('editNome').value = '';
+
     document.getElementById('editCargo').value = '';
+
     document.getElementById('editEmail').value = '';
+
     document.getElementById('editContacto').value = '';
+
     document.getElementById('editNif').value = '';
+
     document.getElementById('editMorada').value = '';
 
-    document.getElementById('modalEdicao').style.display = 'flex';
+    document.getElementById('modalEdicao').style.display =
+        'flex';
 
     document.body.style.overflow = 'hidden';
 }
@@ -130,7 +153,8 @@ function abrirModalNovoFuncionario() {
 // =======================================================
 function fecharModalEdicao() {
 
-    document.getElementById('modalEdicao').style.display = 'none';
+    document.getElementById('modalEdicao').style.display =
+        'none';
 
     document.body.style.overflow = '';
 }
@@ -143,57 +167,54 @@ async function salvarEdicao() {
     const dadosFuncionario = {
 
         nome: document.getElementById('editNome').value,
+
         morada: document.getElementById('editMorada').value,
+
         email: document.getElementById('editEmail').value,
+
         nif: document.getElementById('editNif').value,
+
         contacto: document.getElementById('editContacto').value,
+
         cargo: document.getElementById('editCargo').value
     };
 
     try {
 
-        let resposta;
+        let url = 'http://localhost:8008/api/funcionarios';
+
+        let metodo = 'POST';
 
         // =======================================================
         // EDITAR
         // =======================================================
-        if (funcionarioEmEdicao) {
+        if (funcionarioEmEdicao !== 'novo') {
 
-            resposta = await fetch(`http://localhost:8008/api/funcionarios/${funcionarioEmEdicao}`, {
+            url =
+                `http://localhost:8008/api/funcionarios/${funcionarioEmEdicao}`;
 
-                method: 'PUT',
-
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-
-                body: JSON.stringify(dadosFuncionario)
-            });
+            metodo = 'PUT';
         }
 
-        // =======================================================
-        // CRIAR
-        // =======================================================
-        else {
+        const resposta = await fetch(url, {
 
-            resposta = await fetch('http://localhost:8008/api/funcionarios', {
+            method: metodo,
 
-                method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
 
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+            body: JSON.stringify(dadosFuncionario)
+        });
 
-                body: JSON.stringify(dadosFuncionario)
-            });
-        }
+        const resultado = await resposta.json();
 
         if (!resposta.ok) {
 
-            throw new Error('Erro ao guardar funcionário');
+            throw new Error(resultado.message);
         }
 
-        alert('Funcionário guardado com sucesso!');
+        alert(resultado.message);
 
         fecharModalEdicao();
 
@@ -212,23 +233,28 @@ async function salvarEdicao() {
 // =======================================================
 async function eliminarFuncionario(id) {
 
-    const confirmar = confirm('Deseja eliminar este funcionário?');
+    const confirmar =
+        confirm('Deseja eliminar este funcionário?');
 
     if (!confirmar) return;
 
     try {
 
-        const resposta = await fetch(`http://localhost:8008/api/funcionarios/${id}`, {
+        const resposta = await fetch(
+            `http://localhost:8008/api/funcionarios/${id}`,
+            {
+                method: 'DELETE'
+            }
+        );
 
-            method: 'DELETE'
-        });
+        const resultado = await resposta.json();
 
         if (!resposta.ok) {
 
-            throw new Error('Erro ao eliminar funcionário');
+            throw new Error(resultado.message);
         }
 
-        alert('Funcionário eliminado com sucesso!');
+        alert(resultado.message);
 
         carregarFuncionarios();
 
