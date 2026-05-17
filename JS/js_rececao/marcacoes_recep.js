@@ -8,9 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const API_BASE = "http://localhost:8008/api";
 
     // =======================================================
-    // PASSO 1: PROCURAR ANIMAIS POR NIF (REAL COM INNER JOIN)
-    // =======================================================
- // =======================================================
     // PASSO 1: PROCURAR ANIMAIS POR NIF (COM FILTRO DE ÓBITO)
     // =======================================================
     const inputNif = document.getElementById('nif_cliente');
@@ -27,23 +24,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if(resultado.status === 200 && resultado.data.length > 0) {
                         
-                        // 🛡️ O NOSSO NOVO FILTRO: Apenas animais que não estão marcados como 'Morto'
+                        // 🛡️ O NOSSO NOVO FILTRO: Apenas animais vivos
                         const animaisVivos = resultado.data.filter(animal => animal.estado !== 'Morto');
 
                         if (animaisVivos.length > 0) {
                             this.style.borderColor = "#2ea89c";
                             this.style.backgroundColor = "#e0f2f1";
-                            // Mandamos apenas os vivos para o ecrã
                             renderizarAnimaisDaBD(animaisVivos);
                         } else {
-                            // O cliente existe, mas todos os animais estão falecidos
-                            this.style.borderColor = "#f39c12"; // Um laranja de aviso
+                            this.style.borderColor = "#f39c12"; 
                             this.style.backgroundColor = "#fef5e7";
                             containerAnimais.innerHTML = '<p style="color: #e67e22; width: 100%; text-align: center; margin-top: 1rem;"><i class="fa fa-info-circle"></i> O cliente foi encontrado, mas não existem animais vivos elegíveis para marcação.</p>';
                         }
-
                     } else {
-                        // NIF não existe ou não tem animais nenhuns
                         this.style.borderColor = "#e74c3c";
                         this.style.backgroundColor = "#fadbd8";
                         containerAnimais.innerHTML = '<p style="color: #e74c3c; width: 100%; text-align: center; margin-top: 1rem;">Nenhum cliente/animal encontrado para este NIF.</p>';
@@ -127,9 +120,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (erro) { console.error("Erro ao carregar veterinários:", erro); }
     }
 
-    // =======================================================
-    // PASSO 2.1: VISIBILIDADE DOS VETERINÁRIOS
-    // =======================================================
     const checkboxesServico = document.querySelectorAll('input[name="servico"]');
     const seccaoVeterinario = document.getElementById('seccao-veterinario');
     const checkboxConsulta = document.getElementById('check-consulta');
@@ -148,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // =======================================================
-    // PASSO 3: DATA E HORA (SLOTS 30 MIN)
+    // PASSO 3: DATA E HORA
     // =======================================================
     const inputDataVisual = document.getElementById('data_marcacao_visual');
     const containerSlots = document.getElementById('container-slots-hora');
@@ -204,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // =======================================================
-    // PASSO 4: GRAVAR A MARCAÇÃO NA BASE DE DADOS (POST)
+    // PASSO 4: GRAVAR A MARCAÇÃO
     // =======================================================
     const formMarcacao = document.querySelector('.formulario-marcacao');
     
@@ -212,40 +202,26 @@ document.addEventListener('DOMContentLoaded', function() {
         formMarcacao.addEventListener('submit', async function(evento) {
             evento.preventDefault(); 
 
-            // 1. Motivo (Serviços)
             const servicosSelecionados = Array.from(document.querySelectorAll('input[name="servico"]:checked'))
                                               .map(cb => cb.value)
                                               .join(', ');
 
-            // 2. Médico com Escolha Aleatória (se o valor for 0)
+            // Envia o Médico Escolhido ou "0" para o Backend tratar
             let vetEscolhido = document.querySelector('input[name="id_veterinario"]:checked')?.value;
-            
             if (!vetEscolhido || vetEscolhido === "0") {
-                const medicosReais = document.querySelectorAll('input[name="id_veterinario"][value]:not([value="0"])');
-                if (medicosReais.length > 0) {
-                    const indiceAleatorio = Math.floor(Math.random() * medicosReais.length);
-                    vetEscolhido = medicosReais[indiceAleatorio].value;
-                    console.log("Roleta girou! Médico sorteado: ID " + vetEscolhido);
-                } else {
-                    alert("Aviso: Não há veterinários disponíveis para atribuir a consulta.");
-                    return;
-                }
+                vetEscolhido = 0; 
             }
 
-            // 3. Formatar Data e Hora para o TIMESTAMP do Postgres
             const dataEscolhida = document.getElementById('data_marcacao_real').value;
             const horaEscolhida = document.getElementById('hora_marcacao_real').value;
             const dataHoraConsulta = `${dataEscolhida} ${horaEscolhida}:00`; 
 
-            // 4. Construir o objeto final (req.body)
             const dadosParaEnviar = {
                 id_animal: document.querySelector('input[name="id_animal"]:checked').value,
                 id_veterinario: vetEscolhido, 
                 data_consulta: dataHoraConsulta,
                 motivo: servicosSelecionados 
             };
-
-            console.log("Pronto para gravar na BD:", dadosParaEnviar);
 
             try {
                 const resposta = await fetch(`${API_BASE}/consultas`, {
@@ -257,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const resultado = await resposta.json();
 
                 if (resultado.status === 201) {
-                    alert('🎉 Marcação confirmada com sucesso! Vai aparecer na tabela.');
+                    alert('🎉 Marcação confirmada com sucesso!');
                     window.location.reload(); 
                 } else {
                     alert('Erro ao gravar: ' + resultado.message);
@@ -268,14 +244,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
 });
 
-// =======================================================
-// NAVEGAÇÃO DOS PASSOS (Global)
-// =======================================================
 let passoAtual = 1;
-
 window.mudarPasso = function(direcao) {
     if (direcao === 1) {
         if (passoAtual === 1 && !document.querySelector('input[name="id_animal"]:checked')) {
@@ -300,9 +271,6 @@ window.mudarPasso = function(direcao) {
     document.getElementById('btn-confirmar').style.display = passoAtual === 3 ? 'block' : 'none';
 };
 
-// =======================================================
-// HISTÓRICO DE MARCAÇÕES (Modal)
-// =======================================================
 window.abrirModalHistoricoMarcacoes = function() {
     document.getElementById('modal-historico-marcacoes').style.display = 'flex';
     carregarHistoricoAPI(); 

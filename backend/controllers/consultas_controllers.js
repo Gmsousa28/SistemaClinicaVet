@@ -4,8 +4,11 @@ const {
     obterConsultaByIdBD,
     atualizarConsultaBD,
     eliminarConsultaBD,
-    obterconsultasdovetespecificoBD
-}= require('../models/consultas_models');
+    obterFuncionarioServicoAleatorioBD,
+    criarServicoBD,
+    obterconsultasdovetespecificoBD,
+    obterVeterinarioDisponivelBD // 🛡️ Faltava importar isto!
+} = require('../models/consultas_models');
 
 const handleResponse = (res, status, message, data = null) => {
     res.status(status).json({ status, message, data });
@@ -37,40 +40,67 @@ const criarConsulta = async (req, res) => {
         // ROTA A: É PARA A TABELA DE CONSULTAS
         // ==========================================
         if (temConsulta) {
-            // Usa a tua função com as regras da professora (Bloco DO $$)
-            resposta.consulta = await criarConsultaBD(id_animal, id_veterinario, data_consulta, 'Consulta');
+            let vetIdFinal = id_veterinario;
+
+            // 🛡️ O ESCUDO: Intercetar o zero!
+            // Usamos String() para garantir que apanhamos "0" ou 0
+            if (String(vetIdFinal) === "0") {
+                console.log(">>> A rececionista pediu Qualquer Médico (ID 0). A procurar quem está de serviço...");
+                
+                const vetDisponivel = await obterVeterinarioDisponivelBD(data_consulta);
+                
+                if (!vetDisponivel) {
+                    return handleResponse(res, 400, "Erro: Não encontrámos nenhum veterinário de serviço com a agenda livre para o dia e hora selecionados.");
+                }
+                
+                // Trocamos o 0 pelo ID real do médico antes de mandar para a BD!
+                vetIdFinal = vetDisponivel.id_veterinario;
+                console.log(">>> Sucesso! A consulta foi atribuída ao Médico ID:", vetIdFinal);
+            }
+
+            // Executa a gravação já com o ID real
+            resposta.consulta = await criarConsultaBD(id_animal, vetIdFinal, data_consulta, 'Consulta');
         }
 
         // ==========================================
         // ROTA B: É PARA A TABELA DE SERVIÇOS
         // ==========================================
         if (outrosServicos.length > 0) {
-            // 1. Vai pescar um funcionário à sorte que NÃO seja Médico
-            const funcionario = await obterFuncionarioServicoAleatorioBD();
+            const totalBlocosEstetica = outrosServicos.length;
+
+            // 1. Encontra UM único funcionário aleatório com a agenda livre para o combo completo
+            const funcionarioElegivel = await obterFuncionarioServicoAleatorioBD(data_consulta, totalBlocosEstetica);
             
-            if (!funcionario) {
-                return handleResponse(res, 400, "Erro: Não há auxiliares/banhistas registados para fazer o serviço.");
+            if (!funcionarioElegivel) {
+                return handleResponse(res, 400, "Erro: Não encontrámos nenhum funcionário com disponibilidade contínua para realizar todos os serviços de estética selecionados neste horário.");
             }
 
-            // 2. Faz o INSERT para cada serviço extra (banho, tosquia, etc.)
-            for (const tipo of outrosServicos) {
-                // Primeira letra maiúscula para o ENUM da base de dados aceitar (ex: 'Banho', 'Tosquia')
+            // 2. Com o funcionário garantido para todo o percurso, fazemos os INSERTS em cascata
+            for (let i = 0; i < outrosServicos.length; i++) {
+                const tipo = outrosServicos[i];
+                
+                // Calcula a hora exata de cada bloco (ex: 1º serviço às 11:30, 2º às 12:00)
+                let dataSlot = new Date(data_consulta);
+                dataSlot.setMinutes(dataSlot.getMinutes() + (i * 30));
+
+                // Primeira letra maiúscula para o ENUM
                 const tipoEnum = tipo.charAt(0).toUpperCase() + tipo.slice(1);
                 
-                // Preço base obrigatório (já que a tua tabela não tem DEFAULT para preço)
+                // Preço base estipulado
                 const precoServico = tipo === 'tosquia' ? 25.00 : 20.00;
 
+                // Gravamos na tabela 'servicos'
                 const novoServico = await criarServicoBD(
                     id_animal, 
-                    funcionario.id_funcionario, 
-                    data_consulta, 
+                    funcionarioElegivel.id_funcionario, // O mesmo funcionário faz a sequência toda!
+                    dataSlot, 
                     tipoEnum, 
                     precoServico
                 );
                 resposta.servicos.push(novoServico);
             }
         }
-
+        
         // 3. Tudo correu bem!
         return handleResponse(res, 201, "Marcação efetuada com sucesso e distribuída pelas tabelas!", resposta);
         
@@ -123,8 +153,8 @@ const listarConsultasDoVeterinario = async (req, res, next) => {
         // 1. Apanhar o ID do veterinário que vem no URL do pedido
         const id_veterinario = req.params.id; 
 
-        // 2. Passar esse ID para a tua função da base de dados
-        const consultas = await obterconsultasdovetespecicifoBD(id_veterinario);
+        // 2. Passar esse ID para a tua função da base de dados (CORRIGIDO: "especifico")
+        const consultas = await obterconsultasdovetespecificoBD(id_veterinario);
 
         // 3. Enviar a resposta para o Frontend (usando a tua estrutura habitual)
         res.status(200).json({ status: 200, message: "Consultas carregadas", data: consultas });

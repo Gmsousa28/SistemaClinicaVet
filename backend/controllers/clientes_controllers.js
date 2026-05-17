@@ -48,6 +48,22 @@ const criarCliente = async (req, res, next) => {
         const novoCliente = await criarClienteBD(nome, morada, email, nif, contacto);
         handleResponse(res, 201, "Novo cliente registado com sucesso", novoCliente);
     } catch (err) {
+
+        if (err.code === '23505') {
+            // Juntámos as duas chaves de e-mail (a do login e a da tabela cliente)
+            if (err.constraint === 'login_cliente_email_key' || err.constraint === 'cliente_email_key') {
+                return handleResponse(res, 400, "Erro: Este E-mail já está registado noutro cliente!");
+            }
+            if (err.constraint === 'cliente_nif_key' || err.constraint.includes('nif')) {
+                return handleResponse(res, 400, "Erro: Este NIF já está registado no sistema!");
+            }
+            if (err.constraint === 'cliente_contacto_key' || err.constraint.includes('contacto')) {
+                return handleResponse(res, 400, "Erro: Este número de telemóvel já está em uso!");
+            }
+            
+            return handleResponse(res, 400, "Erro: Já existe um registo com estes dados únicos.");
+        }
+        
         next(err);
     }
 };
@@ -61,7 +77,23 @@ const atualizarCliente = async (req, res, next) => {
         
         if (!atualizado) return handleResponse(res, 404, "Não foi possível atualizar o cliente");
         handleResponse(res, 200, "Dados do cliente atualizados", atualizado);
-    } catch (err) {
+} catch (err) {
+
+        if (err.code === '23505') {
+            // Juntámos as duas chaves de e-mail (a do login e a da tabela cliente)
+            if (err.constraint === 'login_cliente_email_key' || err.constraint === 'cliente_email_key') {
+                return handleResponse(res, 400, "Erro: Este E-mail já está registado noutro cliente!");
+            }
+            if (err.constraint === 'cliente_nif_key' || err.constraint.includes('nif')) {
+                return handleResponse(res, 400, "Erro: Este NIF já está registado no sistema!");
+            }
+            if (err.constraint === 'cliente_contacto_key' || err.constraint.includes('contacto')) {
+                return handleResponse(res, 400, "Erro: Este número de telemóvel já está em uso!");
+            }
+            
+            return handleResponse(res, 400, "Erro: Já existe um registo com estes dados únicos.");
+        }
+        
         next(err);
     }
 };
