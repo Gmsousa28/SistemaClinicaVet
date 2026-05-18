@@ -1,193 +1,253 @@
-// Função para mostrar o modal (muda de none para flex e bloqueia scroll)
-function abrirModalResgates() {
-    document.getElementById('modal-resgate').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+const API_BASE = "http://localhost:8008/api";
+
+// =======================================================
+// FUNÇÕES GLOBAIS DE MODAIS (ABRIR E FECHAR)
+// =======================================================
+function abrirModalCliente() { 
+    document.getElementById('modal-cliente').style.display = 'flex'; 
+    document.body.style.overflow = 'hidden'; 
 }
 
-// Função para esconder o modal e devolver scroll
-function fecharModalResgates() {
-    document.getElementById('modal-resgate').style.display = 'none';
-    document.body.style.overflow = '';
+function fecharModalCliente() { 
+    document.getElementById('modal-cliente').style.display = 'none'; 
+    document.body.style.overflow = ''; 
 }
 
-// A tua função da imagem automática
+function abrirModalResgates() { 
+    document.getElementById('modal-resgate').style.display = 'flex'; 
+    document.body.style.overflow = 'hidden'; 
+}
+
+function fecharModalResgates() { 
+    document.getElementById('modal-resgate').style.display = 'none'; 
+    document.body.style.overflow = ''; 
+}
+
+function abrirModalAdocao() { 
+    const m = document.getElementById('modal-adocao'); 
+    if(m) { 
+        m.style.display = 'flex'; 
+        document.body.style.overflow = 'hidden'; 
+        const form = document.getElementById('form-formalizar-adocao');
+        if (form) form.reset();
+        const resAnimal = document.getElementById('resultado_animal_resgate');
+        if (resAnimal) resAnimal.innerHTML = '';
+        const resDono = document.getElementById('resultado_nif_dono');
+        if (resDono) resDono.innerHTML = '';
+        if(window.validarBotaoAdocao) window.validarBotaoAdocao(false, false);
+    } 
+}
+
+function fecharModalAdocao() { 
+    const m = document.getElementById('modal-adocao'); 
+    if(m) { 
+        m.style.display = 'none'; 
+        document.body.style.overflow = ''; 
+    } 
+}
+
+function abrirModalHistoricoAdocoes() {
+    const modal = document.getElementById('modal-historico-adocoes');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function fecharModalHistoricoAdocoes() {
+    const modal = document.getElementById('modal-historico-adocoes');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
 function mudarImagemResgates() {
     const selecao = document.getElementById('especie').value;
     const imagem = document.getElementById('foto-preview');
-
-    const imgCao = "../../img/icone_cao.jpg";
-    const imgGato = "../../img/icone_gato.jpg";
-
-    if (selecao === 'cao') {
-        imagem.src = imgCao;
-    } else {
-        imagem.src = imgGato;
+    if (imagem) {
+        imagem.src = selecao === 'cao' ? "../../img/icone_cao.jpg" : "../../img/icone_gato.jpg";
     }
 }
 
-
 // =======================================================
-// LÓGICA DA FICHA DE CLIENTE E PESQUISA (Pronta para API)
+// LÓGICA PRINCIPAL DA PÁGINA (ARRANCA AO CARREGAR)
 // =======================================================
-
-// 1. Base de Dados Simulada (Agora indexada por NIF para podermos pesquisar)
-const clientesClinicaDB = {
-    "123456789": {
-        id: 1,
-        nome: "João Manuel Silva",
-        nif: "123456789",
-        nascimento: "1985-06-15",
-        email: "joao.silva@email.com",
-        telemovel: "912345678",
-        morada: "Rua dos Animais, Nº 42, Porto",
-        animais: [
-            { nome: "Max", especie: "Cão", raca: "Labrador", nascimento: "2019-01-10", foto: "../../img/icone_cao.jpg" },
-            { nome: "Luna", especie: "Gato", raca: "Europeu Comum", nascimento: "2020-03-20", foto: "../../img/icone_gato.jpg" }
-        ]
-    },
-    "987654321": {
-        id: 2,
-        nome: "Ana Costa",
-        nif: "987654321",
-        nascimento: "1990-08-22",
-        email: "ana.costa@email.com",
-        telemovel: "923456789",
-        morada: "Avenida Central, Nº 10, Lisboa",
-        animais: [
-            { nome: "Mia", especie: "Gato", raca: "Siamês", nascimento: "2021-05-12", foto: "../../img/icone_gato.jpg" }
-        ]
-    }
-};
-
-// 2. Função que injeta os dados no HTML
-function carregarDadosCliente(cliente) {
-    const elNome = document.getElementById('cliente_nome');
-    if (!elNome) return; 
-
-    document.getElementById('cliente_nome').value = cliente.nome;
-    document.getElementById('cliente_nif').value = cliente.nif;
-    document.getElementById('cliente_nascimento').value = cliente.nascimento;
-    document.getElementById('cliente_email').value = cliente.email;
-    document.getElementById('cliente_tlm').value = cliente.telemovel;
-    document.getElementById('cliente_morada').value = cliente.morada;
-
-    const listaAnimais = document.getElementById('lista_animais_cliente');
-    listaAnimais.innerHTML = ''; 
-
-    cliente.animais.forEach(animal => {
-        listaAnimais.innerHTML += `
-            <div class="mini-cartao-animal">
-                <img src="${animal.foto}" alt="${animal.nome}">
-                <div class="mini-info">
-                    <strong>${animal.nome}</strong>
-                    <span>${animal.especie} • ${animal.raca} • Nasc: ${animal.nascimento}</span>
-                </div>
-            </div>
-        `;
-    });
-}
-
-// 3. Abre o pop-up recebendo o cliente específico
-function abrirModalCliente(clienteDados) {
-    carregarDadosCliente(clienteDados);
-    document.getElementById('modal-cliente').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
-
-function fecharModalCliente() {
-    document.getElementById('modal-cliente').style.display = 'none';
-    document.body.style.overflow = '';
-}
-
-// 4. Lógica de Pesquisa e Validação (Adicionada ao DOMContentLoaded)
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Listeners do Modal da Ficha
-    const btnFecharFicha = document.getElementById('btn-fechar-ficha');
-    if (btnFecharFicha) btnFecharFicha.addEventListener('click', fecharModalCliente);
+    // -------------------------------------------------------
+    // 1. DASHBOARD: CONSULTAS DE HOJE
+    // -------------------------------------------------------
+    const tbodyConsultasHoje = document.querySelector('table tbody');
 
-    const btnAgendar = document.getElementById('btn-agendar-consulta');
-    if (btnAgendar) {
-        btnAgendar.addEventListener('click', () => { window.location.href = 'marcacoes_recep.html'; });
+    if (tbodyConsultasHoje) {
+        carregarConsultasDeHoje();
     }
 
-    // LISTENER DA BARRA DE PESQUISA
-    const btnPesquisar = document.getElementById('btn-pesquisar-cliente');
-    const inputPesquisaNif = document.getElementById('pesquisa-nif');
+    async function carregarConsultasDeHoje() {
+        tbodyConsultasHoje.innerHTML = '<tr><td colspan="6" style="text-align:center;"><i class="fa fa-spinner fa-spin"></i> A carregar...</td></tr>';
+        try {
+            const resposta = await fetch(`${API_BASE}/consultas`);
+            const resultado = await resposta.json();
+
+            if (resultado.status === 200) {
+                const dataHojeLocal = new Date();
+                const ano = dataHojeLocal.getFullYear();
+                const mes = String(dataHojeLocal.getMonth() + 1).padStart(2, '0');
+                const dia = String(dataHojeLocal.getDate()).padStart(2, '0');
+                const dataDeHojeTexto = `${ano}-${mes}-${dia}`; 
+
+                // Filtra apenas as marcações de hoje
+                const consultasHoje = resultado.data.filter(c => c.data_consulta && c.data_consulta.startsWith(dataDeHojeTexto));
+
+                tbodyConsultasHoje.innerHTML = ''; 
+
+                if (consultasHoje.length === 0) {
+                    tbodyConsultasHoje.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#7f8c8d;">Sem consultas marcadas para hoje.</td></tr>';
+                    return;
+                }
+
+                consultasHoje.forEach(c => {
+                    const horaConsulta = new Date(c.data_consulta).toLocaleTimeString('pt-PT', {hour: '2-digit', minute:'2-digit'});
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${horaConsulta}</td>
+                        <td><i class="fa fa-paw" style="color:#7f8c8d;"></i> ID Animal: ${c.id_animal}</td>
+                        <td>ID Vet: ${c.id_veterinario}</td> 
+                        <td>${c.motivo || 'Consulta'}</td>
+                        <td><span style="color:#2ea89c; font-weight:bold;">${c.estado || 'Agendado'}</span></td>
+                        <td>
+                            <button class="btn-alternar-validar" style="background-color:#2ea89c; color:white; border:none; padding:5px 15px; border-radius:5px; cursor:pointer; font-weight:bold; transition: 0.3s;">
+                                <i class="fa fa-check"></i> Validar
+                            </button>
+                        </td>
+                    `;
+                    tbodyConsultasHoje.appendChild(tr);
+                });
+
+                // Lógica de alternar os botões de validar
+                document.querySelectorAll('.btn-alternar-validar').forEach(botao => {
+                    botao.addEventListener('click', function() {
+                        if (this.innerText.includes('Validado')) {
+                            this.innerHTML = '<i class="fa fa-check"></i> Validar';
+                            this.style.backgroundColor = '#2ea89c'; 
+                            this.style.opacity = '1';
+                        } else {
+                            this.innerHTML = '<i class="fa fa-check-double"></i> Validado';
+                            this.style.backgroundColor = '#7f8c8d'; 
+                            this.style.opacity = '0.7';
+                        }
+                    });
+                });
+            }
+        } catch (erro) {
+            tbodyConsultasHoje.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Erro a carregar.</td></tr>';
+        }
+    }
+
+    // -------------------------------------------------------
+    // 2. FICHA DE CLIENTE (PESQUISA COM FETCH GLOBAL)
+    // -------------------------------------------------------
+    const btnPesquisar = document.getElementById('btn-pesquisar-cliente') || document.querySelector('.btn-pesquisar');
+    const inputPesquisaNif = document.getElementById('pesquisa-nif') || document.querySelector('.input-pesquisa-nif');
+    const btnFecharFicha = document.getElementById('btn-fechar-ficha');
+    const btnAgendar = document.getElementById('btn-agendar-consulta');
+
+    if (btnFecharFicha) btnFecharFicha.addEventListener('click', fecharModalCliente);
+    if (btnAgendar) btnAgendar.addEventListener('click', () => { window.location.href = 'marcacoes_recep.html'; });
 
     if (btnPesquisar && inputPesquisaNif) {
-        btnPesquisar.addEventListener('click', function() {
+        btnPesquisar.addEventListener('click', async function(e) {
+            e.preventDefault(); 
             const nifDigitado = inputPesquisaNif.value.trim();
 
-            // Validação 1: O NIF tem 9 números?
             if (nifDigitado.length !== 9 || isNaN(nifDigitado)) {
                 alert("Por favor, introduza um NIF válido contendo exatamente 9 números.");
-                inputPesquisaNif.focus();
                 return;
             }
 
-            // Validação 2: Procura o NIF na Base de Dados Simulada
-            if (clientesClinicaDB[nifDigitado]) {
-                // Sucesso: Encontrou o cliente, passa os dados e abre o modal!
-                abrirModalCliente(clientesClinicaDB[nifDigitado]);
-            } else {
-                // Falha: Cliente não existe
-                alert(`O cliente com o NIF ${nifDigitado} não foi encontrado no sistema.\nPor favor, proceda à criação de uma nova ficha.`);
+            const textoOriginal = btnPesquisar.innerHTML;
+            btnPesquisar.innerHTML = '<i class="fa fa-spinner fa-spin"></i> A procurar...';
+
+            try {
+                // Puxa TODOS os clientes para a memória e procura o NIF lá dentro (resolve o erro 404 da rota em falta)
+                const respostaTodosClientes = await fetch(`${API_BASE}/clientes`);
+                const resultadoTodos = await respostaTodosClientes.json();
+
+                if (resultadoTodos.status === 200 && resultadoTodos.data) {
+                    
+                    const clienteEncontrado = resultadoTodos.data.find(c => String(c.nif) === nifDigitado);
+
+                    if (clienteEncontrado) {
+                        document.getElementById('cliente_nome').value = clienteEncontrado.nome || '';
+                        document.getElementById('cliente_nif').value = clienteEncontrado.nif || '';
+                        document.getElementById('cliente_nascimento').value = clienteEncontrado.data_nascimento ? clienteEncontrado.data_nascimento.split('T')[0] : '';
+                        document.getElementById('cliente_email').value = clienteEncontrado.email || '';
+                        document.getElementById('cliente_tlm').value = clienteEncontrado.contacto || '';
+                        document.getElementById('cliente_morada').value = clienteEncontrado.morada || '';
+
+                        await carregarAnimaisDoCliente(nifDigitado);
+                        abrirModalCliente();
+                    } else {
+                        alert(`O cliente com o NIF ${nifDigitado} não foi encontrado no sistema.\nPor favor, proceda à criação de uma nova ficha.`);
+                    }
+                } else {
+                    alert("Erro ao ler a base de dados de clientes.");
+                }
+            } catch (erro) {
+                console.error(erro);
+                alert("Erro ao ligar ao servidor.");
+            } finally {
+                btnPesquisar.innerHTML = textoOriginal;
             }
         });
     }
-});
 
+    async function carregarAnimaisDoCliente(nif) {
+        const listaAnimais = document.getElementById('lista_animais_cliente');
+        if(!listaAnimais) return;
+        
+        listaAnimais.innerHTML = '<p style="text-align:center;"><i class="fa fa-spinner fa-spin"></i> A procurar animais...</p>';
 
+        try {
+            const resposta = await fetch(`${API_BASE}/animais/nif/${nif}`);
+            const resultado = await resposta.json();
+            listaAnimais.innerHTML = ''; 
 
-// LÓGICA DO MODAL DE ADOÇÃO (Validação Animal + Cliente)
+            if (resultado.status === 200 && resultado.data && resultado.data.length > 0) {
+                resultado.data.forEach(animal => {
+                    let especie = animal.especie.toLowerCase();
+                    let icone = especie.includes('cão') || especie.includes('cao') ? '../../img/icone_cao.jpg' : '../../img/icone_gato.jpg';
+                    let dataNasc = animal.data_nascimento ? animal.data_nascimento.split('T')[0] : 'Desconhecida';
 
-// Funções para abrir e fechar o modal
-function abrirModalAdocao() {
-    const modal = document.getElementById('modal-adocao');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Bloqueia scroll
-        // Limpar o formulário sempre que abre
-        document.getElementById('form-formalizar-adocao').reset();
-        document.getElementById('resultado_animal_resgate').innerHTML = '';
-        document.getElementById('resultado_nif_dono').innerHTML = '';
-        validarBotaoAdocao(false, false);
+                    listaAnimais.innerHTML += `
+                        <div class="mini-cartao-animal">
+                            <img src="${icone}" alt="${animal.nome}">
+                            <div class="mini-info">
+                                <strong>${animal.nome}</strong>
+                                <span>${animal.especie} • ${animal.raca} • Nasc: ${dataNasc}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                listaAnimais.innerHTML = '<p style="color:#7f8c8d; padding:10px;">Este cliente não tem animais registados.</p>';
+            }
+        } catch (erro) {
+            listaAnimais.innerHTML = '<p style="color:red; padding:10px;">Erro ao carregar lista de animais.</p>';
+        }
     }
-}
 
-function fecharModalAdocao() {
-    const modal = document.getElementById('modal-adocao');
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = ''; // Devolve scroll
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // --- LISTENERS DA FICHA DE CLIENTE ---
-    const btnFecharFicha = document.getElementById('btn-fechar-ficha');
-    if (btnFecharFicha) {
-        btnFecharFicha.addEventListener('click', fecharModalCliente);
-    }
-
-    const btnAgendar = document.getElementById('btn-agendar-consulta');
-    if (btnAgendar) {
-        btnAgendar.addEventListener('click', () => {
-            window.location.href = 'marcacoes_recep.html';
-        });
-    }
-    // -------------------------------------
-
+    // -------------------------------------------------------
+    // 3. LÓGICA DO MODAL DE ADOÇÃO / RESGATES
+    // -------------------------------------------------------
     const inputIdAnimal = document.getElementById('id_animal_resgate');
     const inputNifDono = document.getElementById('nif_novo_dono');
     const btnConfirmarAdocao = document.getElementById('btn-confirmar-adocao');
 
-    // Só avança se o modal existir nesta página
     if (inputIdAnimal && inputNifDono) {
         
-        // --- BASES DE DADOS SIMULADAS ---
+        // Mantive a tua Base de Dados Mockada aqui para as Adoções
         const animaisResgatadosDB = {
             "405": { nome: "Sem Nome", especie: "Cão • Sénior", img: "../../img/icone_cao.jpg" },
             "102": { nome: "Bolinha", especie: "Cão • Adulto", img: "../../img/icone_cao.jpg" },
@@ -199,11 +259,9 @@ document.addEventListener('DOMContentLoaded', function() {
             "987654321": { nome: "Ana Costa", email: "ana.costa@email.com" }
         };
 
-        // --- VARIÁVEIS DE CONTROLO ---
         let animalValido = false;
         let clienteValido = false;
 
-        // 1. Validar ID do Animal enquanto escreve
         inputIdAnimal.addEventListener('input', function() {
             const id = this.value.trim();
             const zonaResultado = document.getElementById('resultado_animal_resgate');
@@ -236,7 +294,6 @@ document.addEventListener('DOMContentLoaded', function() {
             validarBotaoAdocao(animalValido, clienteValido);
         });
 
-        // 2. Validar NIF do Cliente enquanto escreve
         inputNifDono.addEventListener('input', function() {
             const nif = this.value.trim();
             const zonaResultado = document.getElementById('resultado_nif_dono');
@@ -265,7 +322,6 @@ document.addEventListener('DOMContentLoaded', function() {
             validarBotaoAdocao(animalValido, clienteValido);
         });
 
-        // 3. Função que liga/desliga o botão final
         window.validarBotaoAdocao = function(animalOk, clienteOk) {
             if (animalOk && clienteOk) {
                 btnConfirmarAdocao.disabled = false;
@@ -278,27 +334,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // 4. Ação do botão Final
         btnConfirmarAdocao.addEventListener('click', function() {
             alert("Sucesso! O animal foi associado ao NIF do novo dono. O processo será arquivado.");
             fecharModalAdocao();
         });
     }
 });
-
-// LÓGICA DO HISTÓRICO GERAL DE ADOÇÕES
-function abrirModalHistoricoAdocoes() {
-    const modal = document.getElementById('modal-historico-adocoes');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Bloqueia scroll
-    }
-}
-
-function fecharModalHistoricoAdocoes() {
-    const modal = document.getElementById('modal-historico-adocoes');
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = ''; // Devolve scroll
-    }
-}

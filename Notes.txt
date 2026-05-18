@@ -100,3 +100,8 @@ EM RELACAO AOS UPDATES O SITE ENVIA TODOS OS DADOS OS QUE ATUALIZOU E OS QUE NAO
 UPDATE CLIENTE NA BD
 Se for o Cliente no Site: O teu código nunca pede ao cliente para digitar o seu ID. O código vai buscar o ID do cliente silenciosamente à "sessão/login" dele e injeta-o na nossa função da base de dados. Assim, é impossível ele atualizar o perfil do vizinho.
 Se for o Rececionista na Clínica: O teu código sabe que aquele utilizador tem o nível de "Funcionário". Por isso, apresenta-lhe uma lista de todos os clientes. Quando o rececionista escolhe o cliente 5 para editar, o código envia o ID 5 para a nossa mesma função.
+
+
+
+Dashboard Receçaoo é apenas Visual os botoes de validar a presença
+só funcionario consegue receber pagamentos
