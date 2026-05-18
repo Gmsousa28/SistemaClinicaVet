@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Perfil Cliente</title>
+        <title>Perfil Funcionário</title>
         
         <link rel="stylesheet" href="../../CSS/PaginaSite.css">
         <link rel="stylesheet" href="../../CSS/perfis.css"> 
@@ -12,7 +12,6 @@
     </head>
 
     <body class="com-sidebar">
-
 
         <header>
             <div class="header-texto">
@@ -28,10 +27,10 @@
         <div id="alerta-sucesso">
             <i class="fa fa-check-circle"></i> Perfil atualizado com sucesso!
         </div>
->
+
         <section class="sidebar">
-            <a href="#" class="logo">
-                <img src="../../img/Logo_vet.png">
+            <a href="../../Pag_principal.html" class="logo">
+                <img src="../../img/Logo_vet.png" alt="Logótipo Clínica Miacãomigo">
             </a>
             <hr>
             <nav class="menu">
@@ -55,77 +54,68 @@
                     <section class="perfil">
                         <section class="foto-container">
                             <img src="../../img/imagemdefault.png" alt="Foto de perfil padrão" id="foto-perfil">
-                            
                             <input type="file" id="input-foto" accept="image/*" style="display: none;">
-                            
-                            <label for="input-foto" class="overlay-foto">
-                                <i class="fa fa-camera"></i>
-                                <span>Alterar</span>
-                            </label>
+                            <label for="input-foto" class="overlay-foto">                            
                         </section>
-                        <h3>João Silva</h3>
-                        <p class="user">@joao</p>
+                        <h3 id="perfil-nome-completo">A carregar...</h3>
+                        <p class="user" id="perfil-username">@loading</p>
                         <section class="perfil-bottom">
-                            <button class="editar">Editar Perfil</button>
+                            <button class="editar" id="btn-editar-perfil">Editar Perfil</button>
                         </section>
                     </section>
 
                     <section class="coluna-principal">
-                        
                         <section class="conta"> 
                             <h2 class="titulo-conta">Dados da Conta</h2>
                             <section class="info-grid">
                                 <section class="campo">
                                     <label>Nome</label>
                                     <div class="input-icon"><i class="fa fa-user"></i>
-                                        <input type="text" value="João">
+                                        <input type="text" id="conta-nome" value="" disabled>
                                     </div>
                                 </section>
                                 <section class="campo">
                                     <label>Apelido</label>
                                     <div class="input-icon"><i class="fa fa-user"></i>
-                                        <input type="text" value="Silva">
+                                        <input type="text" id="conta-apelido" value="" disabled>
                                     </div>
                                 </section>
                                 <section class="campo">
                                     <label>Email</label>
                                     <div class="input-icon"><i class="fa fa-envelope"></i>
-                                        <input type="email" value="joao@gmail.com">
+                                        <input type="email" id="conta-email" value="" disabled>
                                     </div>
                                 </section>
                                 <section class="campo">
                                     <label>NIF</label>
                                     <div class="input-icon"><i class="fa fa-id-card"></i>
-                                        <input type="text" value="123456789">
+                                        <input type="text" id="conta-nif" value="" disabled>
                                     </div>
                                 </section>
                                 <section class="campo">
                                     <label>Telefone</label>
                                     <div class="input-icon"><i class="fa fa-phone"></i>
-                                        <input type="text" value="912345678">
+                                        <input type="text" id="conta-telefone" value="" disabled>
                                     </div>
                                 </section>
                                 <section class="campo">
                                     <label>Morada</label>
                                     <div class="input-icon"><i class="fa fa-location-dot"></i>
-                                        <input type="text" value="Rua Exemplo, Lisboa">
+                                        <input type="text" id="conta-morada" value="" disabled>
                                     </div>
                                 </section>
                             </section>
                         </section>
-
                     </section> 
 
                 </section> 
-
             </section>
-            
         </main>
         
         <footer>
             <p style="color: white; font-size: 0.9rem;">Área Reservada - Clínica Miacãomigo © 2026</p>
         </footer>
 
-        <script src="../../../JS/cliente_perfil.js"></script>
+        <script src="../../../JS/js_rececao/perfil_recep.js"></script>
     </body>
 </html>

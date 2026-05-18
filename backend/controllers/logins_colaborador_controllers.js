@@ -1,6 +1,7 @@
 const {
     listarLoginsColaboradoresBD,
-    verificarLoginColaboradorBD
+    verificarLoginColaboradorBD,
+    obterPerfilColaboradorBD
 } = require('../models/logins_colaborador_models.js');
 
 const handleResponse = (res, status, message, data = null) => {
@@ -71,7 +72,35 @@ const fazerLoginColaborador = async (req, res) => {
     }
 };
 
+
+// Importa o obterPerfilColaboradorBD no topo do ficheiro!
+// const { obterPerfilColaboradorBD } = require('../models/logins_colaborador_models.js');
+
+const obterPerfilColaborador = async (req, res) => {
+    try {
+        const { id } = req.params; // Apanha o ID que vem na URL (ex: 6)
+        
+        const colaborador = await obterPerfilColaboradorBD(id);
+        
+        if (!colaborador) {
+            return res.status(404).json({ status: 404, message: "Colaborador não encontrado." });
+        }
+        
+        return res.status(200).json({ 
+            status: 200, 
+            message: "Perfil carregado com sucesso!", 
+            data: colaborador 
+        });
+    } catch (err) {
+        console.error("Erro ao obter perfil:", err);
+        return res.status(500).json({ status: 500, message: "Erro interno do servidor." });
+    }
+};
+
+// Lembra-te de adicionar obterPerfilColaborador no module.exports lá no fundo!
+
 module.exports = {
     listarLoginsColaboradores,
-    fazerLoginColaborador
+    fazerLoginColaborador,
+    obterPerfilColaborador
 };
