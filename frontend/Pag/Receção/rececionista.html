@@ -8,6 +8,14 @@
         <link rel="stylesheet" href="../../CSS/PaginaSite.css">
         <link rel="stylesheet" href="../../CSS/css_rececao/rececionista.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">  
+
+        <script>
+        const tipoUtilizador = localStorage.getItem('tipoUtilizador');
+        if (!tipoUtilizador || tipoUtilizador !== 'funcionario') {
+            alert('Acesso negado!');
+            window.location.href = '../Logins_Sessões/login.html';
+        }
+        </script>       
     </head>
 
     <body class="com-sidebar"> 
@@ -38,7 +46,7 @@
                 <a href="animais_recep.html"><i class="fa fa-paw"></i> Animais </a>
                 <a href="resg_ado.html"><i class="fa fa-hand-holding-heart"></i> Resgates e Adoções </a>
                 <hr>
-                <a href="../../Pag_principal.html"><i class="fa fa-sign-out"></i> Sair</a>
+                <a href="#" onclick="fazerLogout(event)"><i class="fa fa-sign-out"></i> Sair</a>
             </nav>
             
         </section>
@@ -187,6 +195,7 @@
         <footer>
             <p style="color: white; font-size: 0.9rem;">Área Reservada - Clínica Miacãomigo © 2026</p>
         </footer>
-    <script src="../../../JS/js_rececao/rececao.js"></script>  
+    <script src="../../../JS/js_rececao/rececao.js"></script>
+    <script src="../../../JS/js_logins/auth_logins.js"></script>  
     </body>
 </html>

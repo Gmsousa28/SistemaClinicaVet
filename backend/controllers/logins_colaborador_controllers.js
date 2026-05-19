@@ -1,7 +1,9 @@
 const {
     listarLoginsColaboradoresBD,
-    verificarLoginColaboradorBD,
-    obterPerfilColaboradorBD
+    obterPerfilColaboradorBD,
+    obterPerfilPorLoginColabBD,
+    realizarLoginColaboradorBD,
+    logoutDispositivoColabBD
 } = require('../models/logins_colaborador_models.js');
 
 const handleResponse = (res, status, message, data = null) => {
@@ -18,11 +20,9 @@ const listarLoginsColaboradores = async (req, res, next) => {
 };
 
 const fazerLoginColaborador = async (req, res) => {
-    try{
-        // 1. Apanhar os dados que o JavaScript do frontend nos enviou (POST)
+    try {
         const { email, password } = req.body;
 
-        // 2. Validação básica de segurança
         if (!email || !password) {
             return res.status(400).json({ 
                 status: 400, 
@@ -30,56 +30,77 @@ const fazerLoginColaborador = async (req, res) => {
             });
         }
 
-        // 3. Vai à Base de Dados procurar APENAS por este email usando a tua função
-        const utilizador = await verificarLoginColaboradorBD(email);
+        // 1. A BD trata de validar as credenciais e aplicar as regras das 12h
+        const sessao = await realizarLoginColaboradorBD(email, password);
 
-        // 4. Se a BD não devolveu nada, é porque o email não existe (ou a conta está inativa)
-        if (!utilizador) {
+        if (!sessao) {
             return res.status(401).json({ 
                 status: 401, 
-                message: "Email não encontrado ou conta inativa." 
+                message: "Email ou palavra-passe incorreta." 
             });
         }
 
-        // 5. Comparar as passwords! 
-        // Vê se a password do site é igual à 'palavra_passe' da base de dados
-        if (password === utilizador.palavra_passe) {
-            
-            // SUCESSO! 
-            // Por segurança, vamos apagar a password da resposta antes de a enviar para o frontend
-            delete utilizador.palavra_passe;
+        // 2. Extraímos os retornos gerados pela tua procedure SQL
+        const idLoginColab = sessao.id_colaborador || sessao.id_resultado;
+        const idSessao = sessao.id_sessao || sessao.id_logs;
 
-            return res.status(200).json({ 
-                status: 200, 
-                message: "Login efetuado com sucesso!", 
-                data: utilizador // O frontend vai guardar isto (id_colaborador e email) na memória
-            });
+        // 3. Procura o perfil pelo id_login_colaborador correspondente (Rita / Tiago corrigido!)
+        const utilizadorCompleto = await obterPerfilPorLoginColabBD(idLoginColab);
 
-        } else {
-            // Se as passwords não baterem certo...
-            return res.status(401).json({ 
-                status: 401, 
-                message: "Palavra-passe incorreta." 
-            });
+        if (!utilizadorCompleto) {
+            return res.status(404).json({ status: 404, message: "Perfil do colaborador não encontrado." });
         }
-    }
-    catch (err) {
-        console.error("Erro no login:", err);
-        return res.status(500).json({ 
-            status: 500, 
-            message: "Erro interno do servidor." 
+
+        // Limpeza de segurança
+        if (utilizadorCompleto.palavra_passe) {
+            delete utilizadorCompleto.palavra_passe;
+        }
+
+        // 4. Devolve a resposta compatível com o código dos teus colegas + o id_sessao
+        return res.status(200).json({ 
+            status: 200, 
+            message: "Login efetuado com sucesso!", 
+            id_sessao: idSessao, // O teu identificador para a auditoria
+            data: utilizadorCompleto // O objeto intacto que o frontend deles espera
+        });
+
+    } catch (err) {
+        // Apanha os erros disparados pelo RAISE EXCEPTION do PostgreSQL (ex: Conta suspensa ou Já Logado)
+        console.error("Bloqueio no login:", err.message);
+        return res.status(403).json({ 
+            status: 403, 
+            message: err.message 
         });
     }
 };
 
+// --- ADICIONADA: Função que gere o Logout vindo do botão da Sidebar ---
+const fazerLogoutColaborador = async (req, res) => {
+    try {
+        const { id_colaborador, id_sessao } = req.body; 
 
-// Importa o obterPerfilColaboradorBD no topo do ficheiro!
-// const { obterPerfilColaboradorBD } = require('../models/logins_colaborador_models.js');
+        if (!id_colaborador || !id_sessao) {
+            return res.status(400).json({ status: 400, message: "Dados de sessão em falta para efetuar logout." });
+        }
+
+        const resultado = await logoutDispositivoColabBD(id_colaborador, id_sessao);
+
+        if (resultado && resultado.logout_dispositivo_colab === true) {
+            return res.status(200).json({ status: 200, message: "Sessão encerrada com sucesso." });
+        } else {
+            return res.status(400).json({ status: 400, message: "Sessão já se encontrava encerrada ou os IDs não coincidem." });
+        }
+    } catch (err) {
+        console.error("Erro no logout:", err.message);
+        return res.status(500).json({ status: 500, message: "Erro interno do servidor." });
+    }
+};
 
 const obterPerfilColaborador = async (req, res) => {
     try {
-        const { id } = req.params; // Apanha o ID que vem na URL (ex: 6)
+        const { id } = req.params; 
         
+        // Mantém a pesquisa pelo ID do colaborador tradicional para a rota GET
         const colaborador = await obterPerfilColaboradorBD(id);
         
         if (!colaborador) {
@@ -97,10 +118,9 @@ const obterPerfilColaborador = async (req, res) => {
     }
 };
 
-// Lembra-te de adicionar obterPerfilColaborador no module.exports lá no fundo!
-
 module.exports = {
     listarLoginsColaboradores,
     fazerLoginColaborador,
+    fazerLogoutColaborador, // Exportado corretamente para as tuas rotas
     obterPerfilColaborador
 };

@@ -255,9 +255,7 @@ const obterVeterinarioDisponivelBD = async (data_consulta) => {
     return result.rows[0];
 };
 
-// =======================================================
-// FUNÇÕES PARA OS SERVIÇOS (BANHO / TOSQUIA)
-// =======================================================
+
 // OBTÉM UM FUNCIONÁRIO DISPONÍVEL (Com verificação de Horário!)
 // =======================================================
 const obterFuncionarioServicoAleatorioBD = async (data_inicio, total_blocos) => {
@@ -321,7 +319,7 @@ module.exports = {
     atualizarConsultaBD,
     eliminarConsultaBD,
     obterconsultasdovetespecificoBD,
-    obterVeterinarioDisponivelBD,       // 🚀 Exportado com sucesso!
-    obterFuncionarioServicoAleatorioBD, // Exportado com sucesso!
-    criarServicoBD                      // Exportado com sucesso!
+    obterVeterinarioDisponivelBD,       
+    obterFuncionarioServicoAleatorioBD, 
+    criarServicoBD                      
 };

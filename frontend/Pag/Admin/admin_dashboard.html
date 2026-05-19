@@ -9,6 +9,16 @@
   <link rel="stylesheet" href="../../CSS/css_rececao/rececionista.css">
   <link rel="stylesheet" href="../../CSS/css_admin/admin_dash.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <script>
+    // VALIDAÇÃO DE SEGURANÇA: Só deixa entrar se for Admin
+    const tipoUtilizador = localStorage.getItem('tipoUtilizador');
+    
+    if (!tipoUtilizador || tipoUtilizador !== 'admin') {
+        alert('Acesso negado! Não tens permissões para aceder ao Painel de Administração.');
+        window.location.href = '../Logins_Sessões/login.html'; // Ajusta o caminho para a tua página de login
+    }
+</script>
 </head>
 
 <body class="com-sidebar">
