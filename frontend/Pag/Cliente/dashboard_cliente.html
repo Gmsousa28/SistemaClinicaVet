@@ -10,6 +10,14 @@
         <link rel="stylesheet" href="../../CSS/css_cliente/cliente.css">
         <link rel="stylesheet" href="../../CSS/css_cliente/header_cliente.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+        <script>
+            const tipoUtilizador = localStorage.getItem('tipoUtilizador');
+            if (!tipoUtilizador || tipoUtilizador !== 'cliente') {
+                alert('Acesso negado! Área exclusiva a Clientes.');
+                window.location.href = '../Logins_Sessões/login.html'; // Ajusta o caminho se necessário
+            }
+        </script>
     </head>
 
     <header>
@@ -32,7 +40,7 @@
                 <a href="historico_cliente.html"><i class="fa-solid fa-clock"></i> Histórico</a>
                 <a href="definicoes_cliente.html"><i class="fa fa-cog"></i> Definições</a>
                 <hr>
-                <a href="#"><i class="fa fa-sign-out"></i> Sair</a>
+                <a href="#" onclick="fazerLogout(event)"><i class="fa fa-sign-out"></i> Sair</a>
             </nav>
         </section>
 
@@ -113,5 +121,6 @@
         <!-- O Modal foi apagado daqui para ir para a página de Consultas! -->
 
         <script src="../../../JS/js_cliente/cliente_dashboard.js"></script>
+        <script src="../../../JS/js_logins/auth_logins.js"></script>
     </body>
 </html>

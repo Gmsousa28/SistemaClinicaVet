@@ -39,15 +39,16 @@ async function fazerLogin(event) {
         let urlAPI = '';
 
         // 3. Verifica o tipo de utilizador (apenas para decidir qual a rota a chamar)
+        // 3. Verifica o tipo de utilizador para escolher a Rota da API
         if (tipoUtilizador === 'cliente') {
             urlAPI = 'http://localhost:8008/api/login_cliente';
-        } else if (tipoUtilizador === 'veterinario' || tipoUtilizador === 'admin' || tipoUtilizador === 'funcionario') {
+        } else if (tipoUtilizador === 'colaborador') {
             urlAPI = 'http://localhost:8008/api/login_colaborador'; 
         } else {
             alert("Por favor, seleciona um tipo de conta válido.");
             return; 
         }
-
+        
         // 4. Envia o email e password para o teu backend
         const resposta = await fetch(urlAPI, {
             method: 'POST',
