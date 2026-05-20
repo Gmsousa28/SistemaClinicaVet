@@ -212,6 +212,7 @@ const obterconsultasdovetespecificoBD = async (id_veterinario) => {
         FROM public.consulta c
         INNER JOIN public.animal a ON c.id_animal = a.id_animal
         INNER JOIN public.cliente cli ON a.id_cliente = cli.id_cliente
+        WHERE c.id_veterinario = $1
         ORDER BY c.data_consulta ASC;
         `,
         [id_veterinario]
