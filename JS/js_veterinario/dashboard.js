@@ -100,7 +100,7 @@ async function carregarProximasConsultas(idDoVetLogado) {
     
     if (!tbody) return;
     
-    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #7f8c8d;">A carregar as tuas consultas de hoje...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #7f8c8d;"><i class="fa fa-spinner fa-spin"></i> A carregar as tuas consultas de hoje...</td></tr>`;
 
     try {
         // Pedir todas as consultas agendadas ao backend
@@ -111,11 +111,12 @@ async function carregarProximasConsultas(idDoVetLogado) {
 
         const todasConsultas = resultado.data; 
 
-        // Capturar o tempo presente (Data e Hora)
+        // 1. Capturar o tempo presente (LOCAL) igual à função que funciona
         const agora = new Date();
-        const dataHoje = agora.toISOString().split('T')[0]; 
-        const horaAtual = agora.getHours().toString().padStart(2, '0') + ":" + 
-                          agora.getMinutes().toString().padStart(2, '0');
+        const ano = agora.getFullYear();
+        const mes = String(agora.getMonth() + 1).padStart(2, '0');
+        const dia = String(agora.getDate()).padStart(2, '0');
+        const dataDeHojeTexto = `${ano}-${mes}-${dia}`; 
 
         let consultasFiltradas = [];
 
@@ -125,25 +126,32 @@ async function carregarProximasConsultas(idDoVetLogado) {
                 return; 
             }
 
-            // Converter e tratar a data que vem do PostgreSQL
-            const dataObjeto = new Date(consulta.data_consulta);
-            const dataC = dataObjeto.toISOString().split('T')[0];
-            const horaC = dataObjeto.toISOString().split('T')[1].substring(0, 5);
+            // 🛡️ FILTRO 2: Só queremos as consultas de HOJE
+            if (consulta.data_consulta && consulta.data_consulta.startsWith(dataDeHojeTexto)) {
+                
+                // Converte a data da BD num objeto de data real do JavaScript (que assume o teu fuso horário)
+                const dataDaConsulta = new Date(consulta.data_consulta);
 
-            // 🛡️ FILTRO 2: Só queremos as consultas de HOJE que ainda vão acontecer
-            if (dataC === dataHoje && horaC >= horaAtual) {
-                consultasFiltradas.push({
-                    hora: horaC,
-                    nomeAnimal: consulta.nome || "Paciente", 
-                    especie: consulta.especie || "cão",
-                    cliente: consulta.nome|| "Proprietário",
-                    servico: consulta.motivo || "Consulta Geral"
-                });
+                // 🛡️ FILTRO 3: A consulta ainda vai acontecer hoje? (Compara o tempo diretamente)
+                if (dataDaConsulta >= agora) {
+                    
+                    // Extrai a hora já convertida e formatada para Portugal (PT-PT)
+                    const horaFormatada = dataDaConsulta.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+                    
+                    consultasFiltradas.push({
+                        dataObjeto: dataDaConsulta, // Guardamos o objeto para ordenar facilmente depois
+                        horaDisplay: horaFormatada,
+                        nomeAnimal: consulta.nome_animal || consulta.nome || "Paciente", // Tenta ler nome_animal primeiro
+                        especie: consulta.especie_animal || consulta.especie || "cão", 
+                        cliente: consulta.nome_cliente || consulta.nome || "Proprietário",
+                        servico: consulta.motivo || "Consulta Geral"
+                    });
+                }
             }
         });
 
-        // Ordenar a lista por ordem cronológica (as mais próximas aparecem primeiro)
-        consultasFiltradas.sort((a, b) => a.hora.localeCompare(b.hora));
+        // Ordenar a lista cronologicamente da mais cedo para a mais tarde (usa o tempo real)
+        consultasFiltradas.sort((a, b) => a.dataObjeto - b.dataObjeto);
 
         // Limitar a exibição às próximas 5 consultas do turno
         const proximas5 = consultasFiltradas.slice(0, 5);
@@ -163,7 +171,7 @@ async function carregarProximasConsultas(idDoVetLogado) {
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td style="font-weight: bold; color: #2ea89c;">${consulta.hora}</td>
+                <td style="font-weight: bold; color: #2ea89c;">${consulta.horaDisplay}</td>
                 <td><i class="fa fa-${icone}" style="color: #7f8c8d; margin-right: 8px;"></i> ${consulta.nomeAnimal}</td>
                 <td>${consulta.cliente}</td>
                 <td><span class="badge-servico" style="background: #e0f2f1; color: #2ea89c; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">${consulta.servico}</span></td>

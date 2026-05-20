@@ -200,23 +200,19 @@ const eliminarConsultaBD = async (id_consulta) => {
 const obterconsultasdovetespecificoBD = async (id_veterinario) => {
     const result = await pool.query(
         `
-        SELECT
-            c.data_consulta,
-            c.motivo,
-            cl.nome,
-            a.animal,
-            a.especie,
-            a.nome,
-            a.raca
-        FROM public.veterinario v
-        INNER JOIN public.consulta c
-            ON v.id_veterinario = c.id_veterinario
-        INNER JOIN public.animal a
-            ON c.id_animal = a.id_animal
-        INNER JOIN public.cliente cl
-            ON a.id_cliente = cl.id_cliente
-        WHERE v.id_veterinario = $1
-        ORDER BY c.data_consulta DESC;
+        SELECT 
+        c.id_consulta,
+        c.data_consulta,
+        c.id_veterinario,
+        c.motivo,
+        c.estado,
+        a.nome AS nome_animal,      
+        a.especie AS especie_animal, 
+        cli.nome AS nome_cliente    
+        FROM public.consulta c
+        INNER JOIN public.animal a ON c.id_animal = a.id_animal
+        INNER JOIN public.cliente cli ON a.id_cliente = cli.id_cliente
+        ORDER BY c.data_consulta ASC;
         `,
         [id_veterinario]
     );
