@@ -206,6 +206,7 @@ const obterconsultasdovetespecificoBD = async (id_veterinario) => {
             cl.nome,
             a.animal,
             a.especie,
+            a.nome,
             a.raca
         FROM public.veterinario v
         INNER JOIN public.consulta c

@@ -1,104 +1,178 @@
-// ==========================================
-// 1. ARRANQUE DA PÁGINA
-// ==========================================
-document.addEventListener("DOMContentLoaded", () => {
+// =================================================================
+// 1. ARRANQUE DA PÁGINA, SEGURANÇA INTELIGENTE E SAUDAÇÃO REAL
+// =================================================================
+document.addEventListener("DOMContentLoaded", async () => {
     
-    // Carrega a tabela de consultas assim que a página abre
-    carregarProximasConsultas();
+    // --- PASSO A: VERIFICAR SE O UTILIZADOR ESTÁ LOGADO ---
+    const dadosMochila = localStorage.getItem('utilizadorLogado');
+    const tipoUtilizador = localStorage.getItem('tipoUtilizador');
 
-    // Lógica da Pesquisa do Cliente
+    // Segurança 1: Se a mochila estiver vazia, bloqueia logo
+    if (!dadosMochila || !tipoUtilizador) {
+        alert("Sessão expirada. Por favor, faz login novamente.");
+        window.location.href = '../Logins_Sessões/login.html'; 
+        return;
+    }
+
+    // Criamos uma versão limpa em minúsculas para comparar sem medo de acentos ou espaços
+    const tipoLimpo = tipoUtilizador.toLowerCase().trim();
+
+    // Segurança 2: Permite entrar se for "veterinario" (HTML) ou "veterinário" (Base de Dados)
+    if (tipoLimpo !== 'veterinario' && tipoLimpo !== 'veterinário') {
+        alert("Acesso negado! Área exclusiva a Veterinários. O teu cargo atual é: " + tipoUtilizador);
+        window.location.href = '../Logins_Sessões/login.html'; 
+        return;
+    }
+
+    // Extrair com segurança os dados guardados no login
+    const utilizador = JSON.parse(dadosMochila);
+    const idDoVetLogado = utilizador.id_colaborador; 
+
+    // --- PASSO B: IR À API BUSCAR O NOME DO MÉDICO ---
+    try {
+        const respostaVet = await fetch(`http://localhost:8008/api/veterinarios/perfil/${idDoVetLogado}`);
+        
+        if (respostaVet.ok) {
+            const dadosPerfil = await respostaVet.json();
+            const nomeDoMedico = dadosPerfil.data.nome; // Nome real vindo do PostgreSQL
+            
+            // Injeta o nome do médico na mensagem de boas-vindas do teu HTML
+            document.getElementById('mensagem-boas-vindas').innerText = `Bom turno, Dr. ${nomeDoMedico}!`;
+        } else {
+            document.getElementById('mensagem-boas-vindas').innerText = "Olá! Bom turno de trabalho.";
+        }
+    } catch (erro) {
+        console.error("Erro ao buscar o nome do médico:", erro);
+        document.getElementById('mensagem-boas-vindas').innerText = "Olá! Bom turno de trabalho.";
+    }
+
+    // --- PASSO C: CARREGAR A TABELA DE CONSULTAS FILTRADA ---
+    carregarProximasConsultas(idDoVetLogado);
+
+    // ==========================================
+    // 2. LÓGICA DA PESQUISA DE CLIENTE POR NIF
+    // ==========================================
     const formPesquisa = document.getElementById('form-pesquisa-cliente');
     const inputNif = document.getElementById('pesquisa-nif');
 
     if (formPesquisa && inputNif) {
-        formPesquisa.addEventListener('submit', (evento) => {
-            // 1. Impede a página de recarregar
-            evento.preventDefault(); 
+        formPesquisa.addEventListener('submit', async (evento) => {
+            evento.preventDefault(); // Impede a página de recarregar o ecrã
 
             const nifDigitado = inputNif.value.trim();
 
-            // 2. Base de Dados Simulada
-            const baseDeDadosClientes = [
-                { nif: "123456789", nome: "João Silva", telefone: "912345678", email: "joao.silva@email.com", morada: "Rua das Flores, 12" },
-                { nif: "987654321", nome: "Ana Costa", telefone: "961234567", email: "ana.costa@email.com", morada: "Av. da Liberdade, 45" }
-            ];
+            if (nifDigitado.length !== 9) {
+                alert("Por favor, introduz um NIF válido com 9 dígitos.");
+                return;
+            }
 
-            // 3. Procura se existe algum cliente com este NIF
-            const clienteEncontrado = baseDeDadosClientes.find(cliente => cliente.nif === nifDigitado);
+            try {
+                // Fazer o pedido ao backend para procurar o cliente pelo NIF
+                const resposta = await fetch(`http://localhost:8008/api/clientes/nif/${nifDigitado}`);
+                const resultado = await resposta.json();
 
-            // 4. Resultado da Pesquisa
-            if (clienteEncontrado) {
-                // Sucesso! 
-                alert(`Cliente Encontrado!\nNome: ${clienteEncontrado.nome}\nTelefone: ${clienteEncontrado.telefone}`);
-                
-                // Abre o modal SÓ DEPOIS de confirmar que o cliente existe
-                if (typeof abrirModalCliente === "function") {
-                    abrirModalCliente(); 
+                if (resposta.ok && resultado.data && resultado.data.length > 0) {
+                    const clienteEncontrado = resultado.data[0];
+
+                    alert(`Cliente Encontrado!\nNome: ${clienteEncontrado.nome}\nContacto: ${clienteEncontrado.contacto}\nMorada: ${clienteEncontrado.morada}`);
+                    
+                    // Se tiveres a função de abrir modal criada no teu ficheiro de modais
+                    if (typeof abrirModalCliente === "function") {
+                        abrirModalCliente(); 
+                    }
+                } else {
+                    alert("Cliente não encontrado na Base de Dados. Verifica se o NIF está correto.");
+                    inputNif.focus(); 
                 }
-
-            } else {
-                // Fracasso! Não encontrou ninguém.
-                alert("Cliente não encontrado. Por favor, verifique se o NIF está correto.");
-                inputNif.focus(); 
+            } catch (erro) {
+                console.error("Erro ao comunicar com o servidor:", erro);
+                alert("Erro de ligação. O servidor está ligado?");
             }
         });
     }
 });
 
-// ==========================================
-// 2. FUNÇÃO DE CARREGAR TABELA
-// ==========================================
-async function carregarProximasConsultas() {
+// =================================================================
+// 3. FUNÇÃO DE CARREGAR AS PRÓXIMAS CONSULTAS (APENAS DESTE MÉDICO)
+// =================================================================
+async function carregarProximasConsultas(idDoVetLogado) {
     const tbody = document.getElementById('corpo-tabela-consultas');
+    
+    if (!tbody) return;
+    
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #7f8c8d;">A carregar as tuas consultas de hoje...</td></tr>`;
 
     try {
-        const dataHojeSimulada = new Date().toISOString().split('T')[0]; 
-        const dataAmanhaSimulada = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+        // Pedir todas as consultas agendadas ao backend
+        const resposta = await fetch('http://localhost:8008/api/consultas');
+        const resultado = await resposta.json();
 
-        const consultasAPI = [
-            { data: dataHojeSimulada, hora: "08:00", nomeAnimal: "Rex", tipoIcone: "dog", cliente: "Tiago", servico: "Vacinação" },
-            { data: dataHojeSimulada, hora: "20:30", nomeAnimal: "Max", tipoIcone: "dog", cliente: "João Silva", servico: "Vacinação" },
-            { data: dataHojeSimulada, hora: "21:00", nomeAnimal: "Luna", tipoIcone: "cat", cliente: "Ana Costa", servico: "Consulta Geral" },
-            { data: dataHojeSimulada, hora: "21:45", nomeAnimal: "Mia", tipoIcone: "cat", cliente: "Rui", servico: "Check-up" },
-            { data: dataHojeSimulada, hora: "22:15", nomeAnimal: "Bobi", tipoIcone: "dog", cliente: "Sara", servico: "Vacinação" },
-            { data: dataHojeSimulada, hora: "23:00", nomeAnimal: "Thor", tipoIcone: "dog", cliente: "Nuno", servico: "Raio-X" },
-            { data: dataHojeSimulada, hora: "23:30", nomeAnimal: "Nina", tipoIcone: "cat", cliente: "Rita", servico: "Consulta Geral" }, 
-            { data: dataAmanhaSimulada, hora: "10:00", nomeAnimal: "Zeus", tipoIcone: "dog", cliente: "Pedro", servico: "Cirurgia" } 
-        ];
+        if (!resposta.ok) throw new Error(resultado.message);
 
+        const todasConsultas = resultado.data; 
+
+        // Capturar o tempo presente (Data e Hora)
         const agora = new Date();
         const dataHoje = agora.toISOString().split('T')[0]; 
         const horaAtual = agora.getHours().toString().padStart(2, '0') + ":" + 
                           agora.getMinutes().toString().padStart(2, '0');
 
-        let consultasFiltradas = consultasAPI.filter(consulta => {
-            return consulta.data === dataHoje && consulta.hora >= horaAtual;
+        let consultasFiltradas = [];
+
+        todasConsultas.forEach(consulta => {
+            // 🛡️ FILTRO 1: Se a consulta não pertencer a este médico logado, ignora!
+            if (Number(consulta.id_veterinario) !== Number(idDoVetLogado)) {
+                return; 
+            }
+
+            // Converter e tratar a data que vem do PostgreSQL
+            const dataObjeto = new Date(consulta.data_consulta);
+            const dataC = dataObjeto.toISOString().split('T')[0];
+            const horaC = dataObjeto.toISOString().split('T')[1].substring(0, 5);
+
+            // 🛡️ FILTRO 2: Só queremos as consultas de HOJE que ainda vão acontecer
+            if (dataC === dataHoje && horaC >= horaAtual) {
+                consultasFiltradas.push({
+                    hora: horaC,
+                    nomeAnimal: consulta.nome || "Paciente", 
+                    especie: consulta.especie || "cão",
+                    cliente: consulta.nome|| "Proprietário",
+                    servico: consulta.motivo || "Consulta Geral"
+                });
+            }
         });
 
+        // Ordenar a lista por ordem cronológica (as mais próximas aparecem primeiro)
         consultasFiltradas.sort((a, b) => a.hora.localeCompare(b.hora));
 
+        // Limitar a exibição às próximas 5 consultas do turno
         const proximas5 = consultasFiltradas.slice(0, 5);
 
-        tbody.innerHTML = "";
+        tbody.innerHTML = ""; // Limpar mensagem de carregamento
 
+        // Se o médico não tiver trabalho agendado para o resto do dia
         if (proximas5.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 20px; color: #7f8c8d;">Não há mais consultas agendadas para hoje.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 25px; color: #2ea89c; font-weight: bold;"><i class="fa fa-mug-hot"></i> Não tens mais consultas agendadas para hoje. Bom descanso!</td></tr>`;
             return;
         }
 
+        // Renderizar as linhas da tabela no HTML
         proximas5.forEach(consulta => {
+            let especieStr = consulta.especie.toLowerCase();
+            let icone = especieStr.includes('cão') || especieStr.includes('cao') ? 'dog' : (especieStr.includes('gato') ? 'cat' : 'paw');
+
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${consulta.hora}</td>
-                <td><i class="fa fa-${consulta.tipoIcone}" style="color: #7f8c8d; margin-right: 8px;"></i> ${consulta.nomeAnimal}</td>
+                <td style="font-weight: bold; color: #2ea89c;">${consulta.hora}</td>
+                <td><i class="fa fa-${icone}" style="color: #7f8c8d; margin-right: 8px;"></i> ${consulta.nomeAnimal}</td>
                 <td>${consulta.cliente}</td>
-                <td>${consulta.servico}</td>
+                <td><span class="badge-servico" style="background: #e0f2f1; color: #2ea89c; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">${consulta.servico}</span></td>
             `;
             tbody.appendChild(tr);
         });
 
     } catch (erro) {
-        console.error("Erro ao carregar as consultas:", erro);
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: red;">Erro ao carregar os dados.</td></tr>`;
+        console.error("Erro ao carregar as consultas reais:", erro);
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #e74c3c;"><i class="fa fa-exclamation-triangle"></i> Erro de ligação à Base de Dados.</td></tr>`;
     }
 }
