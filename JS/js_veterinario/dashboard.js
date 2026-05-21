@@ -104,9 +104,8 @@ async function carregarProximasConsultas(idDoVetLogado) {
 
     try {
         // Pedir todas as consultas agendadas ao backend
-        const resposta = await fetch('http://localhost:8008/api/consultas');
+        const resposta = await fetch(`http://localhost:8008/api/consultas/veterinario/${idDoVetLogado}`);        
         const resultado = await resposta.json();
-
         if (!resposta.ok) throw new Error(resultado.message);
 
         const todasConsultas = resultado.data; 

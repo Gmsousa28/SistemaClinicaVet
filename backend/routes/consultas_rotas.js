@@ -16,6 +16,6 @@ router.get("/consultas/:id", obterConsultaById);
 router.post("/consultas", criarConsulta);
 router.put("/consultas/:id", atualizarConsulta);
 router.delete("/consultas/:id", eliminarConsulta);
-router.get("/consultas/veterinario/:id_veterinario", listarConsultasDoVeterinario);
+router.get("/consultas/veterinario/:id", listarConsultasDoVeterinario);
 
 module.exports = router;
