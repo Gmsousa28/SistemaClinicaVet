@@ -1,301 +1,241 @@
-/* ========================================================================== */
-/* 1. LAYOUT GERAL E GRELHA                                                   */
-/* ========================================================================== */
-main {
-    max-width: 75% !important; 
-    padding-right: 250px !important; 
-}
 
-.grid {
-    display: grid;
-    grid-template-columns: 280px 1fr; 
-    gap: 30px;
-    align-items: start;
-    max-width: 1200px; 
-    margin-left: 150px; 
-}
-
-body.no-scroll {
-    overflow: hidden; /* Bloqueia o ecrã quando o modal abre */
+/* ========================================================================== */
+/* CENTRAR O CONTEÚDO NO MEIO DO ECRÃ */
+/* ========================================================================== */
+.dashboard {
+    width: 1000% !important;
+    max-width: 1150px !important; /* Podes ajustar este número se quiseres o bloco mais largo ou mais estreito */
+    margin: 0 auto !important;
+    margin-left: 100px !important; /* Esta é a magia que empurra tudo para o centro exato */
 }
 
 /* ========================================================================== */
-/* 2. CARTÃO DE PERFIL (Lateral Esquerda)                                     */
+/* VARIÁVEIS DE COR PARA OS CARTÕES E FORMULÁRIOS */
 /* ========================================================================== */
-.perfil {
-    background: white; 
-    padding: 30px; 
-    border-radius: 18px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-    text-align: center;
-    height: auto;
+:root {
+    --surface: #ffffff;
+    --surface-soft: #f8fbfa;
+    --text: #1f2a2e;
+    --muted: #697a80;
+    --line: #e3ece9;
+    --primary: #2ea89c;
+    --primary-dark: #1f7d73;
+    --primary-soft: #e8f7f5;
+    --danger: #e45645;
+    --danger-soft: #fff1ef;
+    --shadow-soft: 0 10px 30px rgba(30, 58, 62, 0.08);
+    --radius: 18px;
 }
 
-.foto-container {
-    position: relative;
-    display: inline-block;
-    width: 140px; 
-    height: 140px; 
-    margin-bottom: 15px;
-    border-radius: 50%;
-    border: 6px solid #2ea89c;
-    overflow: hidden; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.foto-container img {
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; 
-    display: block;
-}
-
-.overlay-foto {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.6); 
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    opacity: 0; 
-    cursor: pointer;
-    transition: opacity 0.3s ease; 
-}
-
-.foto-container:hover .overlay-foto {
-    opacity: 1;
-}
-
-.overlay-foto i { font-size: 28px; margin-bottom: 5px; }
-.overlay-foto span { font-size: 13px; font-weight: bold; letter-spacing: 1px; }
-
-.user { color: #888; margin-bottom: 20px; }
+body.no-scroll { overflow: hidden; }
+.input-escondido { display: none; }
 
 /* ========================================================================== */
-/* BOTÃO "EDITAR PERFIL" (Estilo Igual ao Guardar Alterações)                 */
+/* ESTRUTURA DOS CARTÕES DO PERFIL E FORMULÁRIO */
 /* ========================================================================== */
+.grid { display: grid; grid-template-columns: 286px minmax(0, 1fr); gap: 24px; align-items: start; }
 
-.perfil .editar {
-    background: linear-gradient(135deg, #2ea89c, #1f7d73); /* Mesmo gradiente */
-    color: white; 
-    border: none; 
-    padding: 12px 16px; /* Ligeiramente mais fino para a barra lateral */
-    font-size: 15px;
-    font-weight: 600;
-    border-radius: 10px; /* Mesmos cantos redondos */
-    cursor: pointer;
-    transition: all 0.3s ease; 
-    margin-bottom: 12px; 
-    width: 80%; /* Mantém a proporção na caixa da foto */
-    box-shadow: 0 4px 10px rgba(46, 168, 156, 0.3); /* Mesma sombra */
-    letter-spacing: 0.5px;
+.perfil, .conta, .meus-animais, .avisos, .modal-content { 
+    background: var(--surface); 
+    border: 1px solid rgba(0, 0, 0, 0.05); 
+    border-radius: var(--radius); 
+    box-shadow: var(--shadow-soft); 
 }
 
-/* Efeito quando passas o rato por cima */
-.perfil .editar:hover {
-    background: linear-gradient(135deg, #35c2b4, #249488); 
-    box-shadow: 0 6px 15px rgba(46, 168, 156, 0.4); 
-    transform: translateY(-2px); 
-}
+.perfil { position: sticky; top: 24px; padding: 28px 24px; text-align: center; }
 
-/* Efeito ao clicar */
-.perfil .editar:active {
-    transform: translateY(1px);
-    box-shadow: 0 2px 5px rgba(46, 168, 156, 0.3);
-}
+/* Foto de Perfil */
+.foto-container { position: relative; display: inline-block; width: 142px; height: 142px; margin-bottom: 18px; overflow: hidden; border: 6px solid #fff; border-radius: 50%; box-shadow: 0 0 0 4px rgba(46, 168, 156, 0.22), 0 18px 34px rgba(31, 125, 115, 0.22); }
+.foto-container img { width: 100%; height: 100%; display: block; object-fit: cover; }
+.overlay-foto { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; background: rgba(13, 35, 38, 0.66); color: #fff; opacity: 0; transition: opacity 0.22s ease; cursor: pointer; }
+.foto-container:hover .overlay-foto { opacity: 1; }
+.overlay-foto i { font-size: 26px; }
+.overlay-foto span { font-size: 12px; font-weight: 800; text-transform: uppercase; }
+
+/* Textos Perfil */
+.perfil h3 { margin: 0; font-size: 24px; color: var(--text); }
+.user { margin: 6px 0 20px; color: var(--muted); font-weight: 600; }
+.perfil-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
+.perfil-stats span { padding: 12px 8px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-soft); color: var(--muted); font-size: 12px; font-weight: 700; }
+.perfil-stats strong { display: block; margin-bottom: 3px; color: var(--text); font-size: 20px; }
+.perfil-bottom small { display: block; margin-top: 14px; color: var(--muted); font-weight: 700; }
+
+/* Botões Padrão (Guardar, Editar) */
+#btn-guardar-perfil, .perfil .editar, .btn-guardar { border: 0; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 46px; padding: 0 18px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; font-weight: 800; box-shadow: 0 12px 24px rgba(46, 168, 156, 0.28); transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease; cursor: pointer; font-family: inherit;}
+#btn-guardar-perfil:hover, .perfil .editar:hover, .btn-guardar:hover { transform: translateY(-2px); box-shadow: 0 16px 30px rgba(46, 168, 156, 0.34); filter: saturate(1.06); }
+.perfil .editar, .btn-bloco, .btn-guardar { width: 100%; }
 
 /* ========================================================================== */
-/* 3. DADOS DA CONTA (Inputs e Formulário)                                    */
+/* FORMULÁRIO E INPUTS */
 /* ========================================================================== */
-.conta {
-    background: #ffffff; 
-    padding: 35px; 
-    border-radius: 18px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.05); 
-    border: 1px solid #eaeaea; 
+.coluna-principal { display: grid; gap: 24px; min-width: 0; }
+.conta, .meus-animais, .avisos { padding: 28px; }
+.section-heading { display: flex; align-items: start; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+.section-heading.compact { align-items: center; }
+.titulo-conta, .meus-animais h3, .avisos h3, .modal-content h2 { margin: 0; color: var(--text); font-size: 24px; line-height: 1.15; }
+
+.badge { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; min-height: 30px; padding: 0 12px; border-radius: 999px; background: var(--primary-soft); color: var(--primary-dark); font-size: 12px; font-weight: 800; }
+.badge.warning { background: #fff6df; color: #9b6a00; }
+
+.info-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.campo { display: flex; flex-direction: column; min-width: 0; text-align: left; }
+.campo label { margin-bottom: 8px; color: #45585e; font-size: 13px; font-weight: 800; }
+
+/* ÍCONES NOS INPUTS - A MAGIA ACONTECE AQUI */
+.input-icon { 
+    position: relative; 
+    display: flex; 
+    align-items: center; 
     width: 100%;
 }
 
-.titulo-conta { color: #2ea89c; font-size: 24px; margin-bottom: 25px; }
-.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.campo { display: flex; flex-direction: column; text-align: left; }
-.campo label { font-size: 13px; color: #555; margin-bottom: 8px; font-weight: 600; }
-
-.input-icon { position: relative; display: flex; align-items: center; }
-.input-icon i { position: absolute; left: 15px; color: #2ea89c; z-index: 2; }
-.input-icon input {
-    width: 100%; padding: 12px 12px 12px 42px; border-radius: 8px;
-    border: 1px solid #e0e0e0; background: #f9f9f9; color: #333; outline: none;
-}
-.input-icon input:focus { border-color: #2ea89c; background: #fff; }
-
-/* Botão "Guardar Alterações" (Estilo Gradiente Moderno) */
-#btn-guardar-perfil {
-    background: linear-gradient(135deg, #2ea89c, #1f7d73);
-    color: white; border: none; padding: 14px 20px;
-    font-size: 16px; font-weight: 600; border-radius: 10px; 
-    cursor: pointer; box-shadow: 0 4px 10px rgba(46, 168, 156, 0.3); 
-    transition: all 0.3s ease; 
-    display: flex; justify-content: center; align-items: center;
-    gap: 10px; letter-spacing: 0.5px;
+.input-icon i { 
+    position: absolute; 
+    left: 15px; /* Mantém o ícone 15px encostado à esquerda */
+    z-index: 2; 
+    width: 18px; 
+    color: var(--primary); 
+    text-align: center;
+    pointer-events: none; /* Para não bloquear o clique do utilizador */
 }
 
-#btn-guardar-perfil:hover {
-    background: linear-gradient(135deg, #35c2b4, #249488); 
-    box-shadow: 0 6px 15px rgba(46, 168, 156, 0.4); 
-    transform: translateY(-2px); 
+/* O "padding: 0 14px 0 44px" obriga o texto a começar aos 44px, saltando o ícone! */
+.input-icon input, .input-icon select { 
+    width: 100%; 
+    min-height: 48px; 
+    padding: 0 14px 0 44px !important; /* IMPORTANTE AQUI! */
+    border: 1px solid var(--line); 
+    border-radius: 14px; 
+    outline: none; 
+    background: var(--surface-soft); 
+    color: var(--text); 
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease; 
+    font-family: inherit;
 }
 
-#btn-guardar-perfil:active {
-    transform: translateY(1px); 
-    box-shadow: 0 2px 5px rgba(46, 168, 156, 0.3);
+.input-icon input:focus, .input-icon select:focus { 
+    border-color: rgba(46, 168, 156, 0.74); 
+    background: #fff; 
+    box-shadow: 0 0 0 4px rgba(46, 168, 156, 0.12); 
 }
 
+.espaco-topo { margin-top: 22px; }
 /* ========================================================================== */
-/* 4. OS MEUS ANIMAIS                                                         */
+/* ANIMAIS E AVISOS (DESIGN ALINHADO) */
 /* ========================================================================== */
-.meus-animais {
-    background: #ffffff; padding: 35px; border-radius: 18px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.05); border: 1px solid #eaeaea; width: 100%;
-}
+/* 4. ANIMAIS E AVISOS (CORRIGIDOS E ALINHADOS) */
 
-.meus-animais h3 { color: #2ea89c; font-size: 24px; margin-bottom: 25px; }
-.animais-lista { display: flex; gap: 40px; flex-wrap: wrap; justify-content: flex-start; }
+/* Os Meus Animais - Lado a Lado */
+.animais-lista { display: flex !important; flex-wrap: wrap !important; gap: 15px !important; justify-content: center !important; width: 100% !important; }
 
-.animal-card { 
-    display: flex; flex-direction: column; align-items: center; 
-    text-align: center; transition: transform 0.3s ease; cursor: pointer; 
-}
-.animal-card:hover { transform: translateY(-5px); }
+.animal-card { width: 76px !important; display: flex !important; flex-direction: column !important; align-items: center !important; gap: 6px !important; border: 0 !important; background: transparent !important; color: inherit !important; text-align: center !important; transition: transform 0.2s !important; cursor: pointer !important; padding:0 !important;}
+.animal-card:hover { transform: translateY(-4px) !important; }
+.animal-card p { margin: 0 !important; color: var(--text) !important; font-weight: 800 !important; font-size: 13px !important;}
+.animal-card small { color: var(--muted) !important; font-size: 11px !important; font-weight: 700 !important; margin-top: -3px !important;}
 
-.animal-card p { font-weight: 700; color: #333; margin: 0; }
-.animal-card small { color: #777; font-size: 13px; }
+.foto-animal-wrapper, .circulo-add { width: 72px !important; height: 72px !important; border-radius: 50% !important; }
+.foto-animal-wrapper { position: relative !important; overflow: hidden !important; border: 3px solid #fff !important; box-shadow: 0 4px 10px rgba(30, 58, 62, 0.12) !important; }
+.foto-animal-wrapper img { display: block !important; width: 100% !important; height: 100% !important; object-fit: cover !important; }
 
-/* Ações (Foto Animal) */
-.foto-animal-wrapper {
-    position: relative; width: 80px; height: 80px; margin-bottom: 10px;
-    border-radius: 50%; overflow: hidden; border: 3px solid #2ea89c;
-}
-.foto-animal-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Animações e Botões do Animal */
+.acoes-animal { position: absolute !important; inset: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 6px !important; background: rgba(13, 35, 38, 0.66) !important; opacity: 0 !important; transition: opacity 0.2s ease !important; }
+.foto-animal-wrapper:hover .acoes-animal { opacity: 1 !important; }
+.acoes-animal button { width: 26px !important; height: 26px !important; display: grid !important; place-items: center !important; border: 0 !important; border-radius: 50% !important; background: #fff !important; color: var(--primary-dark) !important; cursor: pointer !important; font-size: 11px !important;}
+.btn-apagar-animal:hover { color: var(--danger) !important; }
 
-.acoes-animal {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; gap: 10px;
-    opacity: 0; transition: opacity 0.3s ease;
-}
-.foto-animal-wrapper:hover .acoes-animal { opacity: 1; }
+/* Botão Adicionar Animal Tracejado */
+.circulo-add { display: grid !important; place-items: center !important; border: 2px dashed rgba(46, 168, 156, 0.55) !important; background: var(--primary-soft) !important; color: var(--primary-dark) !important; font-size: 20px !important;}
 
-.acoes-animal button {
-    background: none; border: none; color: white;
-    font-size: 18px; cursor: pointer; transition: transform 0.2s, color 0.2s;
-}
-.btn-editar-animal:hover { color: #3498db; transform: scale(1.2); }
-.btn-apagar-animal:hover { color: #e74c3c; transform: scale(1.2); }
+/* Avisos - Formatação Blindada e Alinhada */
+.avisos { display: flex !important; flex-direction: column !important; gap: 12px !important;}
+.aviso { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; padding: 14px 16px !important; border: 1px solid var(--line) !important; border-left: 5px solid var(--primary) !important; border-radius: 12px !important; background: #fff !important; box-shadow: 0 4px 12px rgba(30, 58, 62, 0.05) !important; }
+.aviso-importante { border-left-color: var(--danger) !important; background: var(--danger-soft) !important; border-color: rgba(228, 86, 69, 0.2) !important;}
 
-/* Card de Adicionar Novo */
-.animal-card.adicionar { cursor: pointer; }
-.circulo-add {
-    width: 80px; height: 80px; border-radius: 50%; border: 3px dashed #ccc;
-    display: flex; align-items: center; justify-content: center; margin-bottom: 10px;
-}
-.circulo-add i { font-size: 24px; color: #ccc; }
+/* Alinhamento de Texto e Ícones nos Avisos */
+.aviso-texto { display: flex !important; align-items: center !important; gap: 12px !important; flex: 1 !important; min-width: 0 !important; color: var(--text) !important; font-size: 13px !important; font-weight: 700 !important; flex-wrap: wrap !important;}
+.aviso-texto i { flex: 0 0 auto !important; color: var(--primary) !important; font-size: 16px !important; }
+.aviso-importante .aviso-texto i { color: var(--danger) !important; }
+.aviso-texto span { flex: 1 !important; min-width: 120px !important; line-height: 1.4 !important; }
 
+/* Botão de Ação Alinhado à Direita e Intacto */
+.link-acao { margin-left: auto !important; padding: 6px 14px !important; border-radius: 999px !important; background: var(--danger) !important; color: #fff !important; text-decoration: none !important; font-size: 12px !important; font-weight: 800 !important; white-space: nowrap !important; flex-shrink: 0 !important;}
+
+/* Botão Fechar Alinhado à Direita */
+.btn-fechar-aviso { flex: 0 0 auto !important; width: 28px !important; height: 28px !important; display: grid !important; place-items: center !important; border: 0 !important; border-radius: 50% !important; background: transparent !important; color: #9da9ad !important; cursor: pointer !important; font-size: 14px !important; margin-left: 5px !important; flex-shrink: 0 !important;}
+.btn-fechar-aviso:hover { background: rgba(228, 86, 69, 0.1) !important; color: var(--danger) !important; }
 /* ========================================================================== */
-/* 5. AVISOS INTERATIVOS                                                      */
+/* MODAIS E ALERTAS */
 /* ========================================================================== */
-.avisos {
-    background: #ffffff; padding: 30px; border-radius: 20px; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.06); width: 100%;
-}
-.avisos h3 { color: #2ea89c; font-size: 22px; margin-bottom: 25px; }
-
-.aviso {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 16px 20px; margin-bottom: 15px; background-color: #ffffff;
-    border: 1px solid #f2f2f2; border-left: 5px solid #2ea89c; border-radius: 12px; 
-    box-shadow: 0 4px 12px rgba(0,0,0,0.02); transition: all 0.3s ease;
-}
-.aviso:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
-
-.aviso-importante {
-    border-left-color: #e74c3c; background-color: #fffaf9; border-color: #fceceb;
-}
-
-.aviso-texto { display: flex; align-items: center; gap: 12px; color: #333; font-size: 14px; font-weight: 500; }
-.aviso-texto i { font-size: 18px; color: #2ea89c; }
-.aviso-importante .aviso-texto i { color: #e74c3c; }
-
-.link-acao {
-    margin-left: 12px; background-color: #e74c3c; color: white; padding: 6px 16px;
-    border-radius: 20px; text-decoration: none; font-size: 12px; font-weight: 700;
-    box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); transition: all 0.2s ease;
-}
-.link-acao:hover { background-color: #c0392b; transform: scale(1.05); box-shadow: 0 6px 14px rgba(231, 76, 60, 0.4); }
-
-.btn-fechar-aviso {
-    background: transparent; border: none; color: #c0c0c0; cursor: pointer;
-    font-size: 14px; width: 32px; height: 32px; border-radius: 50%; 
-    display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;
-}
-.btn-fechar-aviso:hover { color: #e74c3c; background-color: #f5f5f5; }
-
-/* ========================================================================== */
-/* 6. ALERTA DE SUCESSO E MODAIS                                              */
-/* ========================================================================== */
-#alerta-sucesso {
-    position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
-    background-color: #2ea89c; color: white; padding: 15px 30px; border-radius: 30px;
-    box-shadow: 0 10px 30px rgba(46, 168, 156, 0.4); font-weight: bold; font-size: 16px;
-    display: flex; align-items: center; gap: 10px; z-index: 9999; 
-    transition: top 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
-}
-#alerta-sucesso.mostrar { top: 40px; }
-
-/* Overlay e Content do Modal */
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center;
-    z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
-}
+#alerta-sucesso { position: fixed; top: -100px; left: 50%; z-index: 9999; display: flex; align-items: center; gap: 10px; transform: translateX(-50%); padding: 15px 24px; border-radius: 999px; background: #173f3b; color: #fff; box-shadow: 0 18px 36px rgba(23, 63, 59, 0.28); font-weight: 800; transition: top 0.45s cubic-bezier(0.2, 1, 0.22, 1); }
+#alerta-sucesso.mostrar { top: 34px; }
+.modal-overlay { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(13, 35, 38, 0.58); opacity: 0; visibility: hidden; backdrop-filter: blur(10px); transition: opacity 0.22s ease, visibility 0.22s ease; }
 .modal-overlay.ativo { opacity: 1; visibility: visible; }
+.modal-content { position: relative; width: min(420px, 100%); padding: 34px; transform: translateY(18px) scale(0.98); transition: transform 0.22s ease; }
+.modal-overlay.ativo .modal-content { transform: translateY(0) scale(1); }
+.fechar-modal { position: absolute; top: 18px; right: 18px; width: 36px; height: 36px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--surface-soft); color: var(--muted); transition: color 0.2s ease, background-color 0.2s ease; cursor: pointer;}
+.fechar-modal:hover { background: rgba(228, 86, 69, 0.1); color: var(--danger); }
+.modal-content h2 { margin-bottom: 24px; text-align: center; color: var(--text);}
+.foto-animal-upload { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 24px; }
+#preview-novo-animal, #preview-edit-animal { width: 96px; height: 96px; border: 4px solid #fff; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 3px rgba(46, 168, 156, 0.24), 0 12px 24px rgba(30, 58, 62, 0.14); }
+.btn-escolher-foto { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px; border-radius: 999px; background: var(--primary-soft); color: var(--primary-dark); cursor: pointer; font-size: 13px; font-weight: 800; }
+.espaco-fundo { margin-bottom: 15px; }
+/* Estilo do Novo Modal */
+.modal-overlay {
+    display: none; 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(44, 62, 80, 0.7);
+    z-index: 1000; justify-content: center; align-items: center;
+}
+.modal-overlay.ativo { display: flex !important; }
 
 .modal-content {
-    background: white; padding: 40px; border-radius: 20px; width: 400px; max-width: 90%;
-    position: relative; transform: translateY(-30px); transition: transform 0.3s ease;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    background: white; width: 100%; max-width: 800px; /* Caixa maior */
+    padding: 3rem; border-radius: 24px; position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
 }
-.modal-overlay.ativo .modal-content { transform: translateY(0); }
 
 .fechar-modal {
-    position: absolute; top: 20px; right: 20px; font-size: 20px; color: #888; cursor: pointer; transition: 0.2s;
+    position: absolute; top: 20px; right: 25px; background: none; border: none;
+    font-size: 2rem; color: #7f8c8d; cursor: pointer;
 }
-.fechar-modal:hover { color: #e74c3c; }
-.modal-content h2 { color: #2ea89c; margin-bottom: 25px; text-align: center; font-size: 22px; }
 
+.form-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 20px;
+}
+
+.full-width { grid-column: span 2; }
+
+.campo label { font-weight: 700; color: #2c3e50; margin-bottom: 8px; display: block; }
+.campo input, .campo select {
+    width: 100%; padding: 14px; border: 1px solid #dcdde1;
+    border-radius: 12px; font-size: 16px; outline: none;
+}
+
+.modal-footer {
+    display: flex; justify-content: center; gap: 20px; margin-top: 2.5rem;
+    border-top: 1px solid #eee; padding-top: 2rem;
+}
+
+.btn-cancelar {
+    background: transparent; border: 2px solid #e74c3c; color: #e74c3c;
+    padding: 12px 40px; border-radius: 25px; font-weight: bold; cursor: pointer;
+}
 .btn-guardar {
-    width: 100%; background: #2ea89c; color: white; border: none; padding: 12px;
-    border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 25px; transition: 0.3s;
+    background: #2ea89c; color: white; border: none;
+    padding: 12px 40px; border-radius: 25px; font-weight: bold; cursor: pointer;
 }
-.btn-guardar:hover { background: #249186; }
-
-/* Fotos nos Modais */
-.foto-animal-upload { display: flex; flex-direction: column; align-items: center; margin-bottom: 25px; }
-#preview-novo-animal, #preview-edit-animal {
-    width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid #2ea89c; margin-bottom: 12px;
-}
-.btn-escolher-foto {
-    background-color: #f0f0f0; color: #555; padding: 8px 16px; border-radius: 20px;
-    cursor: pointer; font-size: 13px; font-weight: bold; transition: background-color 0.2s;
-}
-.btn-escolher-foto:hover { background-color: #e0e0e0; }
-
 /* ========================================================================== */
-/* 7. CLASSES UTILITÁRIAS                                                     */
+/* RESPONSIVIDADE SÓ PARA OS CARTÕES */
 /* ========================================================================== */
-.input-escondido { display: none; }
-.espaco-topo { margin-top: 20px; }
-.espaco-fundo { margin-bottom: 15px; }
-.campo-largo { grid-column: 1 / -1; }
-.btn-bloco { width: 100%; }
+@media (max-width: 1120px) { .linha-inferior { grid-template-columns: 1fr; } }
+@media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; }
+    .perfil { position: static; }
+}
+@media (max-width: 620px) {
+    .conta, .meus-animais, .avisos, .modal-content, .perfil { padding: 22px; border-radius: 18px; }
+    .info-grid { grid-template-columns: 1fr; }
+    .section-heading { align-items: flex-start; flex-direction: column; }
+    .aviso, .aviso-texto { align-items: flex-start; }
+    .aviso-texto { flex-wrap: wrap; }
+}
