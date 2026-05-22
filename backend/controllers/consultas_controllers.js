@@ -7,6 +7,7 @@ const {
     obterFuncionarioServicoAleatorioBD,
     criarServicoBD,
     obterconsultasdovetespecificoBD,
+    obterconsultasdoanipecificoBD,
     obterVeterinarioDisponivelBD // 🛡️ Faltava importar isto!
 } = require('../models/consultas_models');
 
@@ -163,6 +164,16 @@ const listarConsultasDoVeterinario = async (req, res, next) => {
     }
 };
 
+const listarConsultasDoAnimal = async (req, res, next) => {
+    try {
+        const id_animal = req.params.id; 
+        const consultas = await obterconsultasdoanipecificoBD(id_animal);
+        res.status(200).json({ status: 200, message: "Consultas do animal carregadas", data: consultas });
+    } catch (err) {
+        next(err);
+    }
+};
+
 
 module.exports = {
     listarConsultas,
@@ -170,5 +181,6 @@ module.exports = {
     obterConsultaById,
     atualizarConsulta,
     eliminarConsulta,
-    listarConsultasDoVeterinario
+    listarConsultasDoVeterinario,
+    listarConsultasDoAnimal
 };
