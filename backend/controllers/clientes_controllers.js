@@ -4,7 +4,8 @@ const {
     obterClienteByNifBD,
     criarClienteBD,
     atualizarClienteBD,
-    eliminarClienteByIdBD
+    eliminarClienteByIdBD,
+    registarClienteCompletoBD
 } = require('../models/clientes_models.js');
 
 const handleResponse = (res, status, message, data = null) => { 
@@ -109,6 +110,54 @@ const eliminarClienteById = async (req, res, next) => {
 };
 
 
+// Importa o model lá em cima:
+// const { registarClienteCompletoBD } = require('../models/clientes_models');
+
+const registarNovoCliente = async (req, res) => {
+    try {
+        // Desempacota os dados que vieram do Frontend
+        const { nome, email, palavra_passe, contacto, data_nascimento, morada, nif } = req.body;
+
+        // Validação básica de segurança
+        if (!nome || !email || !palavra_passe || !nif || !contacto) {
+            return res.status(400).json({ status: 400, message: "Campos obrigatórios em falta." });
+        }
+
+        // Chama a função do Model com a transação SQL
+        await registarClienteCompletoBD({
+            nome, 
+            email, 
+            palavra_passe, // Nota: Num projeto real, usaríamos o bcrypt para encriptar isto antes de guardar!
+            contacto, 
+            morada, 
+            nif
+        });
+
+        return res.status(201).json({ status: 201, message: "Cliente criado com sucesso!" });
+
+    } catch (err) {
+        console.error("Erro ao registar cliente:", err);
+
+        // 23505 é o código de erro do PostgreSQL para o UNIQUE (Duplicados)
+        if (err.code === '23505') {
+            // Vamos descobrir exatamente qual foi a restrição violada para dar um aviso melhor ao utilizador
+            let detalhe = "O Email, NIF ou Contacto já estão em uso.";
+            if (err.constraint === 'login_cliente_email_key' || err.constraint === 'cliente_email_key') {
+                detalhe = "Este endereço de email já está registado.";
+            } else if (err.constraint === 'cliente_nif_key') {
+                detalhe = "Este NIF já se encontra associado a outra conta.";
+            } else if (err.constraint === 'cliente_contacto_key') {
+                detalhe = "Este número de telemóvel já está em uso.";
+            }
+            return res.status(400).json({ status: 400, message: detalhe });
+        }
+
+        return res.status(500).json({ status: 500, message: "Erro interno do servidor." });
+    }
+};
+
+
+
 
 module.exports = {
     listarClientes,
@@ -116,5 +165,6 @@ module.exports = {
     obterClienteByNif,
     criarCliente,
     atualizarCliente,
-    eliminarClienteById
+    eliminarClienteById,
+    registarNovoCliente
 };
