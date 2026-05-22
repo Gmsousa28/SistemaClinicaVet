@@ -73,11 +73,60 @@ const eliminarClienteByIdBD = async (id_cliente) => {
 };
 
 
+const registarClienteCompletoBD = async (dados) => {
+    // Usamos o client para garantir que tudo corre na mesma ligação
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN'); // Inicia a transação
+
+        // 1. CRIAR O LOGIN
+        const queryLogin = `
+            INSERT INTO public.login_cliente (email, palavra_passe, conta_ativa)
+            VALUES ($1, $2, TRUE)
+            RETURNING id_login_cliente; -- Puxa o ID que o PostgreSQL acabou de gerar!
+        `;
+        const resLogin = await client.query(queryLogin, [dados.email, dados.palavra_passe]);
+        const idLoginGerado = resLogin.rows[0].id_login_cliente;
+
+        // 2. CRIAR A FICHA DO CLIENTE
+        const queryCliente = `
+            INSERT INTO public.cliente (id_login_cliente, nome, morada, email, nif, contacto)
+            VALUES ($1, $2, $3, $4, $5, $6)
+        `;
+        const valoresCliente = [
+            idLoginGerado,      // O ID que veio da tabela de cima ($1)
+            dados.nome,         // ($2)
+            dados.morada,       // ($3)
+            dados.email,        // ($4) - Repete o email aqui como pede o teu SQL
+            dados.nif,          // ($5)
+            dados.contacto      // ($6)
+        ];
+        
+        await client.query(queryCliente, valoresCliente);
+
+        // 3. CONFIRMAR TUDO
+        await client.query('COMMIT');
+        return { sucesso: true };
+
+    } catch (erro) {
+        // Se der erro (ex: NIF duplicado), cancela tudo! Nem cria o login.
+        await client.query('ROLLBACK');
+        throw erro;
+    } finally {
+        client.release();
+    }
+};
+
+
+
+
 module.exports = {
     listarClientesBD,
     obterClienteByIDBD,
     obterClienteByNifBD,
     criarClienteBD,
     atualizarClienteBD,
-    eliminarClienteByIdBD
+    eliminarClienteByIdBD,
+    registarClienteCompletoBD
 };
