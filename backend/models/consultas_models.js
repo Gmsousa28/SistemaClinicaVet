@@ -229,6 +229,7 @@ const obterconsultasdoanipecificoBD = async (id_animal) => {
         c.data_consulta,
         c.id_veterinario,
         a.id_animal,
+        c.id_animal,
         c.motivo,
         v.nome AS nome_veterinario,
         a.raca AS raca_animal,

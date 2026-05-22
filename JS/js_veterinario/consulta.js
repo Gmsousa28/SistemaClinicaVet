@@ -15,8 +15,15 @@ function abrirPopupInfo(textoMotivo) {
     if (popup) popup.style.display = 'flex';
 }
 
-function irParaConsulta(id) {
-    window.location.href = `momento_consulta.html?id=${id}`;
+function irParaConsulta(idConsulta, idAnimal) {
+    // Guarda na mochila para ser super fácil leres os IDs na próxima página
+    localStorage.setItem('consultaAIniciar', JSON.stringify({
+        id_consulta: idConsulta,
+        id_animal: idAnimal
+    }));
+
+    // Redireciona a página enviando os dois dados pelo URL
+    window.location.href = `momento_consulta.html?id_consulta=${idConsulta}&id_animal=${idAnimal}`;
 }
 
 // =================================================================
@@ -77,6 +84,7 @@ async function carregarConsultasDaAPI() {
                     consultasFiltradas.push({
                         dataObjeto: dataDaConsulta, 
                         id_consulta: consulta.id_consulta,
+                        id_animal: consulta.id_animal, // Guardamos o ID do animal para o botão
                         horaDisplay: dataEHoraDisplay, 
                         nomeAnimal: consulta.nome_animal || "Desconhecido", 
                         especie: consulta.especie_animal || "Desconhecida", 
@@ -125,7 +133,7 @@ async function carregarConsultasDaAPI() {
                 <td style="text-align: center;">
                     <button 
                         type="button"
-                        onclick="irParaConsulta(${consulta.id_consulta})"
+                        onclick="irParaConsulta(${consulta.id_consulta}, ${consulta.id_animal})"
                         style="background-color: #2ea89c; color: white; border: none; border-radius: 8px; padding: 6px 15px; cursor: pointer;"
                     >
                         <i class="fa fa-play"></i> Iniciar
@@ -163,13 +171,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const nomeDoMedico = dadosPerfil.data.nome;
                 
                 // Injeta: "Olá Dr(a). Nome! Bom turno de trabalho."
-                msgBoasVindas.innerHTML = `Olá Dr(a). <strong>${nomeDoMedico}</strong>! Boa consulta.`;
+                msgBoasVindas.innerHTML = `Olá Dr(a). <strong>${nomeDoMedico}</strong>! Bom turno de trabalho.`;
             } else {
                 msgBoasVindas.innerText = "Olá! Bom turno de trabalho.";
             }
         } catch (erro) {
             console.error("Erro ao buscar o nome do médico:", erro);
-            msgBoasVindas.innerText = "Olá! Boa consulta.";
+            msgBoasVindas.innerText = "Olá! Bom turno de trabalho.";
         }
     }
 
