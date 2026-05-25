@@ -35,6 +35,26 @@ document.addEventListener("DOMContentLoaded", () => {
         elemento.classList.toggle("oculto", !estaLogado);
     });
 
+    document.querySelectorAll("[data-requer-login]").forEach((link) => {
+        link.addEventListener("click", (evento) => {
+            if (estaLogado) {
+                return;
+            }
+
+            evento.preventDefault();
+
+            const mensagem = link.dataset.avisoLogin ||
+                "Precisa de iniciar sessão para continuar.";
+            const paginaLogin = link.dataset.loginUrl;
+
+            alert(mensagem);
+
+            if (paginaLogin) {
+                window.location.href = paginaLogin;
+            }
+        });
+    });
+
     document.querySelectorAll("[data-logout]").forEach((botao) => {
         botao.addEventListener("click", () => {
             chavesLogin.forEach((chave) => {
