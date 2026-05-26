@@ -338,6 +338,32 @@ const criarServicoBD = async (id_animal, id_funcionario, data_servico, tipo, pre
     return result.rows[0];
 };
 
+const obterConsultasDoClienteBD = async (id_cliente) => {
+    const result = await pool.query(
+        `
+        SELECT 
+        c.id_consulta,
+        c.data_consulta AS data_hora,
+        c.id_veterinario,
+        a.id_animal,
+        c.motivo,
+        v.nome AS nome_veterinario,
+        a.raca AS raca_animal,
+        a.nome AS nome_animal,      
+        a.especie AS especie_animal, 
+        cli.nome AS nome_cliente    
+        FROM public.consulta c
+        INNER JOIN public.veterinario v ON c.id_veterinario = v.id_veterinario
+        INNER JOIN public.animal a ON c.id_animal = a.id_animal
+        INNER JOIN public.cliente cli ON a.id_cliente = cli.id_cliente
+        WHERE cli.id_cliente = $1
+        ORDER BY c.data_consulta ASC;
+        `,
+        [id_cliente]
+    );
+    return result.rows;
+};
+
 module.exports = {
     listarConsultasBD,
     criarConsultaBD,
@@ -346,6 +372,7 @@ module.exports = {
     eliminarConsultaBD,
     obterconsultasdovetespecificoBD,
     obterconsultasdoanipecificoBD,
+    obterConsultasDoClienteBD,
     obterVeterinarioDisponivelBD,       
     obterFuncionarioServicoAleatorioBD, 
     criarServicoBD                      

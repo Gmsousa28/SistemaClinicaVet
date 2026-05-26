@@ -50,34 +50,10 @@
                 <button class="filtro-btn" data-filtro="passada">Passadas</button>
             </section>
 
-            <section class="lista-consultas">
-
-                <section class="consulta" data-status="futura">
-                   <div class="info">
-                        <p class="nome">🐾 Rex</p>
-                        <p>📅 25 Março - 14:30</p>
-                        <p>💉 Vacinação</p>
-                    </div>
-                    <div class="acoes">
-                        <button class="btn btn-detalhes">Ver</button>
-                        <button class="btn btn-editar">Remarcar</button>
-                        <button class="btn btn-cancelar">Cancelar</button>
-                    </div>
-                </section>
-
-                <section class="consulta" data-status="passada">
-                    <div class="info">
-                         <p class="nome">🐱 Mimi</p>
-                        <p>📅 20 Março - 10:00</p>
-                        <p>🩺 Check-up</p>
-                    </div>
-                    <div class="acoes">
-                        <button class="btn btn-detalhes">Ver</button>
-                        <button class="btn btn-repetir">Repetir</button>
-                    </div>
-                </section>
-
+            <section class="lista-consultas" id="container-consultas">
+                <p style="color: white; padding-left: 20px;">A carregar consultas da base de dados...</p>
             </section>
+
         </section>
 
         <div id="modal-nova-consulta" class="modal-overlay">
@@ -88,8 +64,7 @@
                 <div class="campo-modal">
                     <label>Qual animal?</label>
                     <select id="select-animal" class="input-modal">
-                        <option value="rex">Rex (Cão)</option>
-                        <option value="mimi">Mimi (Gato)</option>
+                        <option value="" disabled selected>A carregar os seus animais...</option>
                     </select>
                 </div>
 

@@ -7,6 +7,7 @@
 
         <link rel="stylesheet" href="../../CSS/PaginaSite.css">
         <link rel="stylesheet" href="../../CSS/css_cliente/cliente.css">
+        <link rel="stylesheet" href="../../CSS/css_cliente/dashboard.css">
         <link rel="stylesheet" href="../../CSS/css_cliente/header_cliente.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -44,80 +45,71 @@
         </section>
 
         <section class="dashboard">
-            <div class="header-dashboard">
-                <h2 class="titulo-dashboard">Bem-vindo, João 👋</h2>
-                <!-- Agora é um link (tag 'a') que leva para as consultas -->
+
+            <div class="conteudo-dashboard">
+                
+                <div>
+                    <h2 class="titulo-seccao">Avisos Importantes</h2>
+                    <div class="barra-larga">
+                        <div class="aviso-destaque">
+                            <div class="icone-sino">
+                                <i class="fa fa-bell"></i>
+                            </div>
+                            <div class="mensagem-aviso">
+                                <strong>Atenção:</strong> Tens 2 vacinas pendentes para o Rex. Por favor, agenda a tua visita.
+                            </div>
+                        </div>
+                        <a href="consultas_cliente.html" class="btn-pesquisar-dados">
+                            <i class="fa fa-calendar-plus"></i> Agendar Agora
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="grid-cards">
+                        <a href="consultas_cliente.html" class="card-branco">
+                            <i class="fa fa-calendar-check"></i>
+                            <h4>Próxima Consulta</h4>
+                            <p>25 Março - 14:30</p>
+                        </a>
+                        <a href="perfil_cliente.html" class="card-branco">
+                            <i class="fa fa-paw"></i>
+                            <h4>Meus Animais</h4>
+                            <p>3 registados</p>
+                        </a>
+                        <a href="consultas_cliente.html" class="card-branco">
+                            <i class="fa fa-syringe"></i>
+                            <h4>Vacinas Pendentes</h4>
+                            <p>2 pendentes</p>
+                        </a>
+                        <a href="historico_cliente.html" class="card-branco">
+                            <i class="fa fa-file-medical"></i>
+                            <h4>Histórico</h4>
+                            <p>12 consultas</p>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="titulo-seccao">Próximas Consultas</h2>
+                    <div class="cartao-tabela">
+                        <div class="cabecalho-tabela">
+                            <div>Data/Hora</div>
+                            <div>Animal</div>
+                            <div>Serviço</div>
+                            <div>Veterinário</div>
+                            <div>Ações</div>
+                        </div>
+                        
+                        <div class="linha-tabela-vazia">
+                            Sem consultas marcadas para os próximos dias.
+                        </div>
+
+                        </div>
+                </div>
+
             </div>
-
-            <section class="cards">
-                <a href="consultas_cliente.html" class="card">
-                    <i class="fa fa-calendar"></i>
-                    <h4>Próxima Consulta</h4>
-                    <p>25 Março - 14:30</p>
-                </a>
-                <a href="perfil_cliente.html" class="card">
-                    <i class="fa fa-paw"></i>
-                    <h4>Meus Animais</h4>
-                    <p>3 registados</p>
-                </a>
-                <a href="consultas_cliente.html" class="card">
-                    <i class="fa fa-syringe"></i>
-                    <h4>Vacinas Pendentes</h4>
-                    <p>2 pendentes</p>
-                </a>
-                <a href="historico_cliente.html" class="card">
-                    <i class="fa fa-file"></i>
-                    <h4>Histórico</h4>
-                    <p>12 consultas</p>
-                </a>
-            </section>
-
-            <section class="dashboard-grid">
-                <section class="bloco consultas">
-                    <h3>Próximas Consultas</h3>
-                    
-                    <!-- ESTADO VAZIO: Sem consultas marcadas -->
-                    <div class="estado-vazio">
-                        <div class="icone-vazio"><i class="fa fa-calendar-times"></i></div>
-                        <h4>Nenhuma consulta agendada</h4>
-                        <p>Os seus animais estão em dia! Se precisar de algo, estamos aqui para ajudar.</p>
-                        <!-- Link para a página de consultas -->
-                        <a href="consultas_cliente.html" class="btn-vazio" style="text-decoration: none; display: inline-block;">Agendar Agora</a>
-                    </div>
-                </section>
-
-                <section class="bloco animais">
-                   <h3>Meus Animais</h3>
-                    
-                    <!-- ESTADO VAZIO: Sem animais registados -->
-                    <div class="estado-vazio">
-                        <div class="icone-vazio"><i class="fa fa-paw"></i></div>
-                        <h4>Nenhum animal registado</h4>
-                        <p>Ainda não adicionou nenhum companheiro. Registe o seu primeiro animal no seu perfil.</p>
-                        <a href="perfil_cliente.html" class="btn-vazio">Adicionar Animal</a>
-                    </div>
-                    
-                </section>
-            </section>
-
-            <section class="bloco avisos-container">
-                <h3>Avisos</h3>
-                <div class="aviso">
-                    <div class="aviso-texto"><i class="fa fa-calendar"></i> Consulta amanhã às 14:30</div>
-                    <button class="btn-fechar-aviso" title="Dispensar"><i class="fa fa-times"></i></button>
-                </div>
-                <div class="aviso aviso-importante">
-                    <div class="aviso-texto"><i class="fa fa-syringe"></i> Vacina pendente do Rex</div>
-                    <button class="btn-fechar-aviso" title="Dispensar"><i class="fa fa-times"></i></button>
-                </div>
-                <div class="aviso">
-                    <div class="aviso-texto"><i class="fa fa-exclamation-triangle"></i> Atualizar dados do perfil</div>
-                    <button class="btn-fechar-aviso" title="Dispensar"><i class="fa fa-times"></i></button>
-                </div>
-            </section>
         </section>
-
-        <!-- O Modal foi apagado daqui para ir para a página de Consultas! -->
 
         <script src="../../../JS/js_cliente/cliente_dashboard.js"></script>
         <script src="../../../JS/js_logins/auth_logins.js"></script>

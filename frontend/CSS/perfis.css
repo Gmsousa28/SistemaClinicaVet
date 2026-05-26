@@ -239,3 +239,147 @@ body.no-scroll { overflow: hidden; }
     .aviso, .aviso-texto { align-items: flex-start; }
     .aviso-texto { flex-wrap: wrap; }
 }
+/* ========================================================================== */
+/* MODAL DE ADICIONAR ANIMAL (LIMPO E BLINDADO) */
+/* ========================================================================== */
+
+/* Fundo Escuro */
+.modal-animal-overlay {
+    display: none; 
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    background-color: rgba(44, 62, 80, 0.8); 
+    z-index: 1000; 
+    justify-content: center; 
+    align-items: center;
+}
+
+/* A classe que o JavaScript adiciona para mostrar o modal */
+.modal-animal-overlay.ativo {
+    display: flex;
+}
+
+/* A Caixa Branca */
+.modal-animal-caixa {
+    background: white; 
+    max-width: 700px; 
+    width: 100%; 
+    padding: 2.5rem; 
+    border-radius: 18px; 
+    position: relative; 
+    max-height: 90vh; 
+    overflow-y: auto; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* O "X" no canto superior direito */
+.modal-animal-fechar-x {
+    position: absolute; 
+    top: 20px; right: 25px; 
+    background: none; 
+    border: none; 
+    font-size: 2rem; 
+    color: #7f8c8d; 
+    cursor: pointer; 
+    transition: color 0.2s;
+}
+
+.modal-animal-fechar-x:hover {
+    color: #e74c3c;
+}
+
+/* Título */
+.modal-animal-titulo {
+    color: #1f2a2e; 
+    margin-bottom: 2rem; 
+    text-align: center; 
+    font-size: 28px; 
+    font-weight: 800;
+}
+
+/* Grelha do Formulário */
+.modal-animal-grid {
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 20px; 
+    margin-bottom: 1rem;
+}
+
+/* Campos do Formulário */
+.modal-animal-grupo {
+    text-align: left;
+}
+
+.modal-animal-grupo.largo {
+    grid-column: span 2; /* Para a data de nascimento ocupar a linha toda */
+}
+
+.modal-animal-grupo label {
+    font-weight: bold; 
+    margin-bottom: 8px; 
+    display: block; 
+    color: #1f2a2e;
+}
+
+.modal-animal-input {
+    width: 100%; 
+    padding: 12px 15px; 
+    border: 1px solid #dcdde1; 
+    border-radius: 8px; 
+    background-color: #fff; 
+    outline: none; 
+    font-family: inherit;
+}
+
+.modal-animal-input:focus {
+    border-color: #2ea89c;
+}
+
+select.modal-animal-input {
+    cursor: pointer;
+}
+
+/* Botões do Rodapé */
+.modal-animal-rodape {
+    display: flex; 
+    justify-content: center; 
+    gap: 15px; 
+    border-top: 1px solid #eee; 
+    padding-top: 2rem; 
+    margin-top: 1rem;
+}
+
+.modal-animal-btn-cancelar {
+    background: transparent; 
+    border: 2px solid #e74c3c; 
+    color: #e74c3c; 
+    padding: 12px 35px; 
+    border-radius: 25px; 
+    font-weight: bold; 
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modal-animal-btn-cancelar:hover {
+    background: #e74c3c;
+    color: white;
+}
+
+.modal-animal-btn-guardar {
+    background: #2ea89c; 
+    color: white; 
+    border: none; 
+    padding: 12px 35px; 
+    border-radius: 25px; 
+    font-weight: bold; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.modal-animal-btn-guardar:hover {
+    background: #1f7d73;
+}
