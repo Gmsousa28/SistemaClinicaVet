@@ -177,6 +177,9 @@ async function carregarHistoricoConsultasAnimal() {
             const nomeAnimal =
                 consulta.nome_animal || "Desconhecido";
 
+            const nomeVeterinario =
+                consulta.nome_veterinario || "Desconecido";
+
             const especie =
                 (
                     consulta.especie_animal ||
@@ -206,36 +209,41 @@ async function carregarHistoricoConsultasAnimal() {
 
             const tr = document.createElement("tr");
 
+
             tr.innerHTML = `
-                <td>
-                    <strong>${dataFormatada}</strong>
-                    às ${horaFormatada}
-                </td>
+    <td>
+        <strong>${dataFormatada}</strong>
+        às ${horaFormatada}
+    </td>
 
-                <td>
-                    <i class="fa fa-${icone}"></i>
-                    ${nomeAnimal}
-                </td>
+    <td>
+        <i class="fa fa-${icone}"></i>
+        ${nomeAnimal}
+    </td>
 
-                <td style="text-align:center;">
-                    <button
-                        onclick="abrirPopupInfo('${motivo}')"
-                        title="Ver motivo"
-                    >
-                        <i class="fa fa-info"></i>
-                    </button>
-                </td>
+    <td>
+        <i class="fa fa-user-md"></i>
+        ${nomeVeterinario}
+    </td>
 
-                <td style="text-align:center;">
-                    <button
-                        onclick="abrirPopupInfo1('${relatorio}')"
-                        title="Ver relatório"
-                    >
-                        <i class="fa fa-file-medical"></i>
-                    </button>
-                </td>
-            `;
+    <td style="text-align:center;">
+        <button
+            onclick="abrirPopupInfo('${motivo}')"
+            title="Ver motivo"
+        >
+            <i class="fa fa-info"></i>
+        </button>
+    </td>
 
+    <td style="text-align:center;">
+        <button
+            onclick="abrirPopupInfo1('${relatorio}')"
+            title="Ver relatório"
+        >
+            <i class="fa fa-file-medical"></i>
+        </button>
+    </td>
+`;
             tbody.appendChild(tr);
         });
 
