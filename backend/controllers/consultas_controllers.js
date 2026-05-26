@@ -8,7 +8,8 @@ const {
     criarServicoBD,
     obterconsultasdovetespecificoBD,
     obterconsultasdoanipecificoBD,
-    obterVeterinarioDisponivelBD // 🛡️ Faltava importar isto!
+    obterVeterinarioDisponivelBD, // 🛡️ Faltava importar isto!
+    obterConsultasDoClienteBD
 } = require('../models/consultas_models');
 
 const handleResponse = (res, status, message, data = null) => {
@@ -19,6 +20,19 @@ const listarConsultas = async (req, res, next) => {
     try {
         const consultas = await listarConsultasBD();
         handleResponse(res, 200, "Lista de consultas carregada", consultas);
+    } catch (err) {
+        next(err);
+    }
+};
+
+// O teu novo controlador:
+const listarConsultasDoCliente = async (req, res, next) => {
+    try {
+        const id_cliente = req.params.id; 
+        const consultas = await obterConsultasDoClienteBD(id_cliente);
+        
+        // Usando a tua função handleResponse habitual
+        handleResponse(res, 200, "Consultas do cliente carregadas", consultas);
     } catch (err) {
         next(err);
     }
@@ -182,5 +196,6 @@ module.exports = {
     atualizarConsulta,
     eliminarConsulta,
     listarConsultasDoVeterinario,
-    listarConsultasDoAnimal
+    listarConsultasDoAnimal,
+    listarConsultasDoCliente
 };

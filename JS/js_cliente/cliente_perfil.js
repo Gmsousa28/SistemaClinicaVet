@@ -210,14 +210,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    document.querySelectorAll(".fechar-modal, .modal-overlay").forEach((elemento) => {
+  // Fechar o modal quando clica no X, no Cancelar, ou fora da caixa preta
+    document.querySelectorAll(".fechar-modal-javascript, .modal-overlay").forEach((elemento) => {
         elemento.addEventListener("click", (evento) => {
-            if (evento.target !== elemento && !elemento.classList.contains("fechar-modal")) return;
-            document.querySelectorAll(".modal-overlay").forEach((modal) => {
-                modal.classList.remove("ativo");
-                modal.setAttribute("aria-hidden", "true");
-            });
-            document.body.classList.remove("no-scroll");
+            // Se clicou no fundo escuro (fora da caixa) ou num dos botões
+            if (evento.target !== elemento && !elemento.classList.contains("fechar-modal-javascript")) return;
+            
+            const modalAdd = document.getElementById('modal-animal');
+            if (modalAdd) {
+                modalAdd.classList.remove('ativo'); 
+                modalAdd.setAttribute("aria-hidden", "true");
+                document.body.classList.remove("no-scroll"); 
+            }
         });
     });
 
@@ -325,3 +329,37 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+// 1. A função calculadora que te dei há bocado
+function formatarTempoAtualizacao(dataGuardada) {
+    if (!dataGuardada) return "Sem atualizações recentes";
+
+    const dataAtualizacao = new Date(dataGuardada);
+    const agora = new Date();
+    const diferencaDias = Math.floor((agora - dataAtualizacao) / (1000 * 60 * 60 * 24));
+
+    if (diferencaDias === 0) return "Atualizado hoje";
+    if (diferencaDias === 1) return "Atualizado ontem";
+    if (diferencaDias < 7) return `Atualizado há ${diferencaDias} dias`;
+    if (diferencaDias < 14) return "Atualizado há 1 semana";
+    return `Atualizado há ${Math.floor(diferencaDias / 7)} semanas`;
+}
+
+// 2. Quando a página carrega, vai ver se há alguma data guardada na memória do navegador
+const dataMemoria = localStorage.getItem('ultima_atualizacao_perfil');
+const badge = document.getElementById('badge-atualizacao'); // Lembra-te de pôr este ID no HTML!
+
+if (badge) {
+    badge.innerText = formatarTempoAtualizacao(dataMemoria);
+}
+
+// 3. Quando o cliente clica no botão de Guardar, gravamos a data de HOJE na memória
+const btnGuardarPerfil = document.getElementById('btn-guardar-perfil');
+if (btnGuardarPerfil) {
+    btnGuardarPerfil.addEventListener('click', () => {
+        // Guarda o momento exato do clique
+        localStorage.setItem('ultima_atualizacao_perfil', new Date().toISOString());
+        
+        // Atualiza a etiqueta logo à frente dos olhos do cliente
+        if (badge) badge.innerText = "Atualizado hoje";
+    });
+}

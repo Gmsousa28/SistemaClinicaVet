@@ -1,0 +1,217 @@
+/* ========================================================================== */
+/* 1. ESTRUTURA BASE E LAYOUT (ESTILO DARK/MODERNO)                           */
+/* ========================================================================== */
+
+body.com-sidebar {
+    background-color: #364453; /* Fundo escuro igual à imagem */
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.dashboard {
+    margin-left: 240px; /* Espaço para a sidebar */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Faixa Verde no Topo */
+.banner-topo {
+    background-color: #3bb19b;
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.banner-topo h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.banner-topo p {
+    margin: 8px 0 0 0;
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+/* Área central com margens */
+.conteudo-dashboard {
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.titulo-seccao {
+    color: white;
+    font-size: 22px;
+    margin: 0 0 15px 0;
+}
+
+/* ========================================================================== */
+/* 2. BARRA LARGA (AVISOS / NOTIFICAÇÕES)                                     */
+/* ========================================================================== */
+
+.barra-larga {
+    background: white;
+    border-radius: 12px;
+    padding: 18px 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-left: 6px solid #f39c12; /* Linha laranja para chamar a atenção de aviso */
+    gap: 20px;
+}
+
+.aviso-destaque {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-grow: 1;
+}
+
+/* Novo ícone de sino com fundo redondinho */
+.icone-sino {
+    background: rgba(243, 156, 18, 0.15); /* Fundo laranja suave */
+    color: #f39c12; /* Cor de alerta */
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0; /* Impede o ícone de ficar esmagado */
+}
+
+.mensagem-aviso {
+    font-size: 15px;
+    color: #2c3e50;
+    line-height: 1.5;
+}
+
+.mensagem-aviso strong {
+    color: #f39c12;
+}
+
+.btn-pesquisar-dados {
+    background: #364453;
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    white-space: nowrap; /* A MAGIA: Impede que o texto parta em duas linhas! */
+    transition: all 0.3s ease;
+    flex-shrink: 0; /* Impede o botão de ficar esmagado */
+}
+
+.btn-pesquisar-dados:hover {
+    background: #3bb19b; /* Fica verde quando passas o rato por cima */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 177, 155, 0.3);
+}
+
+/* ========================================================================== */
+/* 3. CARTÕES BRANCOS (ESTATÍSTICAS)                                          */
+/* ========================================================================== */
+
+.grid-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 colunas para os teus 4 atalhos */
+    gap: 20px;
+}
+
+.card-branco {
+    background: white;
+    border-radius: 10px;
+    padding: 30px 20px;
+    text-align: center;
+    text-decoration: none;
+    color: #2c3e50;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-branco:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.card-branco i {
+    font-size: 32px;
+    color: #3bb19b; /* Verde água */
+    margin-bottom: 15px;
+}
+
+.card-branco h4 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.card-branco p {
+    margin: 0;
+    font-size: 13px;
+    color: #7f8c8d;
+}
+
+/* ========================================================================== */
+/* 4. TABELA INFERIOR (CONSULTAS)                                             */
+/* ========================================================================== */
+
+.cartao-tabela {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.cabecalho-tabela {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1.5fr 1fr 1fr;
+    background: #f8f9fa;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.linha-tabela-vazia {
+    text-align: center;
+    padding: 40px 20px;
+    color: #7f8c8d;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+}
+
+.btn-pesquisar-dados {
+    background: #364453;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-pesquisar-dados:hover {
+    background: #28333e;
+}
