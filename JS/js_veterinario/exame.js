@@ -211,138 +211,77 @@ if (containerExames) {
         `;
     }
 }
-    // =======================================================
-    // 4. GRAVAR A PRESCRIÇÃO DOS EXAMES
-    // =======================================================
-    const formMarcacao =
-    document.getElementById('form-marcar-exame');
+   // =======================================================
+// 4. GRAVAR A PRESCRIÇÃO DOS EXAMES
+// =======================================================
+const formMarcacao = document.getElementById('form-marcar-exame');
 
 if (formMarcacao) {
+    formMarcacao.addEventListener('submit', async function(evento) {
+        evento.preventDefault();
 
-    formMarcacao.addEventListener(
-        'submit',
-        async function(evento) {
+        // ===================================================
+        // BUSCAR EXAMES SELECIONADOS (E CONVERTER PARA NÚMERO)
+        // ===================================================
+        const examesSelecionados = Array.from(
+            document.querySelectorAll('input[name="exame_selecionado"]:checked')
+        ).map(cb => cb.value)
+        .join(', ');
 
-            evento.preventDefault();
-
-            // ===================================================
-            // BUSCAR EXAMES SELECIONADOS
-            // ===================================================
-
-            const examesSelecionados = Array.from(
-                document.querySelectorAll(
-                    'input[name="exame_selecionado"]:checked'
-                )
-            ).map(cb => cb.value);
-
-            // Validar seleção
-            if (examesSelecionados.length === 0) {
-
-                alert(
-                    'Por favor, selecione pelo menos um exame.'
-                );
-
-                return;
-            }
-
-            // ===================================================
-            // DADOS PARA ENVIAR
-            // ===================================================
-
-            const dadosParaEnviar = {
-
-                id_consulta: idConsultaAtual,
-
-                id_animal: idAnimalAtual,
-
-                exames: examesSelecionados
-            };
-
-            console.log(
-                "🚀 A enviar exames:",
-                dadosParaEnviar
-            );
-
-            try {
-
-                // ===================================================
-                // FETCH API
-                // ===================================================
-
-                const resposta = await fetch(
-                    `${API_BASE}/prescrever-exames`,
-                    {
-                        method: 'POST',
-
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-
-                        body: JSON.stringify(
-                            dadosParaEnviar
-                        )
-                    }
-                );
-
-                // Converter resposta
-                const resultado =
-                    await resposta.json();
-
-                console.log(
-                    "Resposta API:",
-                    resultado
-                );
-
-                // ===================================================
-                // SUCESSO
-                // ===================================================
-
-                if (
-                    resultado.status === 201 ||
-                    resposta.ok
-                ) {
-
-                    alert(
-                        '🎉 Exame(s) registado(s) com sucesso!'
-                    );
-
-                    window.location.href =
-                        "momento_consulta.html";
-                }
-
-                // ===================================================
-                // ERRO PERSONALIZADO
-                // ===================================================
-
-                else {
-
-                    alert(
-                        'Erro ao gravar exame: ' +
-                        (
-                            resultado.message ||
-                            'Tente novamente.'
-                        )
-                    );
-                }
-
-            }
-
-            // ===================================================
-            // ERRO SERVIDOR
-            // ===================================================
-
-            catch (erro) {
-
-                console.error(
-                    "Erro grave:",
-                    erro
-                );
-
-                alert(
-                    "Erro ao ligar ao servidor."
-                );
-            }
+        // Validar seleção
+        if (examesSelecionados.length === 0) {
+            alert('Por favor, selecione pelo menos um exame.');
+            return;
         }
-    );
+
+        // ===================================================
+        // DADOS PARA ENVIAR
+        // ===================================================
+        const dadosParaEnviar = {
+            id_consulta: idConsultaAtual,
+            id_animal: idAnimalAtual,
+            exames: examesSelecionados
+        };
+
+        console.log("🚀 A enviar exames:", dadosParaEnviar);
+
+        try {
+            // ===================================================
+            // FETCH API
+            // ===================================================
+            // ⚠️ ATENÇÃO: Confirma se a tua rota tem "/consultas" ou não!
+            const resposta = await fetch(`${API_BASE}/prescrever-exames`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dadosParaEnviar)
+            });
+
+            // Converter resposta
+            const resultado = await resposta.json();
+
+            // ===================================================
+            // SUCESSO
+            // ===================================================
+            if (resultado.status === 201 || resposta.ok) {
+                alert('🎉 Exame(s) registado(s) com sucesso!');
+                window.location.href = "momento_consulta.html";
+            }
+            // ===================================================
+            // ERRO PERSONALIZADO DO SERVIDOR
+            // ===================================================
+            else {
+                alert('Erro ao gravar exame: ' + (resultado.message || 'Tente novamente.'));
+            }
+
+        } catch (erro) {
+            // ===================================================
+            // ERRO GRAVE (Ex: Servidor desligado)
+            // ===================================================
+            console.error("Erro grave no Fetch:", erro);
+            alert("Erro ao ligar ao servidor. Verifica a Consola (F12).");
+        }
+    });
 }
 });
