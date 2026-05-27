@@ -47,41 +47,7 @@
             
             <section class="cartao-formulario"> 
                 
-                <div class="barra-passos">
-                    <div class="passo ativo" id="indicador-passo-1">
-                        <div class="circulo-passo">1</div>
-                        <span>Cliente e Animal</span>
-                    </div>
-                    <div class="linha-passo"></div>
-                    <div class="passo" id="indicador-passo-2">
-                        <div class="circulo-passo">2</div>
-                        <span>Exame</span>
-                    </div>
-                </div>
-                
-                <form id="form-marcar-exame" class="formulario-marcacao">
-                    
-                    <div class="conteudo-passo" id="passo-1">
-                        <h3 style="color: #2c3e50; margin-bottom: 1.5rem; text-align: center;">Identificar Cliente</h3>
-                        
-                        <div class="grupo-input" style="max-width: 500px; margin: 0 auto 2.5rem auto;">
-                            <label for="nif_cliente">Procurar Cliente (NIF):</label>
-                            <div style="position: relative;">
-                                <i class="fa fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #95a5a6; pointer-events: none;"></i>
-                                <input type="text" id="nif_cliente" name="nif_cliente" placeholder="Introduza o NIF (Ex: 123456789)" style="padding-left: 40px;" maxlength="9">
-                            </div>
-                        </div>
-                        
-                        <hr style="border: none; border-top: 1px solid #eee; margin: 2rem 0;">
-
-                        <h3 style="color: #2c3e50; margin-bottom: 1.5rem; text-align: center;">Selecionar Animal</h3>
-                        
-                        <div class="grid-animais-selecao" id="grid-animais-selecao">
-                            <p style="color: #7f8c8d; width: 100%; text-align: center; font-style: italic;" id="msg-animais">
-                                Introduza um NIF válido em cima para procurar os animais do cliente.
-                            </p>
-                        </div>
-                    </div> 
+                <form id="form-marcar-exame" class="formulario-marcacao"> 
 
                     <div class="conteudo-passo" id="passo-2" style="display: none;">
                         <h3 style="color: #2c3e50; margin-bottom: 1.5rem; text-align: center;">Detalhes do Exame</h3>
@@ -90,12 +56,6 @@
                     
                         <div class="grid-opcoes-selecao" id="container-exames">
                             <p style="color: #7f8c8d; width: 100%; font-style: italic;"><i class="fa fa-spinner fa-spin"></i> A carregar lista de exames...</p>
-                        </div>
-                        
-                        <div id="seccao-veterinario" style="display: none; margin-top: 2rem;">
-                            <label style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">2. Veterinário (Opcional):</label>
-                            <div class="grid-opcoes-selecao" id="container-vets">
-                                </div>
                         </div>
                     </div>
                     

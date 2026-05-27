@@ -55,6 +55,8 @@ const loginsColaboradorRouter = require('./backend/routes/logins_colaborador_rot
 const ocorrenciasLaboraisRouter = require('./backend/routes/ocorrencias_laborais_rotas.js');
 const resgatesRouter = require('./backend/routes/resgates_rotas.js');
 const prescreveRouter = require('./backend/routes/prescreve_rotas.js');
+const orientaRouter = require('./backend/routes/orienta_rotas.js');
+const medicamentosRouter = require('./backend/routes/medicamentos_rotas.js');
 
 /* ======================================================
    ROTAS API
@@ -75,6 +77,8 @@ server.use('/api', loginsColaboradorRouter);
 server.use('/api', ocorrenciasLaboraisRouter);
 server.use('/api', resgatesRouter);
 server.use('/api', prescreveRouter);
+server.use('/api', orientaRouter);
+server.use('/api', medicamentosRouter);
 
 
 
