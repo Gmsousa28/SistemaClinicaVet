@@ -365,6 +365,26 @@ const obterConsultasDoClienteBD = async (id_cliente) => {
     return result.rows;
 };
 
+const guardarRelatorioFinalBD = async (id_consulta, diagnostico) => {
+    try {
+        // Fazemos um UPDATE porque a consulta já existe na Base de Dados
+        const query = `
+            UPDATE public.consulta
+            SET diagnostico = $1
+            WHERE id_consulta = $2
+            RETURNING *;
+        `;
+        
+        const valores = [diagnostico, id_consulta];
+        const resultado = await pool.query(query, valores);
+        
+        // Retorna a consulta atualizada
+        return resultado.rows[0];
+    } catch (erro) {
+        throw erro;
+    }
+}
+
 module.exports = {
     listarConsultasBD,
     criarConsultaBD,
@@ -376,5 +396,7 @@ module.exports = {
     obterConsultasDoClienteBD,
     obterVeterinarioDisponivelBD,       
     obterFuncionarioServicoAleatorioBD, 
-    criarServicoBD                      
+    criarServicoBD,
+    guardarRelatorioFinalBD
+
 };

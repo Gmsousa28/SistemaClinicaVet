@@ -9,7 +9,8 @@ const {
     obterconsultasdovetespecificoBD,
     obterconsultasdoanipecificoBD,
     obterVeterinarioDisponivelBD, // 🛡️ Faltava importar isto!
-    obterConsultasDoClienteBD
+    obterConsultasDoClienteBD,
+    guardarRelatorioFinalBD
 } = require('../models/consultas_models');
 
 const handleResponse = (res, status, message, data = null) => {
@@ -188,6 +189,54 @@ const listarConsultasDoAnimal = async (req, res, next) => {
     }
 };
 
+const finalizarConsulta = async (req, res) => {
+    try {
+        // 🔍 Log de diagnóstico para ver o que chega REALMENTE ao Node:
+        console.log("Conteúdo recebido no req.body:", req.body);
+
+        // Se o req.body inteiro vier vazio por falta do express.json()
+        if (!req.body || Object.keys(req.body).length === 0) {
+            return res.status(400).json({
+                status: 400,
+                message: "Erro: O servidor recebeu um pacote vazio. Certifica-te de que tens 'app.use(express.json())' no teu server.js!"
+            });
+        }
+
+        // Tenta ler com suporte a pequenas variações de nomes para não falhar
+        const id_consulta = req.body.id_consulta;
+        const diagnostico = req.body.diagnostico || req.body.texto || req.body.descricao;
+
+        if (!id_consulta || !diagnostico || String(diagnostico).trim() === '') {
+            return res.status(400).json({ 
+                status: 400, 
+                message: `Faltam dados detetados no servidor. id_consulta: ${id_consulta}, relatorio: ${diagnostico}` 
+            });
+        }
+
+        const consultaAtualizada = await guardarRelatorioFinalBD(Number(id_consulta), String(diagnostico).trim());
+
+        if (!consultaAtualizada) {
+            return res.status(404).json({
+                status: 404,
+                message: "Consulta não encontrada na base de dados para atualizar."
+            });
+        }
+
+        return res.status(200).json({
+            status: 200,
+            message: "🎉 Relatório guardado e consulta finalizada com sucesso!",
+            data: consultaAtualizada
+        });
+
+    } catch (erro) {
+        console.error("🔴 ERRO NO TERMINAL DO SERVER:", erro);
+        return res.status(500).json({ 
+            status: 500, 
+            message: "Erro interno do servidor ao guardar o relatório.",
+            detalhe: erro.message
+        });
+    }
+};
 
 module.exports = {
     listarConsultas,
@@ -197,5 +246,6 @@ module.exports = {
     eliminarConsulta,
     listarConsultasDoVeterinario,
     listarConsultasDoAnimal,
-    listarConsultasDoCliente
+    listarConsultasDoCliente,
+    finalizarConsulta
 };
