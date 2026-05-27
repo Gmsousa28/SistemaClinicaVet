@@ -37,11 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
         elemento.classList.toggle("oculto", !estaLogado);
     });
 
-    // ==========================================================================
-    // --- A MAGIA DA NAVEGAÇÃO CONDICIONAL (ADMIN, VET, RECEÇÃO vs CLIENTE) ---
+   // ==========================================================================
+    // --- A MAGIA DA NAVEGAÇÃO CONDICIONAL (REFORÇADA) ---
     // ==========================================================================
     if (estaLogado) {
-        // Pega no tipo de utilizador e converte para minúsculas para evitar erros de maiúsculas
         let tipoUtilizador = localStorage.getItem("tipoUtilizador");
         if (tipoUtilizador) tipoUtilizador = tipoUtilizador.toLowerCase(); 
 
@@ -49,43 +48,32 @@ document.addEventListener("DOMContentLoaded", () => {
         const btnMarcarConsulta = document.querySelector("a[data-requer-login]");
         const btnSair = document.querySelector("button[data-logout]");
 
-        // SE FOR QUALQUER TIPO DE STAFF (Não é cliente)
-        if (tipoUtilizador && tipoUtilizador !== "cliente") {
+        // 1. Lógica para STAFF
+        if (tipoUtilizador === "admin" || tipoUtilizador === "veterinario" || tipoUtilizador === "vet" || tipoUtilizador === "rececionista" || tipoUtilizador === "rececao") {
             
-            // 1. Esconde o botão "Sair" para TODO o staff na página principal
-            if (btnSair) btnSair.classList.add("oculto");
+            if (btnSair) btnSair.classList.add("oculto"); // Esconde Sair
 
-            // 2. Encaminhar consoante o Cargo exato
             if (tipoUtilizador === "admin") {
-                if (btnPerfil) {
-                    btnPerfil.href = "../frontend/Pag/Admin/admin_dashboard.html";
-                    btnPerfil.innerText = "Dashboard Admin";
-                }
-                if (btnMarcarConsulta) {
-                    btnMarcarConsulta.href = "../frontend/Pag/Admin/marcacoes_admin.html";
-                    btnMarcarConsulta.innerText = "Gerir Marcações";
-                }
+                if (btnPerfil) { btnPerfil.href = "../frontend/Pag/Admin/admin_dashboard.html"; btnPerfil.innerText = "Dashboard Admin"; }
+                if (btnMarcarConsulta) { btnMarcarConsulta.href = "../frontend/Pag/Admin/marcacoes_admin.html"; btnMarcarConsulta.innerText = "Gerir Marcações"; }
             } 
             else if (tipoUtilizador === "veterinario" || tipoUtilizador === "vet") {
-                if (btnPerfil) {
-                    btnPerfil.href = "../frontend/Pag/Veterinário/dashboard_vet.html";
-                    btnPerfil.innerText = "Dashboard Médico";
-                }
-                if (btnMarcarConsulta) {
-                    btnMarcarConsulta.href = "../frontend/Pag/Veterinário/marcacoes_vet.html";
-                    btnMarcarConsulta.innerText = "Ver Consultas";
-                }
+                if (btnPerfil) { btnPerfil.href = "../frontend/Pag/Veterinário/dashboard_vet.html"; btnPerfil.innerText = "Dashboard Médico"; }
+                if (btnMarcarConsulta) { btnMarcarConsulta.href = "../frontend/Pag/Veterinário/marcacoes_vet.html"; btnMarcarConsulta.innerText = "Ver Consultas"; }
             } 
-            else if (tipoUtilizador === "rececionista" || tipoUtilizador === "rececao") {
-                if (btnPerfil) {
-                    btnPerfil.href = "../frontend/Pag/Receção/rececionista.html";
-                    btnPerfil.innerText = "Dashboard Receção";
-                }
-                if (btnMarcarConsulta) {
-                    btnMarcarConsulta.href = "../frontend/Pag/Receção/marcacoes_recep.html";
-                    btnMarcarConsulta.innerText = "Gerir Marcações";
-                }
+            else { // Rececionista
+                if (btnPerfil) { btnPerfil.href = "../frontend/Pag/Receção/rececionista.html"; btnPerfil.innerText = "Dashboard Receção"; }
+                if (btnMarcarConsulta) { btnMarcarConsulta.href = "../frontend/Pag/Receção/marcacoes_recep.html"; btnMarcarConsulta.innerText = "Gerir Marcações"; }
             }
+        } 
+        // 2. Lógica para CLIENTE (A parte que faltava!)
+        else {
+            // Garantir que o botão Sair está visível para clientes
+            if (btnSair) btnSair.classList.remove("oculto");
+            
+            // Garantir que os botões apontam para os sítios de cliente
+            if (btnPerfil) { btnPerfil.href = "frontend/Pag/Cliente/perfil_cliente.html"; btnPerfil.innerText = "O Meu Perfil"; }
+            if (btnMarcarConsulta) { btnMarcarConsulta.href = "frontend/Pag/Cliente/consultas_cliente.html"; btnMarcarConsulta.innerText = "Marcar Consulta"; }
         }
     }
     // ==========================================================================

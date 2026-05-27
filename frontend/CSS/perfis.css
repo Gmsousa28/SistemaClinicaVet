@@ -4,7 +4,7 @@
 /* ========================================================================== */
 .dashboard {
     width: 1000% !important;
-    max-width: 1150px !important; /* Podes ajustar este número se quiseres o bloco mais largo ou mais estreito */
+    max-width: 1000px !important; /* Podes ajustar este número se quiseres o bloco mais largo ou mais estreito */
     margin: 0 auto !important;
     margin-left: 100px !important; /* Esta é a magia que empurra tudo para o centro exato */
 }
