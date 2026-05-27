@@ -4,26 +4,34 @@
 const API_BASE = "http://localhost:8008/api";
 let passoAtual = 1;
 
-// Ler os dados da consulta ativa que estão guardados na mochila
+// Ler os dados da consulta ativa guardados no localStorage
 const dadosConsulta = JSON.parse(localStorage.getItem('consultaAIniciar'));
 
-// Se o médico tentar entrar aqui sem uma consulta ativa, mandamo-lo de volta
+// Verifica se existe uma consulta ativa
 if (!dadosConsulta || !dadosConsulta.id_consulta) {
-    alert("Erro: Não foi encontrada nenhuma consulta ativa. A redirecionar para o Dashboard.");
+
+    alert("Erro: Não foi encontrada nenhuma consulta ativa.");
+
     window.location.href = "../Veterinário/dashboard_vet.html";
 }
 
+// Guardar ID da consulta atual
 const idConsultaAtual = dadosConsulta.id_consulta;
 
 
 // =======================================================
-// 2. FUNÇÃO VISUAL (Mantida para consistência)
+// 2. FUNÇÃO VISUAL
 // =======================================================
 function mostrarPasso(passo) {
+
     const passosConteudo = document.querySelectorAll('.conteudo-passo');
-    passosConteudo.forEach(el => el.style.display = 'none');
+
+    passosConteudo.forEach(el => {
+        el.style.display = 'none';
+    });
 
     const passoAtivo = document.getElementById('passo-' + passo);
+
     if (passoAtivo) {
         passoAtivo.style.display = 'block';
     }
@@ -31,60 +39,91 @@ function mostrarPasso(passo) {
 
 
 // =======================================================
-// 3. SUBMISSÃO REAL PARA A API (PATCH)
+// 3. FINALIZAR CONSULTA (PATCH)
 // =======================================================
 async function validarEFinalizar(evento) {
-    // 1. Impede o recarregamento automático da página
+
+    // Impede refresh automático do formulário
     evento.preventDefault();
 
+    // Buscar textarea do diagnóstico
     const textarea = document.getElementById('relatorio-consulta');
 
-    // 2. Validação local: o relatório não pode ir vazio
-    if (textarea && textarea.value.trim() === '') {
-        alert('Por favor, preencha o relatório da consulta antes de finalizar.');
+    // Verificar se existe
+    if (!textarea) {
+
+        alert("Erro: textarea do diagnóstico não encontrada.");
+        return;
+    }
+
+    // Buscar texto do diagnóstico
+    const diagnostico = textarea.value.trim();
+
+    // Validar campo vazio
+    if (diagnostico === '') {
+
+        alert('Por favor, preencha o diagnóstico antes de finalizar.');
+
         textarea.focus();
         return;
     }
 
-    // 3. Preparar o pacote com os dados exatos que o teu Controller espera
+    // Dados enviados para o backend
     const dadosParaEnviar = {
+
         id_consulta: Number(idConsultaAtual),
-        relatorio: textarea.value.trim()
+        diagnostico: diagnostico
     };
 
-    console.log("🚀 A enviar relatório final (PATCH):", dadosParaEnviar);
+    console.log("🚀 Dados enviados:", dadosParaEnviar);
 
     try {
-        // 4. Chamada PATCH real à tua API
+
+        // Pedido PATCH
         const resposta = await fetch(`${API_BASE}/consultas/finalizar`, {
+
             method: 'PATCH',
+
             headers: {
                 'Content-Type': 'application/json'
             },
+
             body: JSON.stringify(dadosParaEnviar)
         });
 
+        // Converter resposta para JSON
         const resultado = await resposta.json();
-        console.log("Resposta do Servidor:", resultado);
 
-        // 5. Tratar o Sucesso
+        console.log("✅ Resposta do servidor:", resultado);
+
+        // Sucesso
         if (resposta.ok || resultado.status === 200) {
-            alert('🎉 Consulta finalizada e relatório guardado com sucesso!');
-            
-            // Opcional: Se a consulta acabou, podemos limpar a mochila para o próximo atendimento
+
+            alert('🎉 Consulta finalizada com sucesso!');
+
+            // Limpar consulta ativa
             localStorage.removeItem('consultaAIniciar');
 
-            // Redirecionamento para o Dashboard do Veterinário
+            // Redirecionar
             window.location.href = "../Veterinário/dashboard_vet.html";
-        } 
-        // 6. Tratar Erros do Servidor
+        }
+
+        // Erro vindo do backend
         else {
-            alert('Erro ao finalizar consulta: ' + (resultado.message || 'Tente novamente.'));
+
+            alert(
+                'Erro ao finalizar consulta: ' +
+                (resultado.message || 'Tente novamente.')
+            );
         }
 
     } catch (erro) {
-        console.error("Erro grave ao ligar ao servidor:", erro);
-        alert("Erro ao ligar ao servidor. Verifica se o teu Backend está ligado.");
+
+        console.error("❌ Erro ao ligar ao servidor:", erro);
+
+        alert(
+            "Erro ao ligar ao servidor. Verifica se o backend está ligado."
+        );
     }
 }
 
@@ -94,13 +133,20 @@ async function validarEFinalizar(evento) {
 // =======================================================
 document.addEventListener("DOMContentLoaded", () => {
 
-    // 4.1 Mostrar passo inicial
+    // Mostrar primeiro passo
     mostrarPasso(passoAtual);
 
-    // 4.2 Ligar submit do formulário (escuta o clique no botão de submit)
+    // Buscar formulário
     const formulario = document.querySelector('.formulario-marcacao');
 
+    // Validar existência
     if (formulario) {
+
+        // Evento submit
         formulario.addEventListener('submit', validarEFinalizar);
+
+    } else {
+
+        console.error("❌ Formulário não encontrado.");
     }
 });

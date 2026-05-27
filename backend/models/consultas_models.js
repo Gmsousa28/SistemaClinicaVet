@@ -367,25 +367,20 @@ const obterConsultasDoClienteBD = async (id_cliente) => {
 
 const guardarDiagnosticoFinalBD = async (id_consulta, diagnostico) => {
     try {
-
+        // 💡 QUERY INTELIGENTE: Atualiza o texto E muda o estado para 'realizado' numa só vez!
         const query = `
             UPDATE public.consulta
-            SET diagnostico = $1
+            SET 
+                diagnostico = $1,
+                estado_servico = 'Realizado'
             WHERE id_consulta = $2
             RETURNING *;
         `;
-
-        const valores = [diagnostico, id_consulta];
-
+        
+        const valores = [diagnostico, Number(id_consulta)];
         const resultado = await pool.query(query, valores);
-
-        // Verifica se encontrou a consulta
-        if (resultado.rows.length === 0) {
-            return null;
-        }
-
+        
         return resultado.rows[0];
-
     } catch (erro) {
         throw erro;
     }
