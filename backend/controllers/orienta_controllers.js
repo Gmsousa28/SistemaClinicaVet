@@ -1,13 +1,9 @@
-// CORREÇÃO: Importar exatamente o nome exportado pelo model
-const {
-    orientaMedicamentoBD 
-} = require('../models/orienta_models.js');
+const { orientaMedicamentoBD } = require('../models/orienta_models.js');
 
 const orientaMedicamentos = async (req, res) => {
     try {
         const { id_consulta, id_medicamento } = req.body;
 
-        // Adicionei Array.isArray para garantir que o utilizador envia um array de facto
         if (!id_consulta || !id_medicamento || !Array.isArray(id_medicamento) || id_medicamento.length === 0) {
             return res.status(400).json({ 
                 status: 400, 
@@ -17,11 +13,20 @@ const orientaMedicamentos = async (req, res) => {
 
         const resultados = [];
         const descricaoPadrao = "Medicamento prescrito durante a consulta médica.";
+        const quantidadePadrao = 1.00; // 💡 Define uma quantidade padrão já que a BD exige NUMERIC
 
-        // CORREÇÃO: Variáveis do loop ajustadas para evitar confusão com os nomes
         for (let i = 0; i < id_medicamento.length; i++) {
-            const medicamentoAtual = id_medicamento[i]; 
-            const medicamentoGravado = await orientaMedicamentoBD(id_consulta, medicamentoAtual, descricaoPadrao);
+            // Se o item for um objeto {id_medicamento: 14}, extraímos só o número. Se for número puro, usa-o.
+            const item = id_medicamento[i];
+            const medicamentoIdPuro = typeof item === 'object' ? (item.id_medicamento || item.id) : Number(item);
+
+            // Chamada ao Model com os 4 parâmetros corretos
+            const medicamentoGravado = await orientaMedicamentoBD(
+                Number(id_consulta), 
+                medicamentoIdPuro, 
+                quantidadePadrao, 
+                descricaoPadrao
+            );
             resultados.push(medicamentoGravado);
         }
 
@@ -32,7 +37,7 @@ const orientaMedicamentos = async (req, res) => {
         });
 
     } catch (erro) {
-        console.error("Erro ao prescrever medicamentos:", erro);
+        console.error("Erro ao prescrever medicamentos no Terminal:", erro);
         
         if (erro.code === '23505') {
             return res.status(409).json({ 

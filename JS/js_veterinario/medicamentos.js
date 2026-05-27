@@ -121,8 +121,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    // =======================================================
-// 4. GRAVAR A PRESCRIÇÃO DOS MEDICAMENTOS (FORMATO STRING)
+// =======================================================
+// 4. GRAVAR A PRESCRIÇÃO DOS MEDICAMENTOS (FRONTEND FINAL)
 // =======================================================
 const formMarcacao = document.getElementById('form-prescrever-medicamento');
 
@@ -130,31 +130,23 @@ if (formMarcacao) {
     formMarcacao.addEventListener('submit', async function(evento) {
         evento.preventDefault();
 
-        // 1. Captura as checkboxes selecionadas
         const caixasCheckadas = document.querySelectorAll('input[name="medicamento_selecionado"]:checked');
 
-        // 2. Transforma as caixas em TEXTO CORRIDO (ex: "4" ou "4, 7") igualzinho aos teus exames!
-        const medicamentosTexto = Array.from(caixasCheckadas)
-    .map(cb => ({
-        id_medicamento: Number(cb.value)
-    }));
-
-        // Validar seleção
-        if (medicamentosTexto.length === 0) {
+        if (caixasCheckadas.length === 0) {
             alert('Por favor, selecione pelo menos um medicamento.');
             return;
         }
 
-        // ===================================================
-        // DADOS PARA ENVIAR (FORMATO STRING IDENTICO AOS EXAMES)
-        // ===================================================
+        // Criar um array simples de números: [14, 15]
+        const listaIdsPuros = Array.from(caixasCheckadas).map(cb => Number(cb.value));
+
         const dadosParaEnviar = {
-            id_consulta: idConsultaAtual,
-            id_animal: idAnimalAtual,
-            id_medicamento: medicamentosTexto // 👈 AGORA VAI COMO STRING! Ex: medicamentos: "4"
+            id_consulta: Number(idConsultaAtual),
+            id_animal: Number(idAnimalAtual),
+            id_medicamento: listaIdsPuros // 💡 Sincronizado com o req.body do teu Controller!
         };
 
-        console.log("🚀 A enviar para a API (Formato String):", dadosParaEnviar);
+        console.log("🚀 A enviar pacote perfeito para o Backend:", dadosParaEnviar);
 
         try {
             const resposta = await fetch(`${API_BASE}/orienta-medicamentos`, {
@@ -168,8 +160,8 @@ if (formMarcacao) {
             const resultado = await resposta.json();
             console.log("Resposta do Servidor:", resultado);
 
-            if (resultado.status === 201 || resposta.ok) {
-                alert('🎉 Medicamento(s) registado(s) com sucesso!');
+            if (resposta.ok || resultado.status === 201) {
+                alert('🎉 Medicamento(s) prescrito(s) com sucesso!');
                 window.location.href = "momento_consulta.html";
             } else {
                 alert('Erro ao gravar: ' + (resultado.message || 'Tente novamente.'));
@@ -180,5 +172,5 @@ if (formMarcacao) {
             alert("Erro ao ligar ao servidor.");
         }
     });
-}
+}   
 });
