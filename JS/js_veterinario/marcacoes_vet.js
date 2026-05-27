@@ -271,38 +271,3 @@ window.mudarPasso = function(direcao) {
     document.getElementById('btn-confirmar').style.display = passoAtual === 3 ? 'block' : 'none';
 };
 
-window.abrirModalHistoricoMarcacoes = function() {
-    document.getElementById('modal-historico-marcacoes').style.display = 'flex';
-    carregarHistoricoAPI(); 
-};
-
-window.fecharModalHistoricoMarcacoes = function() {
-    document.getElementById('modal-historico-marcacoes').style.display = 'none';
-};
-
-async function carregarHistoricoAPI() {
-    const tbody = document.getElementById('tabela-marcacoes-body');
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;"><i class="fa fa-spinner fa-spin"></i> A carregar da BD...</td></tr>';
-
-    try {
-        const resposta = await fetch("http://localhost:8008/api/consultas");
-        const resultado = await resposta.json();
-
-        if (resultado.status === 200) {
-            tbody.innerHTML = ''; 
-            resultado.data.forEach(m => {
-                const dataFormatada = new Date(m.data_consulta).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' });
-                tbody.innerHTML += `
-                    <tr>
-                        <td style="padding:15px;"><b>${dataFormatada}</b></td>
-                        <td style="padding:15px;"><strong>ID Vet: ${m.id_veterinario || 'N/A'}</strong></td>
-                        <td style="padding:15px;">ID Animal: ${m.id_animal || 'N/A'}</td>
-                        <td style="padding:15px;">${m.motivo || 'Consulta'}</td>
-                        <td style="padding:15px; text-align:center;"><span style="color:#2ea89c; font-weight:bold;">${m.estado}</span></td>
-                    </tr>`;
-            });
-        }
-    } catch (erro) { 
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Erro ao aceder à BD.</td></tr>'; 
-    }
-}

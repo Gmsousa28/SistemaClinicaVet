@@ -204,6 +204,7 @@ const obterconsultasdovetespecificoBD = async (id_veterinario) => {
         c.id_consulta,
         c.data_consulta,
         c.id_veterinario,
+        c.id_animal,
         c.motivo,
         c.estado,
         a.raca AS raca_animal,

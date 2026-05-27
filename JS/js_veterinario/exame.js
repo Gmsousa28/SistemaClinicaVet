@@ -1,191 +1,287 @@
-// --- 1. CONFIGURAÇÃO INICIAL (Apenas 2 Passos) ---
-let passoAtual = 1;
-const totalPassos = 2;
-
-// --- 2. FUNÇÃO PRINCIPAL VISUAL (Atualiza o ecrã) ---
-function mostrarPasso(passo) {
-    // 1. Esconde todos os blocos de conteúdo
-    const passosConteudo = document.querySelectorAll('.conteudo-passo');
-    passosConteudo.forEach(el => el.style.display = 'none');
+document.addEventListener('DOMContentLoaded', async function() {
     
-    // 2. Mostra apenas o bloco do passo atual
-    const passoAtivo = document.getElementById('passo-' + passo);
-    if (passoAtivo) {
-        passoAtivo.style.display = 'block';
+    const API_BASE = "http://localhost:8008/api";
+
+    // =======================================================
+    // 1. IDENTIFICAR A CONSULTA ATUAL (LENDO A MOCHILA)
+    // =======================================================
+    const dadosConsulta = JSON.parse(localStorage.getItem('consultaAIniciar'));
+    
+    if (!dadosConsulta || !dadosConsulta.id_animal || !dadosConsulta.id_consulta) {
+        alert("Erro: Dados da consulta perdidos. Vai ser redirecionado para o painel principal.");
+        window.location.href = "consulta.html";
+        return;
     }
 
-    // 3. Atualiza a barra de progresso no topo (bolinhas)
-    const indicadores = document.querySelectorAll('.barra-passos .passo');
-    indicadores.forEach((indicador, index) => {
-        if (index < passo) {
-            indicador.classList.add('ativo');
-        } else {
-            indicador.classList.remove('ativo');
-        }
-    });
+    const idConsultaAtual = dadosConsulta.id_consulta;
+    const idAnimalAtual = dadosConsulta.id_animal;
 
-    // 4. Controla a visibilidade dos botões
+    // =======================================================
+    // 2. LIMPAR A INTERFACE (Adeus Passo 1 e NIF!)
+    // =======================================================
+    // Escondemos tudo o que não interessa ao médico nesta fase
+    const barraPassos = document.querySelector('.barra-passos');
+    const passo1 = document.getElementById('passo-1');
     const btnVoltar = document.getElementById('btn-voltar');
     const btnAvancar = document.getElementById('btn-avancar');
+    
+    if (barraPassos) barraPassos.style.display = 'none';
+    if (passo1) passo1.style.display = 'none';
+    if (btnVoltar) btnVoltar.style.display = 'none';
+    if (btnAvancar) btnAvancar.style.display = 'none';
+
+    // Mostramos diretamente os exames e o botão de Confirmar
+    const passo2 = document.getElementById('passo-2');
     const btnConfirmar = document.getElementById('btn-confirmar');
+    
+    if (passo2) passo2.style.display = 'block';
+    if (btnConfirmar) btnConfirmar.style.display = 'inline-block';
 
-    if (passo === 1) {
-        if (btnVoltar) btnVoltar.style.display = 'none';
-        if (btnAvancar) btnAvancar.style.display = 'inline-block';
-        if (btnConfirmar) btnConfirmar.style.display = 'none';
-    } else if (passo === totalPassos) { // Passo 2
-        if (btnVoltar) btnVoltar.style.display = 'inline-block';
-        if (btnAvancar) btnAvancar.style.display = 'none';
-        if (btnConfirmar) btnConfirmar.style.display = 'inline-block';
-    }
-}
+// =======================================================
+// 3. CARREGAR OS EXAMES DA API
+// =======================================================
 
-// --- 3. FUNÇÃO DE NAVEGAÇÃO (Botão Recuar) ---
-function mudarPasso(direcao) {
-    passoAtual += direcao;
-    mostrarPasso(passoAtual);
-}
+const containerExames =
+    document.getElementById('container-exames');
 
-// --- 4. VALIDAÇÃO PARA AVANÇAR (Botão Seguinte) ---
-function validarEAvancar() {
-    // Validação do Passo 1 (NIF)
-    if (passoAtual === 1) {
-        const inputNIF = document.getElementById('nif_cliente');
-        if (inputNIF && inputNIF.value.trim() === '') {
-            alert('Por favor, introduza o NIF para identificar o cliente.');
-            inputNIF.focus();
-            return; // Impede o avanço
+if (containerExames) {
+
+    try {
+
+        // Loading
+        containerExames.innerHTML = `
+            <div style="text-align:center; padding:20px;">
+                <i class="fa fa-spinner fa-spin"></i>
+                A carregar exames...
+            </div>
+        `;
+
+        // Pedido API
+        const resposta =
+            await fetch(`${API_BASE}/exames`);
+
+        // Converter resposta
+        const resultado =
+            await resposta.json();
+
+        console.log("Resultado exames:", resultado);
+
+        // Buscar array
+        const todosServicos =
+            resultado.data || resultado;
+
+        // Mostrar TODOS
+        const apenasExames =
+            todosServicos;
+
+        // Limpar container
+        containerExames.innerHTML = "";
+
+        // Sem exames
+        if (!apenasExames || apenasExames.length === 0) {
+
+            containerExames.innerHTML = `
+                <p style="
+                    color:#e74c3c;
+                    width:100%;
+                    text-align:center;
+                ">
+                    Não há exames disponíveis na base de dados.
+                </p>
+            `;
+
+        } else {
+
+            apenasExames.forEach(exame => {
+
+                const idServico =
+                    exame.id_exame ||
+                    exame.id_servico ||
+                    exame.id;
+
+                const nomeExame =
+                    exame.nome ||
+                    exame.nome_exame ||
+                    "Exame Indefinido";
+
+                const preco =
+                    exame.preco
+                        ? `${exame.preco}€`
+                        : "--";
+
+                const cartaoHTML = `
+                    <label
+                        class="cartao-opcao-radio"
+                        style="cursor:pointer;"
+                    >
+
+                        <input
+                            type="checkbox"
+                            name="exame_selecionado"
+                            value="${idServico}"
+                            class="esconder-radio"
+                        >
+
+                        <div
+                            class="conteudo-cartao-opcao"
+                            style="
+                                display:flex;
+                                align-items:center;
+                                text-align:left;
+                                gap:15px;
+                                padding:15px;
+                            "
+                        >
+
+                            <div
+                                class="avatar-medico"
+                                style="
+                                    background-color:#e3f2fd;
+                                    color:#3498db;
+                                    width:45px;
+                                    height:45px;
+                                    display:flex;
+                                    justify-content:center;
+                                    align-items:center;
+                                    border-radius:50%;
+                                    flex-shrink:0;
+                                "
+                            >
+
+                                <i
+                                    class="fa fa-microscope"
+                                    style="font-size:1.3rem;"
+                                ></i>
+
+                            </div>
+
+                            <div
+                                style="
+                                    display:flex;
+                                    flex-direction:column;
+                                "
+                            >
+
+                                <span
+                                    style="
+                                        font-weight:600;
+                                        color:#2c3e50;
+                                        font-size:0.95rem;
+                                    "
+                                >
+                                    ${nomeExame}
+                                </span>
+
+                                <small
+                                    style="
+                                        color:#7f8c8d;
+                                        font-size:0.85rem;
+                                    "
+                                >
+                                    ${preco}
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </label>
+                `;
+
+                containerExames.innerHTML += cartaoHTML;
+
+            });
         }
-    }
 
-    // Se estiver tudo bem, avança para o passo 2
-    mudarPasso(1);
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar exames:",
+            erro
+        );
+
+        containerExames.innerHTML = `
+            <p style="
+                color:red;
+                width:100%;
+                text-align:center;
+            ">
+                Erro ao carregar exames.
+            </p>
+        `;
+    }
 }
+   // =======================================================
+// 4. GRAVAR A PRESCRIÇÃO DOS EXAMES
+// =======================================================
+const formMarcacao = document.getElementById('form-marcar-exame');
 
-// --- 5. FUNÇÕES DA JANELA MODAL (Histórico) ---
-function abrirModalHistoricoMarcacoes() {
-    const modal = document.getElementById('modal-historico-marcacoes');
-    if (modal) modal.style.display = 'flex'; 
-}
+if (formMarcacao) {
+    formMarcacao.addEventListener('submit', async function(evento) {
+        evento.preventDefault();
 
-function fecharModalHistoricoMarcacoes() {
-    const modal = document.getElementById('modal-historico-marcacoes');
-    if (modal) modal.style.display = 'none';
-}
+        // ===================================================
+        // BUSCAR EXAMES SELECIONADOS (E CONVERTER PARA NÚMERO)
+        // ===================================================
+        const examesSelecionados = Array.from(
+            document.querySelectorAll('input[name="exame_selecionado"]:checked')
+        ).map(cb => cb.value)
+        .join(', ');
 
+        // Validar seleção
+        if (examesSelecionados.length === 0) {
+            alert('Por favor, selecione pelo menos um exame.');
+            return;
+        }
 
-// --- 6. ARRANQUE DA PÁGINA E LIGAÇÕES DE EVENTOS ---
-// Juntámos todos os "DOMContentLoaded" num só para o código ser rápido e profissional!
-document.addEventListener("DOMContentLoaded", () => {
-    
-    // 6.1. Garante que começa visualmente no Passo 1
-    mostrarPasso(passoAtual);
-
-    // 6.2. Ligar o botão "Recuar"
-    const btnVoltar = document.getElementById('btn-voltar');
-    if (btnVoltar) {
-        btnVoltar.addEventListener('click', () => {
-            mudarPasso(-1);
-        });
-    }
-
-    // 6.3. Ligar o botão "Seguinte"
-    const btnAvancar = document.getElementById('btn-avancar');
-    if (btnAvancar) {
-        btnAvancar.addEventListener('click', validarEAvancar);
-    }
-
-    // 6.4. Validação Final antes de Confirmar o Exame (Botão Submit)
-    const formulario = document.querySelector('.formulario-marcacao');
-    if (formulario) {
-        formulario.addEventListener('submit', (evento) => {
-            
-            // Procura todos os checkboxes de exames que estejam selecionados
-            const examesSelecionados = document.querySelectorAll('input[name="servico"]:checked');
-            
-            // Se nenhum exame estiver selecionado, bloqueia o envio
-            if (examesSelecionados.length === 0) {
-                evento.preventDefault(); // Impede o formulário de ser enviado e a página de recarregar
-                alert('Por favor, selecione pelo menos um exame antes de confirmar.');
-                return;
-            }
-
-            // (Simulação) Se houver exames selecionados, impede o envio real para dar o alerta e redirecionar
-            evento.preventDefault(); 
-            alert('Exame(s) registado(s) com sucesso!');
-            window.location.href = "/JS/Veterinário/momento_consulta.html"; 
-        });
-    }
-});
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // =======================================================
-    // PASSO 1: PROCURAR NIF E SELECIONAR ANIMAL
-    // =======================================================
-    const inputNif = document.getElementById('nif_cliente');
-    const containerAnimais = document.querySelector('.grid-animais-selecao');
-
-    // VERIFICAÇÃO DE SEGURANÇA: Só executa se estivermos na página de Marcações!
-    if (inputNif && containerAnimais) {
-        
-        // Base de Dados Simulada de Clientes (Pronto para substituir por API Fetch)
-        const clientesTeste = {
-            "123456789": {
-                nome: "João Silva",
-                animais: [
-                    { id: 1, nome: "Max", tipo: "cao", especie: "Cão" },
-                    { id: 2, nome: "Luna", tipo: "gato", especie: "Gato" }
-                ]
-            },
-            "987654321": {
-                nome: "Ana Costa",
-                animais: [
-                    { id: 3, nome: "Pipo", tipo: "outro", especie: "Papagaio" }
-                ]
-            }
+        // ===================================================
+        // DADOS PARA ENVIAR
+        // ===================================================
+        const dadosParaEnviar = {
+            id_consulta: idConsultaAtual,
+            id_animal: idAnimalAtual,
+            exames: examesSelecionados
         };
 
-        inputNif.addEventListener('input', function() {
-            const nifDigitado = this.value;
-            
-            if(nifDigitado.length === 9) {
-                const cliente = clientesTeste[nifDigitado];
-                
-                if(cliente) {
-                    this.style.borderColor = "#2ea89c";
-                    this.style.backgroundColor = "#e0f2f1";
-                    containerAnimais.innerHTML = ''; 
-                    
-                    cliente.animais.forEach(animal => {
-                        let icone = animal.tipo === 'cao' ? 'fa-dog' : (animal.tipo === 'gato' ? 'fa-cat' : 'fa-paw');
-                        const cartaoHTML = `
-                            <label class="cartao-animal-radio">
-                                <input type="radio" name="id_animal" value="${animal.id}" class="esconder-radio" required>
-                                <div class="conteudo-cartao-animal">
-                                    <div class="avatar-animal ${animal.tipo}"><i class="fa ${icone}"></i></div>
-                                    <div class="info-animal">
-                                        <strong>${animal.nome}</strong>
-                                        <span>${animal.especie}</span>
-                                    </div>
-                                </div>
-                            </label>
-                        `;
-                        containerAnimais.innerHTML += cartaoHTML;
-                    });
-                } else {
-                    this.style.borderColor = "#e74c3c";
-                    this.style.backgroundColor = "#fadbd8";
-                    containerAnimais.innerHTML = '<p style="color: #e74c3c; width: 100%; text-align: center; margin-top: 1rem;">Cliente não encontrado. Verifique o NIF.</p>';
-                }
-            } else if (nifDigitado.length === 0) {
-                this.style.borderColor = "#ccc";
-                this.style.backgroundColor = "#fff";
-                containerAnimais.innerHTML = '<p style="color: #7f8c8d; width: 100%; text-align: center; font-style: italic;">Introduza um NIF válido em cima para procurar os animais do cliente.</p>';
-            }
-        });
-    }
+        console.log("🚀 A enviar exames:", dadosParaEnviar);
 
-     
+        try {
+            // ===================================================
+            // FETCH API
+            // ===================================================
+            // ⚠️ ATENÇÃO: Confirma se a tua rota tem "/consultas" ou não!
+            const resposta = await fetch(`${API_BASE}/prescrever-exames`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dadosParaEnviar)
+            });
+
+            // Converter resposta
+            const resultado = await resposta.json();
+
+            // ===================================================
+            // SUCESSO
+            // ===================================================
+            if (resultado.status === 201 || resposta.ok) {
+                alert('🎉 Exame(s) registado(s) com sucesso!');
+                window.location.href = "momento_consulta.html";
+            }
+            // ===================================================
+            // ERRO PERSONALIZADO DO SERVIDOR
+            // ===================================================
+            else {
+                alert('Erro ao gravar exame: ' + (resultado.message || 'Tente novamente.'));
+            }
+
+        } catch (erro) {
+            // ===================================================
+            // ERRO GRAVE (Ex: Servidor desligado)
+            // ===================================================
+            console.error("Erro grave no Fetch:", erro);
+            alert("Erro ao ligar ao servidor. Verifica a Consola (F12).");
+        }
+    });
+}
 });
