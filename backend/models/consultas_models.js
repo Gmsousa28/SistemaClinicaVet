@@ -371,10 +371,7 @@ const obterConsultasDoClienteBD = async (id_cliente) => {
 
 const guardarDiagnosticoFinalBD = async (id_consulta, diagnostico) => {
     try {
-<<<<<<< HEAD
         // 🎯 A Query perfeita: mapeia as duas colunas reais da tua tabela
-=======
->>>>>>> 1f8e33102258a2de8f36d7c1371b7fcab43c227f
         const query = `
             UPDATE public.consulta
             SET 
