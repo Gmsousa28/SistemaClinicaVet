@@ -158,7 +158,6 @@ const listarResgatesPainelBD = async () => {
 
 // Criar resgate completo
 const criarResgateCompletoBD = async (nome, especie, raca, idade, data_resgate, id_funcionario) => {
-    // Insere o animal e usa o ID gerado para inserir o resgate
     const query = `
         WITH novo_animal AS (
             INSERT INTO animal (id_cliente, nome, especie, raca, sexo, data_nascimento, estado)
@@ -174,11 +173,11 @@ const criarResgateCompletoBD = async (nome, especie, raca, idade, data_resgate, 
     return result.rows[0];
 };
 
-// NOVA FUNÇÃO: Formalizar a Adoção
+
 // Formalizar adocao
 const formalizarAdocaoBD = async (id_animal, nif_cliente) => {
     
-    // 1. Procurar qual é o id_cliente através do NIF
+
     const queryCliente = await pool.query('SELECT id_cliente FROM cliente WHERE nif = $1', [nif_cliente]);
     
     if (queryCliente.rows.length === 0) {
@@ -187,7 +186,7 @@ const formalizarAdocaoBD = async (id_animal, nif_cliente) => {
     
     const id_cliente_novo = queryCliente.rows[0].id_cliente;
 
-    // 2. Atualizar o animal com o novo dono (e mudar o estado para Adotado)
+
     const queryUpdate = `
         UPDATE animal 
         SET id_cliente = $1, estado = 'Adotado' 

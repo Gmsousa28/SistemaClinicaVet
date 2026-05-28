@@ -31,7 +31,6 @@ const verificarLoginColaboradorBD = async (email) => {
     return result.rows[0]; 
 };
 
-// MANTIDA PARA A ROTA DE PERFIL: Procura diretamente pelo id_colaborador (vido da URL)
 // Obter perfil do colaborador
 const obterPerfilColaboradorBD = async (id_colaborador) => {
     const query = `
@@ -84,7 +83,7 @@ const obterPerfilPorLoginColabBD = async (id_login_colaborador) => {
     return result.rows[0]; 
 };
 
-// Chama a function realizar_login_colab que está no PostgreSQL
+
 // Realizar login de colaborador
 const realizarLoginColaboradorBD = async (email, palavra_passe) => {
     const query = `
@@ -94,12 +93,9 @@ const realizarLoginColaboradorBD = async (email, palavra_passe) => {
     return result.rows[0]; 
 };
 
-// Chama a function logout_dispositivo_colab que está no PostgreSQL
+
 // Fazer logout do dispositivo do colaborador
 const logoutDispositivoColabBD = async (id_colaborador, id_logs) => {
-    // A MAGIA ESTÁ AQUI NA QUERY: 
-    // Em vez de enviarmos o $1 (ex: 7) diretamente, pedimos ao PostgreSQL para 
-    // descobrir primeiro qual é o id_login_colaborador (ex: 8) que lhe corresponde!
     const query = `
         SELECT public.logout_dispositivo_colab(
             (SELECT id_login_colaborador FROM public.colaborador WHERE id_colaborador = $1), 
