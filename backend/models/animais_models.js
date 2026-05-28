@@ -64,6 +64,20 @@ const listarAnimaisPorDonoBD = async (nif) => {
     return result.rows;
 };
 
+// =======================================================
+// NOVA FUNÇÃO: Obter os animais de um Cliente específico
+// =======================================================
+const obterAnimaisDoClienteBD = async (id_cliente) => {
+    const result = await pool.query(
+        `
+        SELECT * FROM public.animal 
+        WHERE id_cliente = $1 
+        ORDER BY nome ASC;
+        `,
+        [id_cliente]
+    );
+    return result.rows;
+};
 // ====================================================================
 // O EXPORT (Para o Controller ter acesso a tudo)
 // ====================================================================
@@ -71,6 +85,7 @@ module.exports = {
     listarAnimaisBD,
     criarAnimalBD,
     obterAnimalPorIdBD,
+    obterAnimaisDoClienteBD,
     atualizarAnimalBD,
     eliminarAnimalBD,
     listarAnimaisPorDonoBD,

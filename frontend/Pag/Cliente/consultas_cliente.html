@@ -8,6 +8,9 @@
         <link rel="stylesheet" href="../../CSS/PaginaSite.css">
         <link rel="stylesheet" href="../../CSS/css_cliente/cliente.css">
         <link rel="stylesheet" href="../../CSS/css_cliente/header_cliente.css">
+        
+        <link rel="stylesheet" href="../../CSS/css_rececao/marcacoes_recep.css">
+        
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     </head>
 
@@ -57,34 +60,108 @@
         </section>
 
         <div id="modal-nova-consulta" class="modal-overlay">
-            <div class="modal-content">
+            
+            <div class="modal-content" style="max-width: 800px; width: 95%;">
                 <span class="fechar-modal-consulta"><i class="fa fa-times"></i></span>
-                <h2 class="modal-titulo">Marcar Consulta</h2>
+                <h2 class="modal-titulo" style="text-align: center; margin-top: 10px; margin-bottom: 25px;">Nova Marcação</h2>
                 
-                <div class="campo-modal">
-                    <label>Qual animal?</label>
-                    <select id="select-animal" class="input-modal">
-                        <option value="" disabled selected>A carregar os seus animais...</option>
-                    </select>
-                </div>
-
-                <div class="campo-modal">
-                    <label>Motivo da Consulta</label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa fa-stethoscope"></i>
-                        <input type="text" class="input-modal input-com-icone" placeholder="Ex: Vacina, Check-up...">
+                <div class="barra-passos">
+                    <div class="passo ativo" id="indicador-passo-1">
+                        <div class="circulo-passo">1</div>
+                        <span>Animal</span>
+                    </div>
+                    <div class="linha-passo"></div>
+                    <div class="passo" id="indicador-passo-2">
+                        <div class="circulo-passo">2</div>
+                        <span>Serviço</span>
+                    </div>
+                    <div class="linha-passo"></div>
+                    <div class="passo" id="indicador-passo-3">
+                        <div class="circulo-passo">3</div>
+                        <span>Data e Hora</span>
                     </div>
                 </div>
+                
+                <form id="form-marcacao-cliente" class="formulario-marcacao">
+                    
+                    <div class="conteudo-passo" id="passo-1">
+                        <h3 style="color: var(--cor-base-escura); margin-bottom: 1.5rem; text-align: center;">Selecione o seu Animal</h3>
+                        
+                        <div class="grid-animais-selecao" id="grid-animais-cliente">
+                            <p style="color: #7f8c8d; width: 100%; text-align: center; font-style: italic;">A carregar os seus animais...</p>
+                        </div>
+                    </div> 
 
-                <div class="campo-modal-final">
-                    <label>Data Preferencial</label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa fa-calendar"></i>
-                        <input type="date" class="input-modal input-com-icone">
+                    <div class="conteudo-passo" id="passo-2" style="display: none;">
+                        <h3 style="color: var(--cor-base-escura); margin-bottom: 1.5rem; text-align: center;">Detalhes do Serviço</h3>
+
+                        <label style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">1. Serviço Pretendido (Pode escolher vários):</label>
+                        
+                        <div class="grid-opcoes-selecao" style="margin-bottom: 2.5rem;">
+                            <label class="cartao-opcao-radio">
+                                <input type="checkbox" name="servico" value="consulta" class="esconder-radio" id="check-consulta">
+                                <div class="conteudo-cartao-opcao">
+                                    <i class="fa fa-stethoscope icon-opcao"></i>
+                                    <span>Consulta</span>
+                                </div>
+                            </label>
+                            
+                            <label class="cartao-opcao-radio">
+                                <input type="checkbox" name="servico" value="banho" class="esconder-radio">
+                                <div class="conteudo-cartao-opcao">
+                                    <i class="fa fa-bath icon-opcao"></i>
+                                    <span>Banho</span>
+                                </div>
+                            </label>
+                            
+                            <label class="cartao-opcao-radio">
+                                <input type="checkbox" name="servico" value="tosquia" class="esconder-radio">
+                                <div class="conteudo-cartao-opcao">
+                                    <i class="fa fa-cut icon-opcao"></i>
+                                    <span>Tosquia</span>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div id="seccao-veterinario" style="display: none;">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">2. Veterinário (Opcional):</label>
+                            <div class="grid-opcoes-selecao" id="container-vets">
+                                <p style="color: #7f8c8d; font-style: italic;">A carregar veterinários...</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <button id="btn-confirmar-consulta" class="btn-confirmar-modal">Confirmar Marcação</button>
+                    <div class="conteudo-passo" id="passo-3" style="display: none;">
+                        <h3 style="color: var(--cor-base-escura); margin-bottom: 1.5rem; text-align: center;">Data e Hora da Consulta</h3>
+
+                        <div class="grid-data-hora">
+                            <div class="seccao-data">
+                                <label for="data_marcacao_visual" style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">1. Escolha o dia:</label>
+                                <input type="date" id="data_marcacao_visual" class="input-data-premium" required>
+                                <input type="hidden" name="data_marcacao" id="data_marcacao_real">
+                            </div>
+
+                            <div class="seccao-hora">
+                                <label style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">2. Escolha a hora (Slots 30 min):</label>
+                                <div id="container-slots-hora" class="grid-slots">
+                                    <p class="mensagem-espera-data">Por favor, selecione primeiro um dia para ver os horários disponíveis.</p>
+                                </div>
+                                <input type="hidden" name="hora_marcacao" id="hora_marcacao_real">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="acoes-formulario" style="margin-top: 3rem; border-top: 1px solid #eee; padding-top: 1.5rem; display: flex; justify-content: space-between;">
+                        <button type="button" class="btn-secundario" id="btn-voltar" onclick="mudarPasso(-1)" style="display:none;"><i class="fa fa-arrow-left" style="margin-right: 8px;"></i> Recuar</button>
+                        
+                        <div style="flex-grow: 1;"></div> 
+
+                        <button type="button" class="btn-primario" id="btn-avancar" onclick="mudarPasso(1)">Seguinte <i class="fa fa-arrow-right" style="margin-left: 8px;"></i></button>
+                        
+                        <button type="button" class="btn-primario" id="btn-confirmar" style="display:none; background-color: #27ae60;">Confirmar Marcação <i class="fa fa-check" style="margin-left: 8px;"></i></button>
+                    </div>
+
+                </form>
             </div>
         </div>
 
@@ -97,10 +174,8 @@
                     <p><strong>Animal:</strong> <span id="detalhe-nome">...</span></p>
                     <p><strong>Data e Hora:</strong> <span id="detalhe-data">...</span></p>
                     <p><strong>Motivo:</strong> <span id="detalhe-motivo">...</span></p>
-                    
                     <hr class="divisor-modal">
-                    
-                    <p><strong>Médico(a) Veterinário(a):</strong> A atribuir</p>
+                    <p id="detalhe-medico-texto"><strong>Médico(a) Veterinário(a):</strong> A atribuir</p>
                     <p><strong>Observações da Clínica:</strong> Trazer o boletim de vacinas atualizado. O animal deve estar em jejum se for realizar análises.</p>
                 </div>
 

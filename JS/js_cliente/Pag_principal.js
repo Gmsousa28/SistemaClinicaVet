@@ -49,8 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const btnSair = document.querySelector("button[data-logout]");
 
         // 1. Lógica para STAFF
-        if (tipoUtilizador === "admin" || tipoUtilizador === "veterinario" || tipoUtilizador === "vet" || tipoUtilizador === "rececionista" || tipoUtilizador === "rececao") {
-            
+if (tipoUtilizador === "admin" || tipoUtilizador === "administracao" || tipoUtilizador === "veterinario" || tipoUtilizador === "vet" || tipoUtilizador === "rececionista" || tipoUtilizador === "rececao" || tipoUtilizador === "funcionario") {            
             if (btnSair) btnSair.classList.add("oculto"); // Esconde Sair
 
             if (tipoUtilizador === "admin") {
@@ -72,8 +71,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (btnSair) btnSair.classList.remove("oculto");
             
             // Garantir que os botões apontam para os sítios de cliente
-            if (btnPerfil) { btnPerfil.href = "frontend/Pag/Cliente/perfil_cliente.html"; btnPerfil.innerText = "O Meu Perfil"; }
-            if (btnMarcarConsulta) { btnMarcarConsulta.href = "frontend/Pag/Cliente/consultas_cliente.html"; btnMarcarConsulta.innerText = "Marcar Consulta"; }
+            if (btnPerfil) { btnPerfil.href = "../frontend/Pag/Cliente/perfil_cliente.html"; btnPerfil.innerText = "O Meu Perfil"; }
+            if (btnMarcarConsulta) { btnMarcarConsulta.href = "../frontend/Pag/Cliente/consultas_cliente.html"; btnMarcarConsulta.innerText = "Marcar Consulta"; }
         }
     }
     // ==========================================================================

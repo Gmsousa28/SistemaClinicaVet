@@ -2,6 +2,7 @@ const {
   listarAnimaisBD,
   criarAnimalBD,
   obterAnimalPorIdBD,
+  obterAnimaisDoClienteBD,
   atualizarAnimalBD,
   eliminarAnimalBD,
   listarAnimaisPorDonoBD
@@ -104,11 +105,29 @@ const listarAnimaisPorDono = async (req, res, next) => {
   }
 };
 
+// O teu novo controlador:
+const listarAnimaisDoCliente = async (req, res, next) => {
+    try {
+        const id_cliente = req.params.id; 
+        const animais = await obterAnimaisDoClienteBD(id_cliente);
+        
+        // Devolve o JSON para o site conseguir ler
+        res.status(200).json({ 
+            status: 200, 
+            message: "Animais do cliente carregados com sucesso", 
+            data: animais 
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 module.exports = {
   listarTodosAnimais,
   criarAnimal,
   obterAnimalPorId,
   atualizarAnimal,
+  listarAnimaisDoCliente,
   eliminarAnimal,
   listarAnimaisPorDono
 };
