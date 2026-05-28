@@ -190,47 +190,38 @@ const listarConsultasDoAnimal = async (req, res, next) => {
 };
 
 const finalizarConsulta = async (req, res) => {
-
     try {
-
         const { id_consulta, diagnostico } = req.body;
 
-        // Validação dos dados
-        if (!id_consulta || !diagnostico) {
-            return res.status(400).json({
-                status: 400,
-                message: "Faltam dados: ID da consulta ou o diagnóstico está vazio."
+        if (!id_consulta || !diagnostico || diagnostico.trim() === '') {
+            return res.status(400).json({ 
+                status: 400, 
+                message: "Faltam dados: ID da consulta ou o texto está vazio." 
             });
         }
 
-        // Guarda na BD
-        const consultaAtualizada = await guardarDiagnosticoFinalBD(
-            id_consulta,
-            diagnostico
-        );
+        // Passa os dados para o teu Model atualizado
+        const consultaAtualizada = await guardarDiagnosticoFinalBD(Number(id_consulta), diagnostico.trim());
 
-        // Consulta não encontrada
         if (!consultaAtualizada) {
             return res.status(404).json({
                 status: 404,
-                message: "Consulta não encontrada."
+                message: "Consulta não encontrada para atualizar."
             });
         }
 
-        // Sucesso
         return res.status(200).json({
             status: 200,
-            message: "Diagnóstico guardado com sucesso.",
-            consulta: consultaAtualizada
+            message: "🎉 Consulta finalizada com sucesso!",
+            data: consultaAtualizada
         });
 
     } catch (erro) {
-
-        console.error("Erro ao finalizar consulta:", erro);
-
-        return res.status(500).json({
-            status: 500,
-            message: "Erro interno do servidor."
+        console.error("Erro no controller:", erro);
+        return res.status(500).json({ 
+            status: 500, 
+            message: "Erro interno do servidor.",
+            detalhe: erro.message
         });
     }
 };

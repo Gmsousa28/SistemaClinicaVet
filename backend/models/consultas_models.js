@@ -367,12 +367,12 @@ const obterConsultasDoClienteBD = async (id_cliente) => {
 
 const guardarDiagnosticoFinalBD = async (id_consulta, diagnostico) => {
     try {
-        // 💡 QUERY INTELIGENTE: Atualiza o texto E muda o estado para 'realizado' numa só vez!
+        // 🎯 A Query perfeita: mapeia as duas colunas reais da tua tabela
         const query = `
             UPDATE public.consulta
             SET 
                 diagnostico = $1,
-                estado_servico = 'Realizado'
+                estado = 'Realizado' 
             WHERE id_consulta = $2
             RETURNING *;
         `;
@@ -382,9 +382,11 @@ const guardarDiagnosticoFinalBD = async (id_consulta, diagnostico) => {
         
         return resultado.rows[0];
     } catch (erro) {
+        console.error("🔴 Erro do Postgres (pode ser o ENUM):", erro.message);
         throw erro;
     }
 };
+
 module.exports = {
     listarConsultasBD,
     criarConsultaBD,
