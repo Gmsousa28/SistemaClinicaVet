@@ -1,5 +1,5 @@
 // =================================================================
-// 1. FUNÇÕES DOS POPUPS E REDIRECIONAMENTO
+// 1. FUNÇÕES DOS POPUPS (VER MOTIVO)
 // =================================================================
 function fecharPopupInfo() {
     const popup = document.getElementById('popup-motivo');
@@ -15,19 +15,34 @@ function abrirPopupInfo(textoMotivo) {
     if (popup) popup.style.display = 'flex';
 }
 
+// =================================================================
+// 2. FUNÇÃO PARA INICIAR CONSULTA E GUARDAR NA MOCHILA
+// =================================================================
 function irParaConsulta(idConsulta, idAnimal) {
-    // Guarda na mochila para ser super fácil leres os IDs na próxima página
-    localStorage.setItem('consultaAIniciar', JSON.stringify({
-        id_consulta: idConsulta,
-        id_animal: idAnimal
-    }));
+    
+    // 🛡️ SISTEMA DE SEGURANÇA: Verifica se o Backend se esqueceu de enviar o ID
+    if (!idAnimal || idAnimal === 'undefined' || idAnimal === null) {
+        alert("⚠️ ERRO: O sistema não detetou o ID do animal nesta consulta.\n\nPor favor, verifica se o teu Backend está a incluir o 'id_animal' no SELECT da Base de Dados e reinicia o servidor Node.js.");
+        console.error("Falha ao Iniciar: idConsulta =", idConsulta, "| idAnimal =", idAnimal);
+        return; // Pára tudo e impede a mudança de página!
+    }
 
-    // Redireciona a página enviando os dois dados pelo URL
-    window.location.href = `momento_consulta.html?id_consulta=${idConsulta}&id_animal=${idAnimal}`;
+    // 🎒 Preparar o pacote com os números limpos
+    const pacoteParaGuardar = {
+        id_consulta: Number(idConsulta),
+        id_animal: Number(idAnimal)
+    };
+
+    // 🎒 Fechar o pacote e guardar na mochila (localStorage)
+    localStorage.setItem('consultaAIniciar', JSON.stringify(pacoteParaGuardar));
+    console.log("🎒 Dados guardados na mochila com sucesso:", pacoteParaGuardar);
+
+    // 🚀 Mudar de página! (A mochila trata de levar os dados, não precisamos do URL)
+    window.location.href = "momento_consulta.html";
 }
 
 // =================================================================
-// 2. CARREGAR CONSULTAS FUTURAS DA API (COM MARGEM DE 30 MIN)
+// 3. CARREGAR CONSULTAS FUTURAS DA API (COM MARGEM DE 30 MIN)
 // =================================================================
 async function carregarConsultasDaAPI() {
     const tbody = document.getElementById('corpo-tabela-consultas');
@@ -37,7 +52,7 @@ async function carregarConsultasDaAPI() {
         return;
     }
 
-    // 🎒 Buscar os dados do Veterinário logado
+    // Buscar os dados do Veterinário logado
     const dadosMochila = localStorage.getItem('utilizadorLogado');
     
     if (!dadosMochila) {
@@ -84,7 +99,7 @@ async function carregarConsultasDaAPI() {
                     consultasFiltradas.push({
                         dataObjeto: dataDaConsulta, 
                         id_consulta: consulta.id_consulta,
-                        id_animal: consulta.id_animal, // Guardamos o ID do animal para o botão
+                        id_animal: consulta.id_animal, // A API tem de enviar isto!
                         horaDisplay: dataEHoraDisplay, 
                         nomeAnimal: consulta.nome_animal || "Desconhecido", 
                         especie: consulta.especie_animal || "Desconhecida", 
@@ -150,11 +165,11 @@ async function carregarConsultasDaAPI() {
 }
 
 // =================================================================
-// 3. MOTOR DE ARRANQUE DA PÁGINA (DOM COMPLETAMENTE CARREGADO)
+// 4. MOTOR DE ARRANQUE DA PÁGINA (DOM COMPLETAMENTE CARREGADO)
 // =================================================================
 document.addEventListener('DOMContentLoaded', async () => {
     
-    // 🎒 Buscar os dados do Veterinário logado para a saudação dinâmica
+    // Buscar os dados do Veterinário logado para a saudação dinâmica
     const dadosMochila = localStorage.getItem('utilizadorLogado');
     const msgBoasVindas = document.getElementById('mensagem-boas-vindas');
 
@@ -169,8 +184,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (respostaVet.ok) {
                 const dadosPerfil = await respostaVet.json();
                 const nomeDoMedico = dadosPerfil.data.nome;
-                
-                // Injeta: "Olá Dr(a). Nome! Bom turno de trabalho."
                 msgBoasVindas.innerHTML = `Olá Dr(a). <strong>${nomeDoMedico}</strong>! Bom turno de trabalho.`;
             } else {
                 msgBoasVindas.innerText = "Olá! Bom turno de trabalho.";

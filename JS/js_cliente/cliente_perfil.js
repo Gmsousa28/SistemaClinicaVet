@@ -1,26 +1,48 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     // ==========================================================================
-    // --- CONFIGURAÇÃO DAS APIs ---
-    // ==========================================================================
-    const idClienteAtual = 1; 
-    const urlApiClientes = `http://localhost:8008/api/clientes`; 
-    const urlApiAnimais = `http://localhost:8008/api/animais`; 
-
-    // ==========================================================================
-    // --- 1. DADOS DO PERFIL (LER E GUARDAR) ---
+    // --- SEGURANÇA E LIGAÇÃO À BASE DE DADOS ---
     // ==========================================================================
     
-    // Ler Dados do Perfil
+    // 1. Vai à gaveta nova que o auth.js criou ler os dados do utilizador
+    const dadosSessao = localStorage.getItem("utilizadorLogado");
+    let idClienteAtual = null;
+
+    if (dadosSessao) {
+        try {
+            const utilizador = JSON.parse(dadosSessao);
+            idClienteAtual = utilizador.id_cliente; // Extrai o ID do JSON
+        } catch (e) {
+            console.error("Erro ao ler os dados da sessão.");
+        }
+    }
+
+    // 2. Expulsa quem não tem login (ou se não houver um id_cliente válido)!
+    if (!idClienteAtual) {
+        alert("Acesso negado! Por favor, faça login para ver o seu perfil.");
+        window.location.href = "../../Pag/Logins_Sessões/login.html"; // Verifica se este caminho está certo no teu projeto
+        return; // Pára o script imediatamente
+    }
+
+    const urlApiClientes = `http://localhost:8008/api/clientes`; 
+    const urlApiAnimais = `http://localhost:8008/api/animais`; 
+    const urlApiConsultas = `http://localhost:8008/api/consultas`; 
+
+    // Variável Global para os IDs dos animais (para o filtro das consultas)
+    let meusAnimaisIDs = [];
+
+    // ==========================================================================
+    // --- 1. DADOS DO PERFIL ---
+    // ==========================================================================
     async function carregarPerfil() {
-        console.log("Iniciando carregamento do perfil...");
         try {
             const resposta = await fetch(`${urlApiClientes}/id/${idClienteAtual}`);
+            if (!resposta.ok) return; 
+
             const resultado = await resposta.json();
 
-            if (resultado.status === 200) {
+            if (resultado.status === 200 && resultado.data) {
                 const cliente = resultado.data;
-
                 const partesNome = (cliente.nome || "").split(' ');
                 const primeiroNome = partesNome[0] || "";
                 const apelido = partesNome.length > 1 ? partesNome.slice(1).join(' ') : "";
@@ -34,19 +56,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if(document.getElementById('nome-lateral')) document.getElementById('nome-lateral').innerText = cliente.nome;
                 if(document.getElementById('user-lateral')) document.getElementById('user-lateral').innerText = `@${primeiroNome.toLowerCase()}`; 
-                               
-                console.log("Perfil preenchido com sucesso!");
-            } else {
-                console.error("Erro na resposta do servidor:", resultado.message);
             }
         } catch (erro) {
-            console.error("ERRO CRÍTICO ao ligar à API de Clientes.", erro);
+            console.error("Erro ao carregar Perfil:", erro);
         }
     }
 
     carregarPerfil();
 
-    // Guardar Dados do Perfil
+    // Guardar Perfil
     const btnGuardarPerfil = document.getElementById('btn-guardar-perfil');
     const alertaSucesso = document.getElementById('alerta-sucesso'); 
 
@@ -74,121 +92,148 @@ document.addEventListener('DOMContentLoaded', function() {
                 const resultado = await resposta.json();
 
                 if (resultado.status === 200) {
-                    if(alertaSucesso) {
-                        alertaSucesso.classList.add('mostrar');
-                        setTimeout(() => { alertaSucesso.classList.remove('mostrar'); }, 3000);
-                    }
                     const perfilNome = document.getElementById('nome-lateral');
                     const perfilUser = document.getElementById('user-lateral');
                     if(perfilNome) perfilNome.innerText = nomeCompleto;
                     if(perfilUser) perfilUser.innerText = `@${nomeInput.toLowerCase()}`;
+
+                    if(alertaSucesso) {
+                        alertaSucesso.classList.add('mostrar');
+                        setTimeout(() => { alertaSucesso.classList.remove('mostrar'); }, 2500);
+                    }
                 } else {
                     alert("Erro ao atualizar: " + resultado.message);
                 }
             } catch (erro) {
                 console.error("Erro ao guardar perfil:", erro);
-                alert("Erro de comunicação com o servidor.");
             }
         });
     }
 
     // ==========================================================================
-    // --- 2. FOTO DE PERFIL (Pré-visualização) ---
-    // ==========================================================================
-    const inputFoto = document.getElementById('input-foto');
-    const fotoPerfil = document.getElementById('foto-perfil');
-    if (inputFoto && fotoPerfil) {
-        inputFoto.addEventListener('change', function(evento) {
-            const ficheiro = evento.target.files[0];
-            if (ficheiro) {
-                const leitor = new FileReader();
-                leitor.onload = function(e) { fotoPerfil.src = e.target.result; }
-                leitor.readAsDataURL(ficheiro);
-            }
-        });
-    }
-
-    // ==========================================================================
-    // --- 3. GESTÃO DE ANIMAIS (API LIGADA) ---
+    // --- 2. GESTÃO DOS ANIMAIS E 3. CONTADOR DE CONSULTAS ---
     // ==========================================================================
     const listaAnimais = document.querySelector('.animais-lista');
     const modalAdd = document.getElementById('modal-animal');
-    const btnAdicionarNovo = document.querySelector('.animal-card.adicionar');
-    const btnGuardarNovo = document.getElementById('btn-guardar-animal');
+    
+    const htmlBotaoAdicionar = `
+        <button class="animal-card adicionar" type="button">
+            <span class="circulo-add"><i class="fa fa-plus"></i></span>
+            <p>Adicionar</p>
+        </button>
+    `;
 
-    // Ler Animais da BD
-    async function carregarAnimais() {
+    async function carregarAnimaisEConsultas() {
         if (!listaAnimais) return;
 
         try {
-            const resposta = await fetch(urlApiAnimais);
-            const resultado = await resposta.json();
+            // --- A) Buscar os Animais ---
+            const respostaAnimais = await fetch(urlApiAnimais);
+            if (!respostaAnimais.ok) return;
 
-            if (resultado.status === 200) {
-                const meusAnimais = resultado.data.filter(a => a.id_cliente === idClienteAtual);
+            const resultadoAnimais = await respostaAnimais.json();
+
+            if (resultadoAnimais.status === 200 && Array.isArray(resultadoAnimais.data)) {
+                const meusAnimais = resultadoAnimais.data.filter(a => a.id_cliente == idClienteAtual);
+                
+                // Guardar apenas os números de ID dos animais para usarmos nas consultas!
+                meusAnimaisIDs = meusAnimais.map(a => a.id_animal);
+                
+                const statsAnimais = document.querySelector('.perfil-stats span:first-child strong');
+                const badgeAnimais = document.querySelector('.meus-animais .badge');
+                if (statsAnimais) statsAnimais.innerText = meusAnimais.length;
+                if (badgeAnimais) badgeAnimais.innerText = `${meusAnimais.length} ativos`;
+
                 listaAnimais.innerHTML = '';
-
                 meusAnimais.forEach(animal => {
-                    let fotoSrc = animal.especie.toLowerCase() === 'gato' ? '../../img/icone_gato.jpg' : '../../img/icone_cao.jpg';
+                    let fotoSrc = animal.especie.toLowerCase() === 'gato' 
+                        ? 'https://images.unsplash.com/photo-1573865526739-10659fec78a5?auto=format&fit=crop&w=240&q=80' 
+                        : 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=240&q=80';
+                    
                     const cartao = document.createElement('div');
                     cartao.className = 'animal-card';
                     cartao.innerHTML = `
                         <div class="foto-animal-wrapper">
                             <img src="${fotoSrc}" alt="${animal.nome}">
                             <div class="acoes-animal">
-                                <button class="btn-editar-animal" title="Editar"><i class="fa fa-pencil"></i></button>
-                                <button class="btn-apagar-animal" data-id="${animal.id_animal}" title="Remover"><i class="fa fa-trash"></i></button>
+                                <button class="btn-editar-animal" type="button" aria-label="Editar ${animal.nome}"><i class="fa fa-pen"></i></button>
+                                <button class="btn-apagar-animal" data-id="${animal.id_animal}" type="button" aria-label="Apagar ${animal.nome}"><i class="fa fa-trash"></i></button>
                             </div>
                         </div>
-                        <p class="nome-animal-texto">${animal.nome}</p>
-                        <small class="especie-animal-texto">${animal.especie}</small>
+                        <p>${animal.nome}</p>
+                        <small>${animal.especie}</small>
                     `;
                     listaAnimais.appendChild(cartao);
                 });
 
-                if(btnAdicionarNovo) listaAnimais.appendChild(btnAdicionarNovo);
+                listaAnimais.insertAdjacentHTML('beforeend', htmlBotaoAdicionar);
+                ligarBotaoAdicionar();
             }
+
+            // --- B) Buscar as Consultas (agora que sabemos os IDs dos animais) ---
+            const respostaConsultas = await fetch(urlApiConsultas);
+            if (!respostaConsultas.ok) {
+                console.warn("API de Consultas não devolveu resposta OK.");
+                return;
+            }
+
+            const resultadoConsultas = await respostaConsultas.json();
+
+            if (resultadoConsultas.status === 200 && Array.isArray(resultadoConsultas.data)) {
+                const consultasFuturas = resultadoConsultas.data.filter(c => 
+                    meusAnimaisIDs.includes(c.id_animal) && 
+                    c.estado && 
+                    (c.estado.toLowerCase() === 'agendada' || c.estado.toLowerCase() === 'pendente')
+                );
+
+                const statsConsultas = document.getElementById('stats-consultas');
+                if (statsConsultas) {
+                    statsConsultas.innerText = consultasFuturas.length;
+                }
+            }
+
         } catch (erro) {
-            console.error("Erro ao carregar animais:", erro);
+            console.error("Erro ao carregar dados dinâmicos (Animais/Consultas):", erro);
         }
     }
 
-    carregarAnimais();
+    carregarAnimaisEConsultas();
 
-    // Guardar Novo Animal na BD
-    if (btnAdicionarNovo && modalAdd && btnGuardarNovo) {
-        
-        // Modal Upload Foto Preview
-        const inputFotoAnimal = document.getElementById('input-foto-animal');
-        const previewNovoAnimal = document.getElementById('preview-novo-animal');
-        if (inputFotoAnimal && previewNovoAnimal) {
-            inputFotoAnimal.addEventListener('change', function(evento) {
-                const ficheiro = evento.target.files[0];
-                if (ficheiro) {
-                    const leitor = new FileReader();
-                    leitor.onload = function(e) { previewNovoAnimal.src = e.target.result; }
-                    leitor.readAsDataURL(ficheiro);
-                }
+    function ligarBotaoAdicionar() {
+        const btnAdicionarNovo = document.querySelector('.animal-card.adicionar');
+        if (btnAdicionarNovo && modalAdd) {
+            btnAdicionarNovo.addEventListener('click', () => {
+                modalAdd.classList.add('ativo');
+                modalAdd.setAttribute("aria-hidden", "false");
+                document.body.classList.add('no-scroll');
             });
         }
+    }
 
-        btnAdicionarNovo.addEventListener('click', () => {
-            modalAdd.classList.add('ativo');
-            document.body.classList.add('no-scroll');
+  // Fechar o modal quando clica no X, no Cancelar, ou fora da caixa preta
+    document.querySelectorAll(".fechar-modal-javascript, .modal-overlay").forEach((elemento) => {
+        elemento.addEventListener("click", (evento) => {
+            // Se clicou no fundo escuro (fora da caixa) ou num dos botões
+            if (evento.target !== elemento && !elemento.classList.contains("fechar-modal-javascript")) return;
+            
+            const modalAdd = document.getElementById('modal-animal');
+            if (modalAdd) {
+                modalAdd.classList.remove('ativo'); 
+                modalAdd.setAttribute("aria-hidden", "true");
+                document.body.classList.remove("no-scroll"); 
+            }
         });
-        
-        modalAdd.querySelector('.fechar-modal').addEventListener('click', () => {
-            modalAdd.classList.remove('ativo');
-            document.body.classList.remove('no-scroll');
-        });
+    });
 
+    const btnGuardarNovo = document.getElementById('btn-guardar-animal');
+    if (btnGuardarNovo) {
         btnGuardarNovo.addEventListener('click', async function() {
             const nomeInput = document.getElementById('novo-nome').value.trim();
             const especieInput = document.getElementById('nova-especie').value.trim();
 
             if (nomeInput !== '' && especieInput !== '') {
                 const novoAnimalDados = {
-                    id_cliente: idClienteAtual,
+                    id_cliente: parseInt(idClienteAtual),
                     nome: nomeInput,
                     especie: especieInput,
                     raca: "Não definida",
@@ -207,11 +252,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     const resultado = await resposta.json();
 
                     if (resultado.status === 201) {
-                        carregarAnimais();
+                        carregarAnimaisEConsultas(); // Recarrega tudo
                         document.getElementById('novo-nome').value = '';
                         document.getElementById('nova-especie').value = '';
-                        if (previewNovoAnimal) previewNovoAnimal.src = '../../img/imagemdefault.png';
+                        
                         modalAdd.classList.remove('ativo');
+                        modalAdd.setAttribute("aria-hidden", "true");
                         document.body.classList.remove('no-scroll');
                     } else {
                         alert("Erro ao criar animal: " + resultado.message);
@@ -225,7 +271,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Apagar Animal da BD
     if (listaAnimais) {
         listaAnimais.addEventListener('click', async function(e) {
             const btnApagar = e.target.closest('.btn-apagar-animal');
@@ -233,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (btnApagar) {
                 const idParaApagar = btnApagar.getAttribute('data-id');
                 const cartao = btnApagar.closest('.animal-card');
-                const nomeAnimal = cartao.querySelector('.nome-animal-texto').innerText;
+                const nomeAnimal = cartao.querySelector('p').innerText;
 
                 if (confirm(`Tem a certeza que deseja remover o(a) ${nomeAnimal}?`)) {
                     try {
@@ -244,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const resultado = await resposta.json();
 
                         if (resultado.status === 200) {
-                            cartao.remove(); 
+                            carregarAnimaisEConsultas(); // Atualiza a lista!
                         } else {
                             alert("Erro ao remover: " + resultado.message);
                         }
@@ -257,44 +302,64 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ==========================================================================
-    // --- 4. GESTÃO DE AVISOS INTERATIVOS ---
+    // --- 4. UI EXTRAS (Foto de perfil, Botão Editar e Avisos) ---
     // ==========================================================================
-    const secAvisos = document.querySelector('.avisos');
-    
-    if (secAvisos) {
-        secAvisos.addEventListener('click', function(e) {
-            const btnFechar = e.target.closest('.btn-fechar-aviso');
-            if (btnFechar) {
-                const aviso = btnFechar.closest('.aviso');
-                aviso.style.opacity = '0';
-                aviso.style.transform = 'translateX(30px)';
-                setTimeout(function() {
-                    aviso.remove();
-                    const avisosRestantes = secAvisos.querySelectorAll('.aviso');
-                    if (avisosRestantes.length === 0) {
-                        const semAvisos = document.createElement('p');
-                        semAvisos.style.color = '#888';
-                        semAvisos.style.textAlign = 'center';
-                        semAvisos.style.padding = '20px 0';
-                        semAvisos.style.fontStyle = 'italic';
-                        semAvisos.innerHTML = '<i class="fa fa-check-circle" style="color: #2ea89c; font-size: 20px; display: block; margin-bottom: 10px;"></i> Não tem novos avisos!';
-                        secAvisos.appendChild(semAvisos);
-                    }
-                }, 300);
-            }
-        });
-    }
-
-    // ==========================================================================
-    // --- 5. BOTÃO "EDITAR PERFIL" (Cartão Lateral) ---
-    // ==========================================================================
-    const btnEditarPerfilLateral = document.querySelector('.editar');
+    const btnEditarPerfilLateral = document.querySelector('.perfil .editar');
     const inputPrimeiroNome = document.getElementById('input-nome');
-
     if (btnEditarPerfilLateral && inputPrimeiroNome) {
         btnEditarPerfilLateral.addEventListener('click', () => {
             inputPrimeiroNome.focus();
         });
     }
 
+    document.querySelectorAll(".btn-fechar-aviso").forEach((botao) => {
+        botao.addEventListener("click", () => botao.closest(".aviso").remove());
+    });
+
+    const inputFoto = document.getElementById('input-foto');
+    const fotoPerfil = document.getElementById('foto-perfil');
+    if (inputFoto && fotoPerfil) {
+        inputFoto.addEventListener('change', function(evento) {
+            const ficheiro = evento.target.files[0];
+            if (ficheiro) {
+                const leitor = new FileReader();
+                leitor.onload = function(e) { fotoPerfil.src = e.target.result; }
+                leitor.readAsDataURL(ficheiro);
+            }
+        });
+    }
 });
+// 1. A função calculadora que te dei há bocado
+function formatarTempoAtualizacao(dataGuardada) {
+    if (!dataGuardada) return "Sem atualizações recentes";
+
+    const dataAtualizacao = new Date(dataGuardada);
+    const agora = new Date();
+    const diferencaDias = Math.floor((agora - dataAtualizacao) / (1000 * 60 * 60 * 24));
+
+    if (diferencaDias === 0) return "Atualizado hoje";
+    if (diferencaDias === 1) return "Atualizado ontem";
+    if (diferencaDias < 7) return `Atualizado há ${diferencaDias} dias`;
+    if (diferencaDias < 14) return "Atualizado há 1 semana";
+    return `Atualizado há ${Math.floor(diferencaDias / 7)} semanas`;
+}
+
+// 2. Quando a página carrega, vai ver se há alguma data guardada na memória do navegador
+const dataMemoria = localStorage.getItem('ultima_atualizacao_perfil');
+const badge = document.getElementById('badge-atualizacao'); // Lembra-te de pôr este ID no HTML!
+
+if (badge) {
+    badge.innerText = formatarTempoAtualizacao(dataMemoria);
+}
+
+// 3. Quando o cliente clica no botão de Guardar, gravamos a data de HOJE na memória
+const btnGuardarPerfil = document.getElementById('btn-guardar-perfil');
+if (btnGuardarPerfil) {
+    btnGuardarPerfil.addEventListener('click', () => {
+        // Guarda o momento exato do clique
+        localStorage.setItem('ultima_atualizacao_perfil', new Date().toISOString());
+        
+        // Atualiza a etiqueta logo à frente dos olhos do cliente
+        if (badge) badge.innerText = "Atualizado hoje";
+    });
+}

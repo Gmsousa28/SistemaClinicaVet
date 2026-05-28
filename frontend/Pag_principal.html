@@ -32,8 +32,14 @@
                         com consultas, vacinação, higiene e apoio à adoção.
                     </p>
                     <div class="hero-acoes">
-                        <a href="../frontend/Pag/Logins_Sessões/criarconta.html" class="button">Marcar consulta</a>
-                        <a href="#servicos" class="button button-claro">Ver serviços</a>
+                    <a
+                            href="/frontend/Pag/Cliente/consultas_cliente.html"
+                            class="button"
+                            data-requer-login
+                            data-login-url="/frontend/Pag/Logins_Sessões/login.html"
+                            data-aviso-login="Precisa de iniciar sessão para marcar uma consulta.">Marcar consulta
+                    </a>                        
+                    <a href="#servicos" class="button button-claro">Ver serviços</a>
                     </div>
                 </div>
 
@@ -74,6 +80,37 @@
                     </article>
                 </div>
             </section>
+
+            <section class="equipa" id="equipa" aria-labelledby="titulo-equipa">
+                <div class="section-heading">
+                    <p class="eyebrow">Quem Somos</p>
+                    <h2 id="titulo-equipa">A Nossa Equipa</h2>
+                </div>
+
+                <div class="equipa-grid">
+                    <article class="membro-card">
+                        <img src="../frontend/img/imagemdefault.png" alt="Foto do Dr. Rui Costa">
+                        <h3>Dr. Rui Costa</h3>
+                        <span class="especialidade">Diretor Clínico / Cirurgia</span>
+                        <p>Especialista em Cirurgia Geral e Ortopedia. Apaixonado por cães de grande porte e com mais de 15 anos de experiência.</p>
+                    </article>
+
+                    <article class="membro-card">
+                        <img src="../frontend/img/imagemdefault.png" alt="Foto da Dra. Sofia Almeida">
+                        <h3>Dra. Sofia Almeida</h3>
+                        <span class="especialidade">Medicina Felina</span>
+                        <p>A "encantadora de gatos" da clínica. Especializada em Dermatologia e Comportamento Felino.</p>
+                    </article>
+
+                    <article class="membro-card">
+                        <img src="../frontend/img/imagemdefault.png" alt="Foto do Enf. Tiago Mendes">
+                        <h3>Enf. Tiago Mendes</h3>
+                        <span class="especialidade">Enfermagem Veterinária</span>
+                        <p>O coração do nosso internamento. Altamente dedicado aos cuidados intensivos e recuperação rápida dos patudos.</p>
+                    </article>
+                </div>
+            </section>
+
             <section class="contacto-home" aria-labelledby="titulo-contacto">
                 <div class="section-heading">
                     <p class="eyebrow">Fale connosco</p>
@@ -96,7 +133,7 @@
                     <article class="contacto-card">
                         <span class="contacto-label">Horário</span>
                         <strong>Segunda a Sexta: 9h - 18:30h</strong>
-
+                        <p>Sábado: 9h - 13h</p>
                     </article>
                 </div>
             </section>

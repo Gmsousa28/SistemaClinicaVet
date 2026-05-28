@@ -3,12 +3,11 @@
     <head> 
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Nova Marcação - Clínica Miacãomigo</title>
+        <title>Nova Prescrição - Clínica Miacãomigo</title>
         
         <link rel="stylesheet" href="../../CSS/PaginaSite.css">
         <link rel="stylesheet" href="../../CSS/css_rececao/rececionista.css">
         <link rel="stylesheet" href="../../CSS/css_rececao/marcacoes_recep.css">
-        <link rel="stylesheet" href="../../CSS/css_veterinario/exame.css">
         <link rel="stylesheet" href="../../CSS/css_veterinario/medicamentos.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     </head>
@@ -18,11 +17,11 @@
         <header>
             <div class="header-texto">
                 <h1>Prescrição de Medicamentos</h1> 
-                <p>Medicacao a receitar</p>
+                <p>Medicamento(s) a prescrever</p>
             </div>
                 
             <nav class="header-botoes">
-                <a href="../Veterinário/dashboard_vet.html" class="button">Voltar ao Dashboard</a>
+                <a href="momento_consulta.html" class="button"><i class="fa fa-arrow-left"></i> Voltar à Consulta</a>
             </nav>
         </header>
          
@@ -30,78 +29,34 @@
             <a href="../../frontend/Pag_principal.html" class="logo">
                 <img src="../../img/Logo_vet.png" alt="Logótipo Clínica Miacãomigo">
             </a>
+            <hr>
+            <nav class="menu">
+                <a href="dashboard_vet.html"><i class="fa fa-home"></i> Dashboard</a>
+                <a href="perfil_vet.html"><i class="fa fa-user"></i> Perfil</a>
+                
+                <hr>
+                <a href="#" onclick="fazerLogout(event)"><i class="fa fa-sign-out"></i> Sair</a>
+            </nav>
         </section>
 
         <main class="dashboard-main">
 
            <section class="barra-acoes-topo" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; margin-bottom: 2rem;">
-                
-                <h2 class="titulo-seccao" style="margin: 0; min-width: 300px;">Prescrição de Medicamentos</h2>
-
+                <h2 class="titulo-seccao" style="margin: 0; min-width: 300px;">Prescrever Medicamento(s)</h2>
             </section>
+            
             <section class="cartao-formulario"> 
                 
-                <div class="barra-passos">
-                    <div class="passo ativo">
-                        <div class="circulo-passo">1</div>
-                        <span>Cliente e Animal</span>
-                    </div>
-                    <div class="linha-passo"></div>
-                    <div class="passo">
-                        <div class="circulo-passo">2</div>
-                        <span>Medicamentos</span>
-                    </div>
-                    <div class="linha-passo"></div>
-                    <div class="passo">
-                        <div class="circulo-passo">3</div>
-                        <span>Dosagem</span>
-                    </div>
-                </div>
-                
-                <form action="/api/nova-marcacao" method="POST" class="formulario-marcacao">
-                    
-                    <div class="conteudo-passo" id="passo-1">
-                        <h3 style="color: var(--cor-base-escura); margin-bottom: 1.5rem; text-align: center;">Identificar Cliente</h3>
-                        
-                        <div class="grupo-input" style="max-width: 500px; margin: 0 auto 2.5rem auto;">
-                            <label for="nif_cliente">Procurar Cliente (NIF):</label>
-                            <div style="position: relative;">
-                                <i class="fa fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #95a5a6; pointer-events: none;"></i>
-                                <input type="text" id="nif_cliente" name="nif_cliente" placeholder="Introduza o NIF (Ex: 123456789)" required style="padding-left: 40px;" maxlength="9">
-                            </div>
-                        </div>
-                        
-                        <hr style="border: none; border-top: 1px solid #eee; margin: 2rem 0;">
-
-                        <h3 style="color: var(--cor-base-escura); margin-bottom: 1.5rem; text-align: center;">Selecionar Animal</h3>
-                        
-                        <div class="grid-animais-selecao">
-                            <p style="color: #7f8c8d; width: 100%; text-align: center; font-style: italic;">Introduza um NIF válido em cima para procurar os animais do cliente.</p>
-                        </div>
-                    </div> 
+                <form id="form-prescrever-medicamento" class="formulario-marcacao"> 
 
                     <div class="conteudo-passo" id="passo-2" style="display: none;">
-                        <h3 style="color: var(--cor-base-escura); margin-bottom: 1.5rem; text-align: center;">Detalhes dos Medicamentos</h3>
+                        <h3 style="color: #2c3e50; margin-bottom: 1.5rem; text-align: center;">Detalhes de Medicação</h3>
                         
-                        <label style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">Indique o(s) Medicamento(s) Pretendido(s):</label>
+                        <label style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">1. Medicamento Pretendido (Pode escolher vários): </label>
                     
-                        <textarea 
-                            id="texto-medicamentos"
-                            name="medicamentos_manuais" 
-                            class="caixa-texto-manual" 
-                            placeholder="Escreva aqui os medicamentos. Ex: Bravecto, Milbemax, etc..."></textarea>
-                    </div>
-
-                    <div class="conteudo-passo" id="passo-3" style="display: none;">
-                        <h3 style="color: var(--cor-base-escura); margin-bottom: 1.5rem; text-align: center;">Indicações de Dosagem</h3>
-                        
-                        <label style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">Indique a dosagem para os medicamentos selecionados:</label>
-                    
-                        <textarea 
-                            id="texto-dosagem"
-                            name="dosagem_manual" 
-                            class="caixa-texto-manual" 
-                            placeholder="Escreva aqui a dosagem. Ex: Dar 1 comprimido de 12 em 12 horas durante 5 dias..."></textarea>
+                        <div class="grid-opcoes-selecao" id="container-medicamentos">
+                            <p style="color: #7f8c8d; width: 100%; font-style: italic;"><i class="fa fa-spinner fa-spin"></i> A carregar lista de medicamentos...</p>
+                        </div>
                     </div>
                     
                     <div class="acoes-formulario" style="margin-top: 3rem; border-top: 1px solid #eee; padding-top: 1.5rem; display: flex; justify-content: space-between;">
@@ -115,16 +70,16 @@
                         <button type="button" class="btn-primario" id="btn-avancar">
                             Seguinte <i class="fa fa-arrow-right" style="margin-left: 8px;"></i>
                         </button>
-                        
+                    
                         <button type="submit" class="btn-primario" id="btn-confirmar" style="display:none; background-color: #27ae60;">
-                            Confirmar Registo <i class="fa fa-check" style="margin-left: 8px;"></i>
+                            Prescrever Medicamentos <i class="fa fa-check" style="margin-left: 8px;"></i>
                         </button>
                     
                     </div>
 
                 </form>
             </section>
-        </main>   
+        </main>
         
         <footer>
             <p style="color: white; font-size: 0.9rem;">Área Reservada - Clínica Miacãomigo © 2026</p>

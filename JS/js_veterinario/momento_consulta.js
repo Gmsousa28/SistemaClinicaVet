@@ -36,129 +36,231 @@ function abrirPopupInfo1(textoRelatorio) {
 // 2. CARREGAR HISTÓRICO DA API (SÓ CONSULTAS PASSADAS)
 // =================================================================
 async function carregarHistoricoConsultasAnimal() {
+
     const tbody = document.getElementById('corpo-tabela-historico-animal');
 
     if (!tbody) {
-        console.error("tbody não encontrado no HTML!");
+        console.error("tbody não encontrado!");
         return;
     }
 
-    // 🎒 Buscar os dados da consulta atual à mochila
+    // Buscar dados guardados
     const dadosConsulta = localStorage.getItem('consultaAIniciar');
-    
+
     if (!dadosConsulta) {
-        console.error("Erro: Não há dados da consulta na mochila!");
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #e74c3c;">Erro: Animal não identificado. Volta ao ecrã anterior.</td></tr>`;
+
+        console.error("Nenhuma consulta encontrada no localStorage!");
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" style="text-align:center; color:red;">
+                    Nenhum animal selecionado.
+                </td>
+            </tr>
+        `;
+
         return;
     }
 
+    // Converter objeto
     const consultaAtual = JSON.parse(dadosConsulta);
-    const idAnimalAtendido = consultaAtual.id_animal; 
+
+    console.log("consultaAtual:", consultaAtual);
+
+    /*
+        ⚠️ IMPORTANTE
+        Aqui vais buscar o ID correto.
+        Ajusta conforme o nome do campo do teu objeto.
+    */
+
+    const idAnimalAtendido =
+        consultaAtual.id_animal;
+
+    console.log("ID DO ANIMAL:", idAnimalAtendido);
+
+    // Validar ID
+    if (
+        idAnimalAtendido === undefined ||
+        idAnimalAtendido === null ||
+        idAnimalAtendido === ""
+    ) {
+
+        console.error("ID do animal inválido!");
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" style="text-align:center; color:red;">
+                    ID do animal não encontrado.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
 
     try {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 20px; color: #7f8c8d;"><i class="fa fa-spinner fa-spin"></i> A carregar o histórico clínico...</td></tr>`;
 
-        // Fazer o pedido à API (Traz todas as consultas ou usa a rota específica do animal se tiveres)
-        const resposta = await fetch(`http://localhost:8008/api/consultas/animal/${idAnimalAtendido}`);
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" style="text-align:center; padding:20px;">
+                    <i class="fa fa-spinner fa-spin"></i>
+                    A carregar histórico...
+                </td>
+            </tr>
+        `;
+
+        // Pedido à API
+        const resposta = await fetch(
+            `http://localhost:8008/api/consultas/animal/${idAnimalAtendido}`
+        );
+
+        // Verificar resposta
+        if (!resposta.ok) {
+            throw new Error(`Erro HTTP: ${resposta.status}`);
+        }
+
         const resultado = await resposta.json();
 
-        if (!resposta.ok) throw new Error(resultado.message);
+        console.log("Resultado API:", resultado);
 
-        const todasConsultas = resultado.data || resultado; 
-        const agora = new Date();
-        let historicoFiltrado = [];
+        const todasConsultas = resultado.data || resultado;
 
-        // 🛡️ Filtrar as consultas passadas exclusivas deste animal
-        todasConsultas.forEach(consulta => {
-            // Filtro 1: Tem de ser do animal que estamos a atender
-            if (Number(consulta.id_animal) !== Number(idAnimalAtendido)) {
-                return; 
-            }
+        tbody.innerHTML = "";
 
-            if (consulta.data_consulta) {
-                const dataDaConsulta = new Date(consulta.data_consulta);
+        // Sem consultas
+        if (!todasConsultas || todasConsultas.length === 0) {
 
-                // Filtro 2: Tem de ser no PASSADO (menor que o momento atual)
-                if (dataDaConsulta < agora) {
-                    
-                    // Formata a data e hora à portuguesa
-                    const dataFormatada = dataDaConsulta.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                    const horaFormatada = dataDaConsulta.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
-                    
-                    // Limpa plicas para os botões não darem erro no HTML
-                    const motivoTexto = consulta.motivo || "Nenhum motivo registado.";
-                    const motivoSeguro = motivoTexto.replace(/'/g, "\\'");
-                    
-                    const relatorioTexto = consulta.diagnostico || "Sem relatório ou diagnóstico registado nesta consulta.";
-                    const relatorioSeguro = relatorioTexto.replace(/'/g, "\\'");
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align:center;">
+                        Sem histórico de consultas.
+                    </td>
+                </tr>
+            `;
 
-                    historicoFiltrado.push({
-                        dataObjeto: dataDaConsulta, 
-                        dataExibicao: dataFormatada,
-                        horaExibicao: horaFormatada,
-                        nomeAnimal: consulta.nome_animal || "Desconhecido", 
-                        especie: consulta.especie_animal || consulta.especie || "Desconhecida", 
-                        motivoSeguro: motivoSeguro,
-                        relatorioSeguro: relatorioSeguro
-                    });
-                }
-            }
-        });
-
-        // Ordenar da MAIS RECENTE para a MAIS ANTIGA (Ordem decrescente: b - a)
-        historicoFiltrado.sort((a, b) => b.dataObjeto - a.dataObjeto);
-
-        tbody.innerHTML = ""; 
-
-        if (historicoFiltrado.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 25px; color: #7f8c8d; font-weight: bold;"><i class="fa fa-folder-open"></i> Este animal não tem histórico de consultas anteriores.</td></tr>`;
             return;
         }
 
-        // Desenhar a tabela dinamicamente
+        // Data atual
+        const agora = new Date();
+
+        // Filtrar consultas passadas
+        const historicoFiltrado = todasConsultas
+            .filter(c => {
+
+                if (!c.data_consulta) return false;
+
+                const dataConsulta = new Date(c.data_consulta);
+
+                return dataConsulta < agora;
+            })
+            .sort(
+                (a, b) =>
+                    new Date(b.data_consulta) -
+                    new Date(a.data_consulta)
+            );
+
+        // Desenhar tabela
         historicoFiltrado.forEach(consulta => {
-            let especieStr = consulta.especie.toLowerCase();
-            let icone = especieStr.includes('cão') || especieStr.includes('cao') ? 'dog' : (especieStr.includes('gato') ? 'cat' : 'paw');
 
-            const tr = document.createElement('tr');
+            const dataConsulta = new Date(consulta.data_consulta);
+
+            const dataFormatada =
+                dataConsulta.toLocaleDateString('pt-PT');
+
+            const horaFormatada =
+                dataConsulta.toLocaleTimeString('pt-PT', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+            const nomeAnimal =
+                consulta.nome_animal || "Desconhecido";
+
+            const nomeVeterinario =
+                consulta.nome_veterinario || "Desconecido";
+
+            const especie =
+                (
+                    consulta.especie_animal ||
+                    consulta.especie ||
+                    ""
+                ).toLowerCase();
+
+            const motivo =
+                (consulta.motivo || "Sem motivo")
+                    .replace(/'/g, "\\'");
+
+            const relatorio =
+                (consulta.diagnostico || "Sem relatório")
+                    .replace(/'/g, "\\'");
+
+            let icone = "paw";
+
+            if (
+                especie.includes("cão") ||
+                especie.includes("cao")
+            ) {
+                icone = "dog";
+            }
+            else if (especie.includes("gato")) {
+                icone = "cat";
+            }
+
+            const tr = document.createElement("tr");
+
+
             tr.innerHTML = `
-                <td><strong>${consulta.dataExibicao}</strong> às ${consulta.horaExibicao}</td>
-                <td><i class="fa fa-${icone}" style="color: #7f8c8d; margin-right: 8px;"></i> ${consulta.nomeAnimal}</td>
-                
-                <td style="text-align: center;">
-                    <button 
-                        type="button"
-                        onclick="abrirPopupInfo('${consulta.motivoSeguro}')" 
-                        title="Ver motivo da consulta"
-                        style="background-color: transparent; color: #3498db; border: 2px solid #3498db; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; transition: all 0.2s;"
-                        onmouseover="this.style.backgroundColor='#3498db'; this.style.color='white';"
-                        onmouseout="this.style.backgroundColor='transparent'; this.style.color='#3498db';"
-                    >
-                        <i class="fa fa-info"></i>
-                    </button>
-                </td>
+    <td>
+        <strong>${dataFormatada}</strong>
+        às ${horaFormatada}
+    </td>
 
-                <td style="text-align: center;">
-                    <button 
-                        type="button"
-                        onclick="abrirPopupInfo1('${consulta.relatorioSeguro}')" 
-                        title="Ver relatório da consulta"
-                        style="background-color: transparent; color: #2ea89c; border: 2px solid #2ea89c; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; transition: all 0.2s;"
-                        onmouseover="this.style.backgroundColor='#2ea89c'; this.style.color='white';"
-                        onmouseout="this.style.backgroundColor='transparent'; this.style.color='#2ea89c';"
-                    >
-                        <i class="fa fa-file-medical"></i> 
-                    </button>
-                </td>
-            `;
+    <td>
+        <i class="fa fa-${icone}"></i>
+        ${nomeAnimal}
+    </td>
+
+    <td>
+        <i class="fa fa-user-md"></i>
+        ${nomeVeterinario}
+    </td>
+
+    <td style="text-align:center;">
+        <button
+            onclick="abrirPopupInfo('${motivo}')"
+            title="Ver motivo"
+        >
+            <i class="fa fa-info"></i>
+        </button>
+    </td>
+
+    <td style="text-align:center;">
+        <button
+            onclick="abrirPopupInfo1('${relatorio}')"
+            title="Ver relatório"
+        >
+            <i class="fa fa-file-medical"></i>
+        </button>
+    </td>
+`;
             tbody.appendChild(tr);
         });
 
-    } catch (erro) {
-        console.error("Erro ao carregar dados da API:", erro);
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #e74c3c;"><i class="fa fa-exclamation-triangle"></i> Erro de ligação à Base de Dados. Confirma se o servidor está ligado.</td></tr>`;
     }
-}
+    catch (erro) {
+
+        console.error("Erro:", erro);
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" style="text-align:center; color:red;">
+                    Erro ao carregar histórico.
+                </td>
+            </tr>
+        `;
+    }
+};
 
 // =================================================================
 // 3. MOTOR DE ARRANQUE DA PÁGINA (DOM COMPLETAMENTE CARREGADO)

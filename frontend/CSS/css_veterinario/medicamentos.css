@@ -19,3 +19,14 @@
         border-color: var(--cor-base-escura, #007bff);
         box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1); /* Um brilho suave à volta da caixa */
     }
+
+    /* Nova classe para alinhamento horizontal centrado */
+.conteudo-cartao-fila {
+    display: flex !important; /* Força o uso de Flex */
+    flex-direction: row !important; /* Garante que é uma fila (horizontal) */
+    align-items: center !important; /* Alinha o ícone e texto verticalmente ao centro */
+    justify-content: flex-start !important; /* Começa à esquerda para não ficarem "soltos" */
+    gap: 15px !important; /* Mantém o espaço perfeito entre ícone e texto */
+    text-align: left !important; /* O texto deve ser alinhado à esquerda dentro do seu bloco */
+    padding: 15px !important; /* Espaçamento interno confortável */
+}

@@ -210,6 +210,7 @@ const obterconsultasdovetespecificoBD = async (id_veterinario) => {
         c.id_consulta,
         c.data_consulta,
         c.id_veterinario,
+        c.id_animal,
         c.motivo,
         c.estado,
         a.raca AS raca_animal,
@@ -291,7 +292,6 @@ const obterVeterinarioDisponivelBD = async (data_consulta) => {
 
 // Obter funcionario de servico aleatorio
 const obterFuncionarioServicoAleatorioBD = async (data_inicio, total_blocos) => {
-    // 1. Gera os blocos de tempo para saber se choca com outro serviço
     const timestampsBlocos = [];
     for (let i = 0; i < total_blocos; i++) {
         let bloco = new Date(data_inicio);
@@ -343,6 +343,51 @@ const criarServicoBD = async (id_animal, id_funcionario, data_servico, tipo, pre
     return result.rows[0];
 };
 
+const obterConsultasDoClienteBD = async (id_cliente) => {
+    const result = await pool.query(
+        `
+        SELECT 
+        c.id_consulta,
+        c.data_consulta AS data_hora,
+        c.id_veterinario,
+        a.id_animal,
+        c.motivo,
+        v.nome AS nome_veterinario,
+        a.raca AS raca_animal,
+        a.nome AS nome_animal,      
+        a.especie AS especie_animal, 
+        cli.nome AS nome_cliente    
+        FROM public.consulta c
+        INNER JOIN public.veterinario v ON c.id_veterinario = v.id_veterinario
+        INNER JOIN public.animal a ON c.id_animal = a.id_animal
+        INNER JOIN public.cliente cli ON a.id_cliente = cli.id_cliente
+        WHERE cli.id_cliente = $1
+        ORDER BY c.data_consulta ASC;
+        `,
+        [id_cliente]
+    );
+    return result.rows;
+};
+
+const guardarDiagnosticoFinalBD = async (id_consulta, diagnostico) => {
+    try {
+        const query = `
+            UPDATE public.consulta
+            SET 
+                diagnostico = $1,
+                estado_servico = 'Realizado'
+            WHERE id_consulta = $2
+            RETURNING *;
+        `;
+        
+        const valores = [diagnostico, Number(id_consulta)];
+        const resultado = await pool.query(query, valores);
+        
+        return resultado.rows[0];
+    } catch (erro) {
+        throw erro;
+    }
+};
 module.exports = {
     listarConsultasBD,
     criarConsultaBD,
@@ -351,6 +396,7 @@ module.exports = {
     eliminarConsultaBD,
     obterconsultasdovetespecificoBD,
     obterconsultasdoanipecificoBD,
+    obterConsultasDoClienteBD,
     obterVeterinarioDisponivelBD,       
     obterFuncionarioServicoAleatorioBD, 
     criarServicoBD                      

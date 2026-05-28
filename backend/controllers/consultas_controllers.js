@@ -8,7 +8,9 @@ const {
     criarServicoBD,
     obterconsultasdovetespecificoBD,
     obterconsultasdoanipecificoBD,
-    obterVeterinarioDisponivelBD 
+    obterVeterinarioDisponivelBD, 
+    obterConsultasDoClienteBD,
+    guardarDiagnosticoFinalBD
 } = require('../models/consultas_models');
 
 const handleResponse = (res, status, message, data = null) => {
@@ -25,7 +27,19 @@ const listarConsultas = async (req, res, next) => {
     }
 };
 
-// Criar consulta
+// Listar consultas do cliente
+const listarConsultasDoCliente = async (req, res, next) => {
+    try {
+        const id_cliente = req.params.id; 
+        const consultas = await obterConsultasDoClienteBD(id_cliente);
+        
+        // Usando a tua função handleResponse habitual
+        handleResponse(res, 200, "Consultas do cliente carregadas", consultas);
+    } catch (err) {
+        next(err);
+    }
+};
+
 const criarConsulta = async (req, res) => {
     
     const { id_animal, id_veterinario, data_consulta, motivo } = req.body;
@@ -171,6 +185,51 @@ const listarConsultasDoAnimal = async (req, res, next) => {
     }
 };
 
+const finalizarConsulta = async (req, res) => {
+
+    try {
+
+        const { id_consulta, diagnostico } = req.body;
+
+        // Validação dos dados
+        if (!id_consulta || !diagnostico) {
+            return res.status(400).json({
+                status: 400,
+                message: "Faltam dados: ID da consulta ou o diagnóstico está vazio."
+            });
+        }
+
+        // Guarda na BD
+        const consultaAtualizada = await guardarDiagnosticoFinalBD(
+            id_consulta,
+            diagnostico
+        );
+
+        // Consulta não encontrada
+        if (!consultaAtualizada) {
+            return res.status(404).json({
+                status: 404,
+                message: "Consulta não encontrada."
+            });
+        }
+
+        // Sucesso
+        return res.status(200).json({
+            status: 200,
+            message: "Diagnóstico guardado com sucesso.",
+            consulta: consultaAtualizada
+        });
+
+    } catch (erro) {
+
+        console.error("Erro ao finalizar consulta:", erro);
+
+        return res.status(500).json({
+            status: 500,
+            message: "Erro interno do servidor."
+        });
+    }
+};
 
 module.exports = {
     listarConsultas,
@@ -179,5 +238,8 @@ module.exports = {
     atualizarConsulta,
     eliminarConsulta,
     listarConsultasDoVeterinario,
-    listarConsultasDoAnimal
+    listarConsultasDoAnimal,
+    listarConsultasDoCliente,
+    finalizarConsulta
 };
+

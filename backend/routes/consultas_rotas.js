@@ -7,7 +7,9 @@ const {
   atualizarConsulta,
   eliminarConsulta,
   listarConsultasDoVeterinario,
-  listarConsultasDoAnimal
+  listarConsultasDoAnimal,
+  listarConsultasDoCliente,
+  finalizarConsulta
 } = require("../controllers/consultas_controllers.js");
 
 const router = express.Router();
@@ -19,5 +21,7 @@ router.put("/consultas/:id", atualizarConsulta);
 router.delete("/consultas/:id", eliminarConsulta);
 router.get("/consultas/veterinario/:id", listarConsultasDoVeterinario);
 router.get("/consultas/animal/:id", listarConsultasDoAnimal);
+router.get("/consultas/cliente/:id", listarConsultasDoCliente);
+router.patch("/consultas/finalizar", finalizarConsulta);
 
 module.exports = router;

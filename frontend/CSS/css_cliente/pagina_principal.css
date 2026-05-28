@@ -358,3 +358,66 @@ body.pagina-principal .site-footer a:hover {
         text-align: center;
     }
 }
+/* ========================================================================== */
+/* SECÇÃO DA EQUIPA */
+/* ========================================================================== */
+body.pagina-principal .equipa {
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+}
+
+body.pagina-principal .equipa-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+body.pagina-principal .membro-card {
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+body.pagina-principal .membro-card:hover {
+    transform: translateY(-6px);
+}
+
+/* Força a imagem a ficar redondinha, bonita e sem quebrar! */
+body.pagina-principal .membro-card img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    border: 4px solid var(--cor-principal, #2ea89c);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+body.pagina-principal .membro-card h3 {
+    margin-bottom: 0.25rem;
+    color: var(--cor-base-escura, #2c3e50);
+}
+
+body.pagina-principal .membro-card .especialidade {
+    display: inline-block;
+    margin-bottom: 1rem;
+    color: var(--cor-principal, #2ea89c);
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+body.pagina-principal .membro-card p {
+    color: var(--cor-texto-secundario, #7f8c8d);
+    font-size: 0.95rem;
+}
+
+/* Responsividade para Equipa */
+@media (max-width: 900px) {
+    body.pagina-principal .equipa-grid {
+        grid-template-columns: 1fr;
+    }
+}
