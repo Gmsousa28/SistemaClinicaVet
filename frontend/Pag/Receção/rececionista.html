@@ -9,13 +9,8 @@
         <link rel="stylesheet" href="../../CSS/css_rececao/rececionista.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">  
 
-    <script>
-        const tipoUtilizador = localStorage.getItem('tipoUtilizador');
-        if (!tipoUtilizador || tipoUtilizador !== 'funcionario') {
-            alert('Acesso negado!');
-            window.location.href = '../Logins_Sessões/login.html';
-        }
-    </script> 
+
+
     </head>
 
     <body class="com-sidebar"> 
@@ -92,7 +87,6 @@
 
         </section>
 
-<!-- RANDOM SO PARA VER SE TA OK, DEPOIS USAMOS A BD VINDO DA API -->
             <section class="dashboard-resumo">
                 <h2 class="titulo-seccao">Consultas de Hoje</h2>
                 <div class="tabela-container"> 
@@ -155,10 +149,6 @@
                         <div class="grupo-input">
                             <label for="cliente_nif">NIF:</label>
                             <input type="text" id="cliente_nif" readonly>
-                        </div>
-                        <div class="grupo-input">
-                            <label for="cliente_nascimento">Data de Nascimento:</label>
-                            <input type="date" id="cliente_nascimento" readonly>
                         </div>
                     </div>
 
