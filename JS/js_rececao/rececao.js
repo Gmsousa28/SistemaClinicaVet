@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Pesquisa a ficha de cliente pelo NIF
+// Pesquisa a ficha de cliente pelo NIF
     const btnPesquisar = document.getElementById('btn-pesquisar-cliente') || document.querySelector('.btn-pesquisar');
     const inputPesquisaNif = document.getElementById('pesquisa-nif') || document.querySelector('.input-pesquisa-nif');
     const btnFecharFicha = document.getElementById('btn-fechar-ficha');
@@ -173,9 +173,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     const clienteEncontrado = resultadoTodos.data.find(c => String(c.nif) === nifDigitado);
 
                     if (clienteEncontrado) {
+                        
+                        // 👇 O NOSSO RAIO-X PARA A CONSOLA (F12) 👇
+                        console.log("O QUE VEM DA BASE DE DADOS:", clienteEncontrado);
+                        // 👆 -------------------------------------- 👆
+
                         document.getElementById('cliente_nome').value = clienteEncontrado.nome || '';
                         document.getElementById('cliente_nif').value = clienteEncontrado.nif || '';
-                        document.getElementById('cliente_nascimento').value = clienteEncontrado.data_nascimento ? clienteEncontrado.data_nascimento.split('T')[0] : '';
+                        
+                        // Lógica de conversão de data à prova de bala
+                        let dataFinal = '';
+                        if (clienteEncontrado.data_nascimento) {
+                            const dataObj = new Date(clienteEncontrado.data_nascimento);
+                            
+                            // Verifica se a data é válida antes de a formatar
+                            if (!isNaN(dataObj.getTime())) {
+                                const ano = dataObj.getFullYear();
+                                const mes = String(dataObj.getMonth() + 1).padStart(2, '0');
+                                const dia = String(dataObj.getDate()).padStart(2, '0');
+                                dataFinal = `${ano}-${mes}-${dia}`;
+                            } else {
+                                console.log("Atenção: A data recebida não é válida para o JS:", clienteEncontrado.data_nascimento);
+                            }
+                        }
+                        document.getElementById('cliente_nascimento').value = dataFinal;
+
                         document.getElementById('cliente_email').value = clienteEncontrado.email || '';
                         document.getElementById('cliente_tlm').value = clienteEncontrado.contacto || '';
                         document.getElementById('cliente_morada').value = clienteEncontrado.morada || '';
@@ -196,7 +218,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
     async function carregarAnimaisDoCliente(nif) {
         // Carrega os animais associados ao NIF pesquisado
         const listaAnimais = document.getElementById('lista_animais_cliente');

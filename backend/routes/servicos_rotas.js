@@ -6,6 +6,7 @@ const {
 
 const router = express.Router();
 
+// Rotas de servicos
 router.get("/servicos", listarServicos);
 
 module.exports = router;

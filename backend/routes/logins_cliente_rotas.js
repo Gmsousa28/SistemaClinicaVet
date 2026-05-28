@@ -7,6 +7,7 @@ const {
 
 const router = express.Router();
 
+// Rotas de logins dos clientes
 router.get("/logins_clientes", listarLoginsClientes);
 router.post("/login_cliente", fazerLoginCliente);
 

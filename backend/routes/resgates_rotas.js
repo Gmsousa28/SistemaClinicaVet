@@ -14,10 +14,9 @@ const {
 
 const router = express.Router();
 
-// A TUA NOVA ROTA (Coloca-a aqui no topo para segurança!)
+// Rotas de resgates
 router.get("/resgates-painel", listarResgatesPainel); 
 
-// As tuas rotas antigas mantêm-se iguais!
 router.get("/resgates", listarTodosResgates);
 router.get("/resgates/:id", obterResgatePorId);
 router.post("/resgates", criarResgate);

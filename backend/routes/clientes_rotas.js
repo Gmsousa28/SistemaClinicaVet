@@ -12,6 +12,7 @@ const {
 
 const router = express.Router();
 
+// Rotas de clientes
 router.get("/clientes", listarClientes);
 router.get("/clientes/id/:id", obterClienteByID);
 router.get("/clientes/nif/:nif", obterClienteByNif);

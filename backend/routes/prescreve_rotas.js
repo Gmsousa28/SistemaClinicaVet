@@ -5,7 +5,7 @@ const {
 
 const router = express.Router();
 
-// Rota para prescrever exames (POST)
+// Rotas de prescrever exames
 router.post('/prescrever-exames', prescreverExames);
 
 module.exports = router;

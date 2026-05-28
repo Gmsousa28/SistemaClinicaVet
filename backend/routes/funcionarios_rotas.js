@@ -10,6 +10,7 @@ const {
 
 const router = express.Router();
 
+// Rotas de funcionarios
 router.get("/funcionarios", listarTodosFuncionarios);
 router.get("/funcionarios/:id", obterFuncionarioPorId);
 router.post("/funcionarios", criarFuncionario);

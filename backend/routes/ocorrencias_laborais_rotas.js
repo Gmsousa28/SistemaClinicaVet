@@ -8,19 +8,9 @@ const {
 
 const router = express.Router();
 
-router.get(
-    "/ocorrencias_laborais",
-    listarOcorrenciasLaborais
-);
-
-router.post(
-    "/ocorrencias_laborais",
-    criarOcorrenciaLaboral
-);
-
-router.put(
-    "/ocorrencias_laborais/:id",
-    atualizarOcorrenciaLaboral
-);
+// Rotas de ocorrencias laborais
+router.get("/ocorrencias_laborais",listarOcorrenciasLaborais);
+router.post("/ocorrencias_laborais",criarOcorrenciaLaboral);
+router.put("/ocorrencias_laborais/:id",atualizarOcorrenciaLaboral);
 
 module.exports = router;

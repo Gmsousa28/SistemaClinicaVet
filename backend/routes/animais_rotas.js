@@ -12,6 +12,7 @@ const {
 
 const router = express.Router();
 
+// Rotas de animais
 router.get("/animais", listarTodosAnimais);
 router.get("/animais/:id", obterAnimalPorId);
 router.post("/animais", criarAnimal); 

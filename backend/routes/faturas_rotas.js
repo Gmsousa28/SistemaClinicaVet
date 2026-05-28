@@ -10,6 +10,7 @@ const {
 
 const router = express.Router();
 
+// Rotas de faturas
 router.get("/faturas", listarFaturas);
 
 router.get(

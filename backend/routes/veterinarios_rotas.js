@@ -11,6 +11,7 @@ const {
 
 const router = express.Router();
 
+// Rotas de veterinarios
 router.get("/veterinarios", listarTodosVeterinarios);
 router.get("/veterinarios/:id", obterVeterinarioPorId);
 router.post("/veterinarios", criarVeterinario);

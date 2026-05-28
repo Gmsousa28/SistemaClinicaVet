@@ -13,6 +13,7 @@ const {
 
 const router = express.Router();
 
+// Rotas de consultas
 router.get("/consultas", listarConsultas);
 router.get("/consultas/:id", obterConsultaById);
 router.post("/consultas", criarConsulta);

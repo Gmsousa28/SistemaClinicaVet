@@ -11,6 +11,7 @@ const {
 
 const router = express.Router();
 
+// Rotas de exames
 router.get("/exames", listarTodosExames);
 router.get("/exames/:id", obterExamePorId);
 router.get("/exames/nome/:nome", obterExamePorNome);

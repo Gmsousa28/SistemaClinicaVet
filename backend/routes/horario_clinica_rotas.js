@@ -10,6 +10,7 @@ const {
 
 const router = express.Router();
 
+// Rotas de horarios da clinica
 router.get("/horarios_clinica", listarHorariosClinica);
 router.get("/horarios_clinica/:dia_semana", obterHorarioClinicaByDiaSemana);
 router.post("/horarios_clinica", criarHorarioClinica);
