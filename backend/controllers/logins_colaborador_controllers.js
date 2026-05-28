@@ -10,6 +10,7 @@ const handleResponse = (res, status, message, data = null) => {
     res.status(status).json({ status, message, data });
 };
 
+// Listar logins de colaboradores
 const listarLoginsColaboradores = async (req, res, next) => {
     try {
         const loginsColaboradores = await listarLoginsColaboradoresBD();
@@ -19,6 +20,8 @@ const listarLoginsColaboradores = async (req, res, next) => {
     }
 };
 
+
+// Fazer login de colaborador
 const fazerLoginColaborador = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -30,7 +33,6 @@ const fazerLoginColaborador = async (req, res) => {
             });
         }
 
-        // 1. A BD trata de validar as credenciais e aplicar as regras das 12h
         const sessao = await realizarLoginColaboradorBD(email, password);
 
         if (!sessao) {
@@ -40,32 +42,27 @@ const fazerLoginColaborador = async (req, res) => {
             });
         }
 
-        // 2. Extraímos os retornos gerados pela tua procedure SQL
         const idLoginColab = sessao.id_colaborador || sessao.id_resultado;
         const idSessao = sessao.id_sessao || sessao.id_logs;
 
-        // 3. Procura o perfil pelo id_login_colaborador correspondente (Rita / Tiago corrigido!)
         const utilizadorCompleto = await obterPerfilPorLoginColabBD(idLoginColab);
 
         if (!utilizadorCompleto) {
             return res.status(404).json({ status: 404, message: "Perfil do colaborador não encontrado." });
         }
 
-        // Limpeza de segurança
         if (utilizadorCompleto.palavra_passe) {
             delete utilizadorCompleto.palavra_passe;
         }
 
-        // 4. Devolve a resposta compatível com o código dos teus colegas + o id_sessao
         return res.status(200).json({ 
             status: 200, 
             message: "Login efetuado com sucesso!", 
-            id_sessao: idSessao, // O teu identificador para a auditoria
-            data: utilizadorCompleto // O objeto intacto que o frontend deles espera
+            id_sessao: idSessao, 
+            data: utilizadorCompleto 
         });
 
     } catch (err) {
-        // Apanha os erros disparados pelo RAISE EXCEPTION do PostgreSQL (ex: Conta suspensa ou Já Logado)
         console.error("Bloqueio no login:", err.message);
         return res.status(403).json({ 
             status: 403, 
@@ -74,7 +71,7 @@ const fazerLoginColaborador = async (req, res) => {
     }
 };
 
-// --- ADICIONADA: Função que gere o Logout vindo do botão da Sidebar ---
+// Fazer logout de colaborador
 const fazerLogoutColaborador = async (req, res) => {
     try {
         const { id_colaborador, id_sessao } = req.body; 
@@ -96,11 +93,12 @@ const fazerLogoutColaborador = async (req, res) => {
     }
 };
 
+
+// Obter perfil do colaborador
 const obterPerfilColaborador = async (req, res) => {
     try {
         const { id } = req.params; 
         
-        // Mantém a pesquisa pelo ID do colaborador tradicional para a rota GET
         const colaborador = await obterPerfilColaboradorBD(id);
         
         if (!colaborador) {
@@ -121,6 +119,5 @@ const obterPerfilColaborador = async (req, res) => {
 module.exports = {
     listarLoginsColaboradores,
     fazerLoginColaborador,
-    fazerLogoutColaborador, // Exportado corretamente para as tuas rotas
-    obterPerfilColaborador
+    fazerLogoutColaborador, 
 };

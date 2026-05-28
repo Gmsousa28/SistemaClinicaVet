@@ -8,10 +8,12 @@ const {
     registarClienteCompletoBD
 } = require('../models/clientes_models.js');
 
+// Função auxiliar para manter as respostas do servidor sempre organizadas
 const handleResponse = (res, status, message, data = null) => { 
     res.status(status).json({ status, message, data }); 
 };
 
+// Listar clientes
 const listarClientes = async (req, res, next) => {
     try {
         const clientes = await listarClientesBD();
@@ -21,6 +23,8 @@ const listarClientes = async (req, res, next) => {
     }
 };
 
+
+// Obter cliente por ID
 const obterClienteByID = async (req, res, next) => {
     try {
         const cliente = await obterClienteByIDBD(req.params.id);
@@ -31,6 +35,7 @@ const obterClienteByID = async (req, res, next) => {
     }
 };
 
+// Obter cliente por NIF
 const obterClienteByNif = async (req, res, next) => {
     try {
         const cliente = await obterClienteByNifBD(req.params.nif);
@@ -41,8 +46,8 @@ const obterClienteByNif = async (req, res, next) => {
     }
 };
 
+// Criar cliente
 const criarCliente = async (req, res, next) => {
-    // Agora extrai e passa SÓ os 5 campos que vêm do Frontend
     const { nome, morada, email, nif, contacto } = req.body; 
     
     try {
@@ -69,11 +74,11 @@ const criarCliente = async (req, res, next) => {
     }
 };
 
+// Atualizar cliente
 const atualizarCliente = async (req, res, next) => {
-    // CORREÇÃO: Removido o id_login_cliente daqui, pois não o queremos atualizar
     const { nome, morada, email, nif, contacto } = req.body;
     try {
-        // CORREÇÃO: Removido o id_login_cliente da chamada à função
+
         const atualizado = await atualizarClienteBD(req.params.id, nome, morada, email, nif, contacto);
         
         if (!atualizado) return handleResponse(res, 404, "Não foi possível atualizar o cliente");
@@ -81,7 +86,7 @@ const atualizarCliente = async (req, res, next) => {
 } catch (err) {
 
         if (err.code === '23505') {
-            // Juntámos as duas chaves de e-mail (a do login e a da tabela cliente)
+            
             if (err.constraint === 'login_cliente_email_key' || err.constraint === 'cliente_email_key') {
                 return handleResponse(res, 400, "Erro: Este E-mail já está registado noutro cliente!");
             }
@@ -99,6 +104,8 @@ const atualizarCliente = async (req, res, next) => {
     }
 };
 
+
+// Eliminar cliente por ID
 const eliminarClienteById = async (req, res, next) => {
     try {
         const eliminado = await eliminarClienteByIdBD(req.params.id);
@@ -110,24 +117,23 @@ const eliminarClienteById = async (req, res, next) => {
 };
 
 
-// Importa o model lá em cima:
-// const { registarClienteCompletoBD } = require('../models/clientes_models');
 
+// Registar novo cliente
 const registarNovoCliente = async (req, res) => {
     try {
-        // Desempacota os dados que vieram do Frontend
+        
         const { nome, email, palavra_passe, contacto, data_nascimento, morada, nif } = req.body;
 
-        // Validação básica de segurança
+        
         if (!nome || !email || !palavra_passe || !nif || !contacto) {
             return res.status(400).json({ status: 400, message: "Campos obrigatórios em falta." });
         }
 
-        // Chama a função do Model com a transação SQL
+        
         await registarClienteCompletoBD({
             nome, 
             email, 
-            palavra_passe, // Nota: Num projeto real, usaríamos o bcrypt para encriptar isto antes de guardar!
+            palavra_passe, //Num projeto real, usaríamos uma encriptação antes de guardar
             contacto, 
             morada, 
             nif
@@ -138,9 +144,8 @@ const registarNovoCliente = async (req, res) => {
     } catch (err) {
         console.error("Erro ao registar cliente:", err);
 
-        // 23505 é o código de erro do PostgreSQL para o UNIQUE (Duplicados)
         if (err.code === '23505') {
-            // Vamos descobrir exatamente qual foi a restrição violada para dar um aviso melhor ao utilizador
+
             let detalhe = "O Email, NIF ou Contacto já estão em uso.";
             if (err.constraint === 'login_cliente_email_key' || err.constraint === 'cliente_email_key') {
                 detalhe = "Este endereço de email já está registado.";

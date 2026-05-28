@@ -9,6 +9,7 @@ const handleResponse = (res, status, message, data = null) => {
     res.status(status).json({ status, message, data });
 };
 
+// Listar faturas
 const listarFaturas = async (req, res, next) => {
     try {
         const faturas = await listarFaturasBD();
@@ -18,6 +19,7 @@ const listarFaturas = async (req, res, next) => {
     }
 };
 
+// Listar pendentes de faturacao
 const listarPendentesFaturacao = async (req, res, next) => {
     try {
         const pendentes = await listarPendentesFaturacaoBD();
@@ -27,6 +29,7 @@ const listarPendentesFaturacao = async (req, res, next) => {
     }
 };
 
+// Listar historico de faturacao
 const listarHistoricoFaturacao = async (req, res, next) => {
     try {
         const historico = await listarHistoricoFaturacaoBD();
@@ -36,6 +39,7 @@ const listarHistoricoFaturacao = async (req, res, next) => {
     }
 };
 
+// Pagar fatura
 const pagarFatura = async (req, res, next) => {
     const { tipo, id_origem, valor_total } = req.body;
 

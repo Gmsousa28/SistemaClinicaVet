@@ -1,5 +1,6 @@
 const pool = require('../config/db.js');
 
+// Listar consultas
 const listarConsultasBD = async () => {
     const result = await pool.query(`
         SELECT *
@@ -9,6 +10,7 @@ const listarConsultasBD = async () => {
     return result.rows;
 };
 
+// Criar consulta
 const criarConsultaBD = async (
     id_animal,
     id_veterinario,
@@ -138,6 +140,7 @@ const criarConsultaBD = async (
     return result.rows[0];
 };
 
+// Obter consulta por ID
 const obterConsultaByIdBD = async (id_consulta) => {
     const result = await pool.query(
         `
@@ -150,6 +153,7 @@ const obterConsultaByIdBD = async (id_consulta) => {
     return result.rows[0];
 };
 
+// Atualizar consulta
 const atualizarConsultaBD = async (
     id_consulta,
     id_animal,
@@ -178,6 +182,7 @@ const atualizarConsultaBD = async (
     return result.rows[0];
 };
 
+// Eliminar consulta
 const eliminarConsultaBD = async (id_consulta) => {
     await pool.query(
         `
@@ -197,6 +202,7 @@ const eliminarConsultaBD = async (id_consulta) => {
     return result.rows[0];
 };
 
+// Obter consultas do veterinario especifico
 const obterconsultasdovetespecificoBD = async (id_veterinario) => {
     const result = await pool.query(
         `
@@ -222,6 +228,7 @@ const obterconsultasdovetespecificoBD = async (id_veterinario) => {
     return result.rows;
 };
 
+// Obter consultas do animal especifico
 const obterconsultasdoanipecificoBD = async (id_animal) => {
     const result = await pool.query(
         `
@@ -249,9 +256,8 @@ const obterconsultasdoanipecificoBD = async (id_animal) => {
     return result.rows;
 };
 
-// =======================================================
-// 🛡️ NOVA FUNÇÃO: Procura veterinário disponível pelo horário
-// =======================================================
+
+// Obter veterinario disponivel
 const obterVeterinarioDisponivelBD = async (data_consulta) => {
     const query = `
         SELECT c.id_veterinario 
@@ -283,10 +289,9 @@ const obterVeterinarioDisponivelBD = async (data_consulta) => {
 };
 
 
-// OBTÉM UM FUNCIONÁRIO DISPONÍVEL (Com verificação de Horário!)
-// =======================================================
+
+// Obter funcionario de servico aleatorio
 const obterFuncionarioServicoAleatorioBD = async (data_inicio, total_blocos) => {
-    // 1. Gera os blocos de tempo para saber se choca com outro serviço
     const timestampsBlocos = [];
     for (let i = 0; i < total_blocos; i++) {
         let bloco = new Date(data_inicio);
@@ -321,13 +326,12 @@ const obterFuncionarioServicoAleatorioBD = async (data_inicio, total_blocos) => 
         ORDER BY RANDOM() 
         LIMIT 1;
     `;
-    
-    // Passamos o array de blocos, a data de início e a quantidade de blocos
+
     const result = await pool.query(query, [timestampsBlocos, data_inicio, total_blocos]);
     return result.rows[0];
 };
 
-// 2. Cria o registo com os nomes exatos das colunas da tua BD
+// Criar servico
 const criarServicoBD = async (id_animal, id_funcionario, data_servico, tipo, preco) => {
     const query = `
         INSERT INTO public.servicos (id_animal, id_funcionario, data_servicos, tipo_servico, preco)
@@ -367,7 +371,10 @@ const obterConsultasDoClienteBD = async (id_cliente) => {
 
 const guardarDiagnosticoFinalBD = async (id_consulta, diagnostico) => {
     try {
+<<<<<<< HEAD
         // 🎯 A Query perfeita: mapeia as duas colunas reais da tua tabela
+=======
+>>>>>>> 1f8e33102258a2de8f36d7c1371b7fcab43c227f
         const query = `
             UPDATE public.consulta
             SET 
@@ -398,7 +405,5 @@ module.exports = {
     obterConsultasDoClienteBD,
     obterVeterinarioDisponivelBD,       
     obterFuncionarioServicoAleatorioBD, 
-    criarServicoBD,
-    guardarDiagnosticoFinalBD
-
+    criarServicoBD                      
 };

@@ -1,10 +1,12 @@
 const pool = require('../config/db.js');
 
+// Listar horarios da clinica
 const listarHorariosClinicaBD = async () => {
     const result = await pool.query('SELECT * FROM horario_clinica ORDER BY dia_semana ASC');
     return result.rows;
 };
 
+// Criar horario da clinica
 const criarHorarioClinicaBD = async (dia_semana, hora_abertura, hora_fecho) => {
     const query = `
         INSERT INTO horario_clinica (dia_semana, hora_abertura, hora_fecho) 
@@ -16,11 +18,13 @@ const criarHorarioClinicaBD = async (dia_semana, hora_abertura, hora_fecho) => {
     return result.rows[0];
 };
 
+// Obter horario da clinica por dia da semana
 const obterHorarioClinicaByDiaSemanaBD = async (dia_semana) => {
     const result = await pool.query('SELECT * FROM horario_clinica WHERE dia_semana = $1', [dia_semana]);
     return result.rows[0];
 };
 
+// Atualizar horario da clinica
 const atualizarHorarioClinicaBD = async (dia_semana, hora_abertura, hora_fecho) => {
     const query = `
         UPDATE horario_clinica 
@@ -33,6 +37,7 @@ const atualizarHorarioClinicaBD = async (dia_semana, hora_abertura, hora_fecho) 
     return result.rows[0];
 };
 
+// Eliminar horario da clinica
 const eliminarHorarioClinicaBD = async (dia_semana) => {
     const result = await pool.query('DELETE FROM horario_clinica WHERE dia_semana = $1 RETURNING *', [dia_semana]);
     return result.rows[0];

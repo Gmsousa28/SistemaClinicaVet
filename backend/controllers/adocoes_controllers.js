@@ -6,6 +6,8 @@ const {
     eliminarAdocaoBD
 } = require('../models/adocoes_models.js');
 
+
+// Listar adocoes
 const listarAdocoes = async (req, res) => {
     try {
         const adocoes = await listarAdocoesBD();
@@ -15,6 +17,7 @@ const listarAdocoes = async (req, res) => {
     }
 };
 
+// Criar adocao
 const criarAdocao = async (req, res) => {
     const { id_animal, id_cliente, data_adocao } = req.body;
     try {
@@ -25,6 +28,7 @@ const criarAdocao = async (req, res) => {
     }
 };
 
+// Obter adocao por ID do animal
 const obterAdocaoPorIdAnimal = async (req, res) => {
     try {
         const adocao = await obterAdocaoPorIdAnimalBD(req.params.id_animal);
@@ -35,6 +39,7 @@ const obterAdocaoPorIdAnimal = async (req, res) => {
     }
 };
 
+// Obter adocao por ID
 const obterAdocaoPorId = async (req, res) => {
     try {
         const adocao = await obterAdocaoPorIdBD(req.params.id);
@@ -45,6 +50,7 @@ const obterAdocaoPorId = async (req, res) => {
     }
 };
 
+// Eliminar adocao
 const eliminarAdocao = async (req, res) => {
     try {
         const eliminado = await eliminarAdocaoBD(req.params.id);

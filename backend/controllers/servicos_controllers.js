@@ -6,6 +6,7 @@ const handleResponse = (res, status, message, data = null) => {
     res.status(status).json({ status, message, data });
 };
 
+// Listar servicos
 const listarServicos = async (req, res, next) => {
     try {
         const servicos = await listarServicosBD();

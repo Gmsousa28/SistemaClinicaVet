@@ -1,12 +1,13 @@
 const pool = require('../config/db.js');
 
+// Listar logins de clientes
 const listarLoginsClientesBD = async () => {
     const result = await pool.query('SELECT * FROM login_cliente ORDER BY id_login_cliente DESC');
     return result.rows;
 };
 
+// Verificar login de cliente
 const verificarLoginClienteBD = async (email) => {
-    // Atenção: Usa as crases (`) para poderes ter várias linhas
     const result = await pool.query(`
         SELECT 
             c.id_cliente, 
@@ -20,7 +21,6 @@ const verificarLoginClienteBD = async (email) => {
             lc.email = $1 AND lc.conta_ativa = TRUE;
     `, [email]);
     
-    // Devolve o cliente se o encontrar
     return result.rows[0]; 
 };
 

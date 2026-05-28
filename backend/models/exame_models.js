@@ -1,10 +1,12 @@
 const pool = require('../config/db.js');
 
+// Listar exames
 const listarExamesBD = async () => {
     const result = await pool.query('SELECT * FROM exame ORDER BY id_exame DESC');
     return result.rows;
 };
 
+// Criar exame
 const criarExameBD = async (nome, valor_cobrado) => {
     const query = `
         INSERT INTO exame (nome, valor_cobrado) 
@@ -16,16 +18,19 @@ const criarExameBD = async (nome, valor_cobrado) => {
     return result.rows[0];
 };
 
+// Obter exame por ID
 const obterExameByIdBD = async (id_exame) => {
     const result = await pool.query('SELECT * FROM exame WHERE id_exame = $1', [id_exame]);
     return result.rows[0];
 };
 
+// Obter exame por nome
 const obterExameByNameBD = async (nome) => {
     const result = await pool.query('SELECT * FROM exame WHERE nome = $1', [nome]);
     return result.rows[0];
 };
 
+// Atualizar exame
 const atualizarExameBD = async (id_exame, nome, valor_cobrado) => {
     const query = `
         UPDATE exame 
@@ -38,6 +43,7 @@ const atualizarExameBD = async (id_exame, nome, valor_cobrado) => {
     return result.rows[0];
 };
 
+// Eliminar exame
 const eliminarExameBD = async (id_exame) => {
     const result = await pool.query('DELETE FROM exame WHERE id_exame = $1 RETURNING *', [id_exame]);
     return result.rows[0];
