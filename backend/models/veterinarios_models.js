@@ -1,10 +1,12 @@
 const pool = require('../config/db.js');
 
+// Listar veterinarios
 const listarVeterinariosBD = async () => {
     const result = await pool.query('SELECT * FROM veterinario ORDER BY nome ASC');
     return result.rows;
 };
 
+// Criar veterinario
 const criarVeterinarioBD = async (nome, morada, contacto, email, nif, especialidade) => {
     const query = `
         INSERT INTO veterinario (nome, morada, contacto, email, nif, especialidade) 
@@ -16,11 +18,13 @@ const criarVeterinarioBD = async (nome, morada, contacto, email, nif, especialid
     return result.rows[0];
 };
 
+// Obter veterinario por ID
 const obterVeterinarioPorIdBD = async (id_veterinario) => {
     const result = await pool.query('SELECT * FROM veterinario WHERE id_veterinario = $1', [id_veterinario]);
     return result.rows[0];
 };
 
+// Atualizar veterinario
 const atualizarVeterinarioBD = async (id_veterinario, nome, morada, contacto, email, nif, especialidade) => {
     const query = `
         UPDATE veterinario 
@@ -33,11 +37,13 @@ const atualizarVeterinarioBD = async (id_veterinario, nome, morada, contacto, em
     return result.rows[0];
 };
 
+// Eliminar veterinario
 const eliminarVeterinarioBD = async (id_veterinario) => {
     const result = await pool.query('DELETE FROM veterinario WHERE id_veterinario = $1 RETURNING *', [id_veterinario]);
     return result.rows[0];
 };
 
+// Obter perfil do veterinario
 const obterPerfilVetBD = async (idColaborador) => {
     const result = await pool.query(`
         SELECT 

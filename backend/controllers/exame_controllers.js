@@ -7,10 +7,12 @@ const{
     eliminarExameBD
 } = require('../models/exame_models.js');
 
+// Função auxiliar para manter as respostas do servidor sempre organizadas
 const handleResponse = (res, status, message, data = null) => {
     res.status(status).json({ status, message, data });
 };
 
+// Listar todos os exames
 const listarTodosExames = async (req, res, next) => {
     try {
         const exames = await listarExamesBD();
@@ -20,6 +22,7 @@ const listarTodosExames = async (req, res, next) => {
     }
 };
 
+// Criar exame
 const criarExame = async (req, res, next) => {
     const { nome, descricao } = req.body;
     try {
@@ -30,6 +33,7 @@ const criarExame = async (req, res, next) => {
     }
 };
 
+// Obter exame por ID
 const obterExamePorId = async (req, res, next) => {
     try {
         const exame = await obterExameByIdBD(req.params.id);
@@ -40,6 +44,7 @@ const obterExamePorId = async (req, res, next) => {
     }
 };
 
+// Obter exame por nome
 const obterExamePorNome = async (req, res, next) => {
     try {
         const exame = await obterExameByNameBD(req.params.nome);
@@ -50,6 +55,7 @@ const obterExamePorNome = async (req, res, next) => {
     }
 };
 
+// Atualizar exame
 const atualizarExame = async (req, res, next) => {
     const { nome, descricao } = req.body;
     try {
@@ -61,6 +67,7 @@ const atualizarExame = async (req, res, next) => {
     }
 };
 
+// Eliminar exame
 const eliminarExame = async (req, res, next) => {
     try {
         const eliminado = await eliminarExameBD(req.params.id);

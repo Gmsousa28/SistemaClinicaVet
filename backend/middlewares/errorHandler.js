@@ -1,3 +1,5 @@
+
+// Middleware de tratamento de erros
 const errorHandling = (err, req, res, next) => {
     console.log(err.stack);
     res.status(500).json({

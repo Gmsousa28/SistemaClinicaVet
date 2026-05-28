@@ -1,10 +1,12 @@
 const pool = require('../config/db.js');
 
+// Listar funcionarios
 const listarFuncionariosBD = async () => {
     const result = await pool.query('SELECT * FROM funcionario ORDER BY nome ASC');
     return result.rows;
 };
 
+// Criar funcionario
 const criarFuncionarioBD = async (nome, morada, email, nif, contacto, cargo) => {
     const query = `
         INSERT INTO funcionario (nome, morada, email, nif, contacto, cargo) 
@@ -16,11 +18,13 @@ const criarFuncionarioBD = async (nome, morada, email, nif, contacto, cargo) => 
     return result.rows[0];
 };
 
+// Obter funcionario por ID
 const obterFuncionarioPorIdBD = async (id_funcionario) => {
     const result = await pool.query('SELECT * FROM funcionario WHERE id_funcionario = $1', [id_funcionario]);
     return result.rows[0];
 };
 
+// Atualizar funcionario
 const atualizarFuncionarioBD = async (id_funcionario, nome, morada, email, nif, contacto, cargo) => {
     const query = `
         UPDATE funcionario 
@@ -33,6 +37,7 @@ const atualizarFuncionarioBD = async (id_funcionario, nome, morada, email, nif, 
     return result.rows[0];
 };
 
+// Eliminar funcionario
 const eliminarFuncionarioBD = async (id_funcionario) => {
     const result = await pool.query('DELETE FROM funcionario WHERE id_funcionario = $1 RETURNING *', [id_funcionario]);
     return result.rows[0];

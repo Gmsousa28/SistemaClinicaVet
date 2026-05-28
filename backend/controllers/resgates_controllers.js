@@ -14,6 +14,7 @@ const handleResponse = (res, status, message, data = null) => {
   res.status(status).json({ status, message, data });
 };
 
+// Listar todos os resgates
 const listarTodosResgates = async (req, res, next) => {
   try {
     const resgates = await listarResgatesBD();
@@ -23,6 +24,7 @@ const listarTodosResgates = async (req, res, next) => {
   }
 };
 
+// Criar resgate
 const criarResgate = async (req, res, next) => {
   const { id_animal, id_funcionario, data_resgate, idade } = req.body;
   try {
@@ -33,6 +35,7 @@ const criarResgate = async (req, res, next) => {
   }
 };
 
+// Obter resgate por ID
 const obterResgatePorId = async (req, res, next) => {
   try {
     const resgate = await obterResgatePorIdBD(req.params.id);
@@ -43,6 +46,7 @@ const obterResgatePorId = async (req, res, next) => {
   }
 };
 
+// Atualizar resgate
 const atualizarResgate = async (req, res, next) => {
   const { id_animal, id_funcionario, data_resgate, idade } = req.body;
   try {
@@ -54,6 +58,7 @@ const atualizarResgate = async (req, res, next) => {
   }
 };
 
+// Eliminar resgate
 const eliminarResgate = async (req, res, next) => {
   try {
     const eliminado = await eliminarResgateBD(req.params.id);
@@ -65,7 +70,7 @@ const eliminarResgate = async (req, res, next) => {
 };
 
 
-// NOVO CONTROLLER: Envia os dados preparados para a página de resgates
+// Listar resgates do painel
 const listarResgatesPainel = async (req, res, next) => {
     try {
         const resgates = await listarResgatesPainelBD(); // Usa o novo model
@@ -76,6 +81,7 @@ const listarResgatesPainel = async (req, res, next) => {
 };
 
 
+// Criar novo resgate no painel
 const criarNovoResgatePainel = async (req, res, next) => {
     try {
         const { nome_animal, especie, raca, idade_aprox, data_resgate, id_funcionario } = req.body;
@@ -92,6 +98,7 @@ const criarNovoResgatePainel = async (req, res, next) => {
 };
 
 
+// Formalizar adocao
 const formalizarAdocao = async (req, res, next) => {
     try {
         const { id_animal, nif_cliente } = req.body;
@@ -109,7 +116,7 @@ const formalizarAdocao = async (req, res, next) => {
     }
 };
 
-// Importa o listarAdocoesArquivoBD no topo do ficheiro!
+// Listar adocoes do arquivo
 const listarAdocoesArquivo = async (req, res, next) => {
     try {
         const adocoes = await listarAdocoesArquivoBD();

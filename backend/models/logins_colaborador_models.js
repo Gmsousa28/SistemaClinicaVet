@@ -1,10 +1,12 @@
 const pool = require('../config/db.js');
 
+// Listar logins de colaboradores
 const listarLoginsColaboradoresBD = async () => {
     const result = await pool.query('SELECT * FROM login_colaborador ORDER BY id_login_colaborador DESC');
     return result.rows;
 };
 
+// Verificar login de colaborador
 const verificarLoginColaboradorBD = async (email) => {
     const query = `
         SELECT 
@@ -30,6 +32,7 @@ const verificarLoginColaboradorBD = async (email) => {
 };
 
 // MANTIDA PARA A ROTA DE PERFIL: Procura diretamente pelo id_colaborador (vido da URL)
+// Obter perfil do colaborador
 const obterPerfilColaboradorBD = async (id_colaborador) => {
     const query = `
         SELECT 
@@ -54,6 +57,7 @@ const obterPerfilColaboradorBD = async (id_colaborador) => {
     return result.rows[0]; 
 };
 
+// Obter perfil por login de colaborador
 const obterPerfilPorLoginColabBD = async (id_login_colaborador) => {
     const query = `
         SELECT 
@@ -81,6 +85,7 @@ const obterPerfilPorLoginColabBD = async (id_login_colaborador) => {
 };
 
 // Chama a function realizar_login_colab que está no PostgreSQL
+// Realizar login de colaborador
 const realizarLoginColaboradorBD = async (email, palavra_passe) => {
     const query = `
         SELECT * FROM public.realizar_login_colab($1, $2);
@@ -90,6 +95,7 @@ const realizarLoginColaboradorBD = async (email, palavra_passe) => {
 };
 
 // Chama a function logout_dispositivo_colab que está no PostgreSQL
+// Fazer logout do dispositivo do colaborador
 const logoutDispositivoColabBD = async (id_colaborador, id_logs) => {
     // A MAGIA ESTÁ AQUI NA QUERY: 
     // Em vez de enviarmos o $1 (ex: 7) diretamente, pedimos ao PostgreSQL para 

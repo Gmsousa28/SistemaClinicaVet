@@ -10,6 +10,7 @@ const handleResponse = (res, status, message, data = null) => {
   res.status(status).json({ status, message, data });
 };
 
+// Listar todos os funcionarios
 const listarTodosFuncionarios = async (req, res, next) => {
   try {
     const funcionarios = await listarFuncionariosBD();
@@ -19,6 +20,7 @@ const listarTodosFuncionarios = async (req, res, next) => {
   }
 };
 
+// Criar funcionario
 const criarFuncionario = async (req, res, next) => {
   const { nome, morada, email, nif, contacto, cargo } = req.body;
   try {
@@ -29,6 +31,7 @@ const criarFuncionario = async (req, res, next) => {
   }
 };
 
+// Obter funcionario por ID
 const obterFuncionarioPorId = async (req, res, next) => {
   try {
     const funcionario = await obterFuncionarioPorIdBD(req.params.id);
@@ -39,6 +42,7 @@ const obterFuncionarioPorId = async (req, res, next) => {
   }
 };
 
+// Atualizar funcionario
 const atualizarFuncionario = async (req, res, next) => {
   const { nome, morada, email, nif, contacto, cargo } = req.body;
   try {
@@ -50,6 +54,7 @@ const atualizarFuncionario = async (req, res, next) => {
   }
 };
 
+// Eliminar funcionario
 const eliminarFuncionario = async (req, res, next) => {
   try {
     const eliminado = await eliminarFuncionarioBD(req.params.id);

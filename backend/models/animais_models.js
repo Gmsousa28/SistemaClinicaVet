@@ -1,6 +1,7 @@
 const pool = require('../config/db.js');
 
-// 1. A NOSSA NOVA FUNÇÃO (Para ir buscar o Nome e NIF do dono)
+
+// Listar animais
 const listarAnimaisBD = async () => {
     const query = `
         SELECT 
@@ -15,10 +16,9 @@ const listarAnimaisBD = async () => {
     return result.rows;
 };
 
-// ====================================================================
-// AS FUNÇÕES DA TUA EQUIPA (Totalmente intocadas!)
-// ====================================================================
 
+
+// Criar animal
 const criarAnimalBD = async (id_cliente, nome, especie, raca, sexo, data_nascimento, estado) => {
     const query = `
         INSERT INTO animal (id_cliente, nome, especie, raca, sexo, data_nascimento, estado) 
@@ -30,11 +30,13 @@ const criarAnimalBD = async (id_cliente, nome, especie, raca, sexo, data_nascime
     return result.rows[0];
 };
 
+// Obter animal por ID
 const obterAnimalPorIdBD = async (id_animal) => {
     const result = await pool.query('SELECT * FROM animal WHERE id_animal = $1', [id_animal]);
     return result.rows[0];
 };
 
+// Atualizar animal
 const atualizarAnimalBD = async (id_animal, id_cliente, nome, especie, raca, sexo, data_nascimento, estado) => {
     const query = `
         UPDATE animal 
@@ -47,11 +49,13 @@ const atualizarAnimalBD = async (id_animal, id_cliente, nome, especie, raca, sex
     return result.rows[0];
 };
 
+// Eliminar animal
 const eliminarAnimalBD = async (id_animal) => {
     const result = await pool.query('DELETE FROM animal WHERE id_animal = $1 RETURNING *', [id_animal]);
     return result.rows[0];
 };
 
+// Listar animais por dono
 const listarAnimaisPorDonoBD = async (nif) => {
     const query = `
         SELECT 
@@ -64,9 +68,7 @@ const listarAnimaisPorDonoBD = async (nif) => {
     return result.rows;
 };
 
-// ====================================================================
-// O EXPORT (Para o Controller ter acesso a tudo)
-// ====================================================================
+
 module.exports = {
     listarAnimaisBD,
     criarAnimalBD,

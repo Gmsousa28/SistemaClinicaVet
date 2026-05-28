@@ -6,6 +6,7 @@ const {
     eliminarHorarioClinicaBD
 } = require('../models/horario_clinica_models.js');
 
+// Listar horarios da clinica
 const listarHorariosClinica = async (req, res) => {
     try {
         const horarios = await listarHorariosClinicaBD();
@@ -15,6 +16,7 @@ const listarHorariosClinica = async (req, res) => {
     }
 };
 
+// Criar horario da clinica
 const criarHorarioClinica = async (req, res) => {
     const { dia_semana, hora_abertura, hora_fecho } = req.body;
     try {
@@ -25,6 +27,7 @@ const criarHorarioClinica = async (req, res) => {
     }
 };
 
+// Obter horario da clinica por dia da semana
 const obterHorarioClinicaByDiaSemana = async (req, res) => {
     try {
         const horario = await obterHorarioClinicaByDiaSemanaBD(req.params.dia_semana);
@@ -35,6 +38,7 @@ const obterHorarioClinicaByDiaSemana = async (req, res) => {
     }
 };
 
+// Atualizar horario da clinica
 const atualizarHorarioClinica = async (req, res) => {
     const { hora_abertura, hora_fecho } = req.body;
     try {
@@ -46,6 +50,7 @@ const atualizarHorarioClinica = async (req, res) => {
     }
 };
 
+// Eliminar horario da clinica
 const eliminarHorarioClinica = async (req, res) => {
     try {
         const eliminado = await eliminarHorarioClinicaBD(req.params.dia_semana);

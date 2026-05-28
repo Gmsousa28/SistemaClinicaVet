@@ -1,4 +1,4 @@
-//instalar biblioteca npm install joi
+
 //esta biblioteca serve para colocar restriçoes, por exemplo, só perite criar clientes com no mínimo de 3 letras no primeiro nome, etc
 const Joi = require("joi");
 
@@ -6,7 +6,7 @@ const customerScheme = Joi.object({
   firstName: Joi.string().min(3).required(),
   lastName: Joi.string().min(3).required(),
   email: Joi.string().email().required(),
-  phone: Joi.string().min(10).required(), // formato de telefone desejado
+  phone: Joi.string().min(10).required(), 
   complaints: Joi.number().min(0).required(), 
 });
 

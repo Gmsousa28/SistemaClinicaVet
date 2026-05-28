@@ -11,6 +11,7 @@ const handleResponse = (res, status, message, data = null) => {
   res.status(status).json({ status, message, data });
 };
 
+// Listar todos os veterinarios
 const listarTodosVeterinarios = async (req, res, next) => {
   try {
     const veterinarios = await listarVeterinariosBD();
@@ -20,6 +21,7 @@ const listarTodosVeterinarios = async (req, res, next) => {
   }
 };
 
+// Criar veterinario
 const criarVeterinario = async (req, res, next) => {
   const { nome, morada, contacto, email, nif, especialidade } = req.body;
   try {
@@ -30,6 +32,7 @@ const criarVeterinario = async (req, res, next) => {
   }
 };
 
+// Obter veterinario por ID
 const obterVeterinarioPorId = async (req, res, next) => {
   try {
     const veterinario = await obterVeterinarioPorIdBD(req.params.id);
@@ -40,6 +43,7 @@ const obterVeterinarioPorId = async (req, res, next) => {
   }
 };
 
+// Atualizar veterinario
 const atualizarVeterinario = async (req, res, next) => {
   const { nome, morada, contacto, email, nif, especialidade } = req.body;
   try {
@@ -51,6 +55,7 @@ const atualizarVeterinario = async (req, res, next) => {
   }
 };
 
+// Eliminar veterinario
 const eliminarVeterinario = async (req, res, next) => {
   try {
     const eliminado = await eliminarVeterinarioBD(req.params.id);
@@ -61,12 +66,10 @@ const eliminarVeterinario = async (req, res, next) => {
   }
 };
 
+// Obter perfil do veterinario
 const obterPerfilVeterinario = async (req, res) => {
   try {
-      // Apanha o ID que vem no link (ex: /perfil/1)
       const idColaborador = req.params.id;
-
-      // Vai à base de dados buscar os dados
       const perfil = await obterPerfilVetBD(idColaborador);
 
       if (!perfil) {
@@ -76,7 +79,6 @@ const obterPerfilVeterinario = async (req, res) => {
           });
       }
 
-      // Devolve os dados para o Frontend!
       return res.status(200).json({ 
           status: 200, 
           message: "Perfil carregado com sucesso", 

@@ -1,5 +1,6 @@
 const pool = require('../config/db.js');
 
+// Listar resgates
 const listarResgatesBD = async () => {
 
     const query = `
@@ -25,6 +26,7 @@ const listarResgatesBD = async () => {
     return result.rows;
 };
 
+// Criar resgate
 const criarResgateBD = async (
     id_animal,
     id_funcionario,
@@ -57,6 +59,7 @@ const criarResgateBD = async (
     return result.rows[0];
 };
 
+// Obter resgate por ID
 const obterResgatePorIdBD = async (
     id_resgate
 ) => {
@@ -86,6 +89,7 @@ const obterResgatePorIdBD = async (
 
 
 
+// Atualizar resgate
 const atualizarResgateBD = async (
     id_resgate,
     id_animal,
@@ -119,6 +123,7 @@ const atualizarResgateBD = async (
     return result.rows[0];
 };
 
+// Eliminar resgate
 const eliminarResgateBD = async (
     id_resgate
 ) => {
@@ -137,6 +142,7 @@ const eliminarResgateBD = async (
 
 
 
+// Listar resgates do painel
 const listarResgatesPainelBD = async () => {
     const query = `
         SELECT r.*, r.idade AS idade_aprox, a.nome, a.especie, a.raca, a.estado
@@ -150,6 +156,7 @@ const listarResgatesPainelBD = async () => {
 };
 
 
+// Criar resgate completo
 const criarResgateCompletoBD = async (nome, especie, raca, idade, data_resgate, id_funcionario) => {
     // Insere o animal e usa o ID gerado para inserir o resgate
     const query = `
@@ -168,6 +175,7 @@ const criarResgateCompletoBD = async (nome, especie, raca, idade, data_resgate, 
 };
 
 // NOVA FUNÇÃO: Formalizar a Adoção
+// Formalizar adocao
 const formalizarAdocaoBD = async (id_animal, nif_cliente) => {
     
     // 1. Procurar qual é o id_cliente através do NIF
@@ -191,6 +199,7 @@ const formalizarAdocaoBD = async (id_animal, nif_cliente) => {
     return result.rows[0];
 };
 
+// Listar adocoes do arquivo
 const listarAdocoesArquivoBD = async () => {
     const query = `
         SELECT 

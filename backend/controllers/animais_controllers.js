@@ -7,14 +7,17 @@ const {
   listarAnimaisPorDonoBD
 } = require("../models/animais_models.js");
 
+const { 
+  obterClienteByNifBD 
+} = require('../models/clientes_models.js');
 
-// Adiciona esta linha lá no topo, junto aos outros requires
-const { obterClienteByNifBD } = require('../models/clientes_models.js');
+
 // Função auxiliar para manter as respostas do servidor sempre organizadas
 const handleResponse = (res, status, message, data = null) => {
   res.status(status).json({ status, message, data });
 };
 
+// Listar todos os animais
 const listarTodosAnimais = async (req, res, next) => {
   try {
     const animais = await listarAnimaisBD();
@@ -25,6 +28,7 @@ const listarTodosAnimais = async (req, res, next) => {
 };
 
 
+// Criar animal
 const criarAnimal = async (req, res, next) => {
   const { nif_cliente, nome, especie, raca, sexo, data_nascimento, estado } = req.body;
   try {
@@ -38,7 +42,6 @@ const criarAnimal = async (req, res, next) => {
     const novoAnimal = await criarAnimalBD(cliente.id_cliente, nome, especie, raca, sexo, data_nascimento, estado);
     handleResponse(res, 201, "Novo animal registado com sucesso", novoAnimal);
   } catch (err) {
-    // 🛡️ NOVO ESCUDO: Apanha o erro da data no futuro! (O código 23514 é o de check_violation)
     if (err.constraint === 'chk_data_nascimento_valida' || err.code === '23514') {
         return handleResponse(res, 400, "Erro: A data de nascimento não pode ser no futuro!");
     }
@@ -46,6 +49,7 @@ const criarAnimal = async (req, res, next) => {
   }
 };
 
+// Atualizar animal
 const atualizarAnimal = async (req, res, next) => {
   const { nif_cliente, nome, especie, raca, sexo, data_nascimento, estado } = req.body;
   try {
@@ -60,7 +64,7 @@ const atualizarAnimal = async (req, res, next) => {
     if (!atualizado) return handleResponse(res, 404, "Não foi possível atualizar o animal");
     handleResponse(res, 200, "Ficha do animal atualizada", atualizado);
   } catch (err) {
-    // 🛡️ NOVO ESCUDO também na atualização!
+    
     if (err.constraint === 'chk_data_nascimento_valida' || err.code === '23514') {
         return handleResponse(res, 400, "Erro: A data de nascimento não pode ser no futuro!");
     }
@@ -70,6 +74,7 @@ const atualizarAnimal = async (req, res, next) => {
 
 
 
+// Obter animal por ID
 const obterAnimalPorId = async (req, res, next) => {
   try {
     const animal = await obterAnimalPorIdBD(req.params.id);
@@ -81,13 +86,14 @@ const obterAnimalPorId = async (req, res, next) => {
 };
 
 
+// Eliminar animal
 const eliminarAnimal = async (req, res, next) => {
   try {
     const eliminado = await eliminarAnimalBD(req.params.id);
     if (!eliminado) return handleResponse(res, 404, "Animal não encontrado para remoção");
     handleResponse(res, 200, "Animal removido do sistema", eliminado);
   } catch (err) {
-    // 23503 é o código oficial do PostgreSQL para "Foreign Key Violation"
+    // código de erro do postgres para violação de chave estrangeira
     if (err.code === '23503') {
       return handleResponse(res, 400, "Não podes eliminar este animal porque ele já tem consultas ou banhos registados no histórico!");
     }
@@ -95,6 +101,7 @@ const eliminarAnimal = async (req, res, next) => {
   }
 };
 
+// Listar animais por dono
 const listarAnimaisPorDono = async (req, res, next) => {
   try {
     const animais = await listarAnimaisPorDonoBD(req.params.nif);
@@ -103,6 +110,8 @@ const listarAnimaisPorDono = async (req, res, next) => {
     next(err);
   }
 };
+
+
 
 module.exports = {
   listarTodosAnimais,

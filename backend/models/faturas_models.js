@@ -1,10 +1,12 @@
 const pool = require('../config/db.js');
 
+// Listar faturas
 const listarFaturasBD = async () => {
     const result = await pool.query('SELECT * FROM fatura ORDER BY id_fatura DESC');
     return result.rows;
 };
 
+// Listar pendentes de faturacao
 const listarPendentesFaturacaoBD = async () => {
     const query = `
         SELECT
@@ -52,6 +54,7 @@ const listarPendentesFaturacaoBD = async () => {
     return result.rows;
 };
 
+// Listar historico de faturacao
 const listarHistoricoFaturacaoBD = async () => {
     const query = `
         SELECT
@@ -75,6 +78,7 @@ const listarHistoricoFaturacaoBD = async () => {
     return result.rows;
 };
 
+// Pagar fatura
 const pagarFaturaBD = async (tipo, id_origem, valor_total) => {
     const campoOrigem = tipo === 'consulta' ? 'id_consulta' : 'id_servicos';
     const campoNulo = tipo === 'consulta' ? 'id_servicos' : 'id_consulta';

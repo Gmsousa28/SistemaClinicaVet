@@ -1,5 +1,6 @@
 const pool = require('../config/db.js');
 
+// Criar ocorrencia laboral
 const criarOcorrenciaBD = async (
     id_colaborador,
     data_inicio,
@@ -35,6 +36,7 @@ const criarOcorrenciaBD = async (
     return result.rows[0];
 };
 
+// Listar ocorrencias laborais
 const listarOcorrenciasBD = async () => {
 
     const query = `
@@ -56,6 +58,7 @@ const listarOcorrenciasBD = async () => {
     return result.rows;
 };
 
+// Listar ferias para admin
 const listarFeriasAdminBD = async () => {
 
     const query = `
@@ -70,6 +73,7 @@ const listarFeriasAdminBD = async () => {
     return result.rows;
 };
 
+// Atualizar ocorrencia laboral
 const atualizarOcorrenciaBD = async (
     id_colaborador,
     data_inicio,
