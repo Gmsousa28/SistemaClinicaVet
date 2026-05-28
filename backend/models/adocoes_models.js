@@ -1,5 +1,8 @@
 const pool = require('../config/db.js');
 
+
+
+// Listar adocoes
 const listarAdocoesBD = async () => {
     const result = await pool.query('SELECT * FROM adocao ORDER BY data_adocao DESC');
     return result.rows;
