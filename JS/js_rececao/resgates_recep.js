@@ -1,8 +1,6 @@
 const API_BASE = "http://localhost:8008/api";
 
-// =======================================================
-// 1. FUNÇÕES GLOBAIS DE MODAIS E INTERFACE
-// =======================================================
+// Funcoes globais usadas pelos botoes dos modais
 function abrirModalResgates() {
     const modal = document.getElementById('modal-resgate');
     if (modal) {
@@ -23,7 +21,7 @@ function mudarImagemResgates() {
     const elEspecie = document.getElementById('especie');
     const imagem = document.getElementById('foto-preview');
     
-    // Só avança se os dois elementos existirem na página!
+    // So muda a imagem se os elementos existirem nesta pagina
     if (elEspecie && imagem) {
         imagem.src = elEspecie.value === 'cao' ? "../../img/icone_cao.jpg" : "../../img/icone_gato.jpg";
     }
@@ -32,6 +30,7 @@ function mudarImagemResgates() {
 function abrirModalAdocao() {
     const modal = document.getElementById('modal-adocao');
     if (modal) {
+        // Limpa resultados anteriores antes de formalizar uma nova adocao
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         
@@ -62,7 +61,7 @@ function abrirModalHistoricoAdocoes() {
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         
-        // Sempre que o modal abre, chama a função para carregar a tabela fresca!
+        // Atualiza o historico sempre que o modal abre
         if (typeof carregarArquivoAdocoes === 'function') {
             carregarArquivoAdocoes();
         }
@@ -77,18 +76,13 @@ function fecharModalHistoricoAdocoes() {
     }
 }
 
-// =======================================================
-// 2. LÓGICA PRINCIPAL (ARRANCA AO CARREGAR A PÁGINA)
-// =======================================================
 document.addEventListener('DOMContentLoaded', function() {
     
-    // -------------------------------------------------------
-    // A. CARREGAR CARTÕES DE RESGATE DO BACKEND
-    // -------------------------------------------------------
+    // Carrega os cartoes dos animais resgatados
     const contentorResgates = document.getElementById('contentor-cartoes-resgate');
 
     async function carregarCartoesResgate() {
-        if (!contentorResgates) return; // Se não estiver na página de resgates, ignora!
+        if (!contentorResgates) return; // ignora se este ecra nao tiver cartoes
 
         contentorResgates.innerHTML = '<p style="text-align:center; width:100%; padding:20px; color:#2ea89c;"><i class="fa fa-spinner fa-spin fa-2x"></i><br>A procurar animais resgatados...</p>';
 
@@ -100,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (resultado.status === 200 && resultado.data && resultado.data.length > 0) {
                 
-                // GUARDAR NA MEMÓRIA PARA O MODAL DE ADOÇÃO USAR DEPOIS!
+                // Guarda os resgates para validar a adocao sem novo pedido
                 window.resgatesGlobais = resultado.data;
 
                 contentorResgates.style.display = 'flex';
@@ -121,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const raca = resgate.raca || 'Desconhecida';
                     const idade = resgate.idade_aprox || 'Idade N/A';
                     
-                    // O ID DO ANIMAL VEM DIRETAMENTE DA BASE DE DADOS
+                    // O id vem da base de dados e e usado no processo de adocao
                     const idAnimal = resgate.id_animal; 
 
                     const cartaoHTML = `
@@ -157,9 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
             contentorResgates.innerHTML = '<p style="text-align:center; width:100%; color:red; margin-top: 20px;">Erro ao comunicar com a base de dados.</p>';
         }
 
-        // =======================================================
-    // CARREGAR TABELA DO LIVRO DE ARQUIVOS (ADOÇÕES)
-    // =======================================================
+    // Carrega a tabela do historico de adocoes
     window.carregarArquivoAdocoes = async function() {
         const tbody = document.querySelector('#modal-historico-adocoes tbody');
         if (!tbody) return;
@@ -177,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const dataObj = new Date(adocao.data_resgate);
                     const dataFormatada = dataObj.toLocaleDateString('pt-PT');
                     
-                    // Constrói a linha da tabela igual ao teu design HTML
+                    // Mantem a linha com o mesmo formato visual do historico
                     tbody.innerHTML += `
                         <tr>
                             <td style="padding: 15px; border-bottom: 1px solid #ecf0f1;">${dataFormatada}</td>
@@ -200,50 +192,46 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     }
 
-    // Arranque inicial dos cartões
+    // Arranque inicial dos cartoes
     carregarCartoesResgate();
 
-    // -------------------------------------------------------
-    // B. CRIAR NOVO RESGATE (SUBMISSÃO DO FORMULÁRIO)
-    // -------------------------------------------------------
+    // Regista um novo resgate a partir do formulario
     const formNovoResgate = document.querySelector('#modal-resgate form');
 
     if (formNovoResgate) {
         formNovoResgate.addEventListener('submit', async function(evento) {
             evento.preventDefault(); 
 
-            // Puxa os dados das caixas do formulário
+            // Recolhe os dados preenchidos no formulario
             const especie = document.getElementById('especie').value;
             const nome_animal = document.getElementById('nome_animal').value;
             const raca = document.getElementById('raca').value;
             const idade_aprox = document.getElementById('idade_aprox').value;
             const data_resgate = document.getElementById('data_resgate').value;
 
-            // ==========================================
-            // LER O FUNCIONÁRIO LOGADO PELO AUTH.JS
-            // ==========================================
+            // Tenta identificar o funcionario que esta a registar
             const utilizadorStorage = localStorage.getItem('utilizadorLogado');
-            let idFuncionarioAtual = 1; // Salva-vidas caso a sessão expire
+            let idFuncionarioAtual = 1; // valor de reserva caso a sessao expire
 
             if (utilizadorStorage) {
                 try {
-                    // Desempacota o JSON guardado pelo auth.js
+                    // Le o JSON guardado pelo auth.js
                     const utilizador = JSON.parse(utilizadorStorage);
-                    // AGORA PUXA O ID DO FUNCIONÁRIO
+                    // Usa o id do funcionario quando estiver disponivel
                     idFuncionarioAtual = utilizador.id_funcionario || 1;
                 } catch (e) {
                     console.error("Erro a ler a sessão do colaborador:", e);
                 }
             }
 
-            // Constrói o pacote de dados a enviar
+            // Dados enviados para criar o resgate
             const dadosResgate = {
                 especie: especie,
                 nome_animal: nome_animal,
                 raca: raca,
                 idade_aprox: idade_aprox,
                 data_resgate: data_resgate,
-                id_funcionario: idFuncionarioAtual // Envia quem está a registar
+                id_funcionario: idFuncionarioAtual // identifica quem esta a registar
             };
 
             const btnSalvar = formNovoResgate.querySelector('.btn-salvar');
@@ -287,9 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-// -------------------------------------------------------
-    // C. LÓGICA DO MODAL DE ADOÇÃO (AGORA COM DADOS REAIS DA BD!)
-    // -------------------------------------------------------
+    // Valida os dados do modal de adocao
     const inputIdAnimal = document.getElementById('id_animal_resgate');
     const inputNifDono = document.getElementById('nif_novo_dono');
     const btnConfirmarAdocao = document.getElementById('btn-confirmar-adocao');
@@ -299,13 +285,13 @@ document.addEventListener('DOMContentLoaded', function() {
         let animalValido = false;
         let clienteValido = false;
 
-        // 1. Validar o ID do Animal (Procura nos resgates que já carregámos)
+        // Valida o id do animal nos resgates ja carregados
         inputIdAnimal.addEventListener('input', function() {
             const id = this.value.trim();
             const zonaResultado = document.getElementById('resultado_animal_resgate');
             
             if (id.length > 0 && window.resgatesGlobais) {
-                // Procura o ID na lista real que veio do PostgreSQL
+                // Procura o id na lista real que veio do backend
                 const animal = window.resgatesGlobais.find(r => String(r.id_animal) === id);
 
                 if (animal) {
@@ -337,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if(window.validarBotaoAdocao) window.validarBotaoAdocao(animalValido, clienteValido);
         });
 
-        // 2. Validar o NIF do Cliente (Vai à base de dados procurar os clientes)
+        // Valida o NIF do novo dono na base de dados
         inputNifDono.addEventListener('input', async function() {
             const nif = this.value.trim();
             const zonaResultado = document.getElementById('resultado_nif_dono');
@@ -346,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 zonaResultado.innerHTML = '<p style="color:#f39c12; font-size:0.85rem; margin-top:5px;"><i class="fa fa-spinner fa-spin"></i> A verificar NIF na base de dados...</p>';
                 
                 try {
-                    // Vai buscar todos os clientes à tua rota (já sabemos que funciona!)
+                    // Vai buscar os clientes para confirmar se o NIF existe
                     const resposta = await fetch(`${API_BASE}/clientes`);
                     const resultado = await resposta.json();
 
@@ -394,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         btnConfirmarAdocao.addEventListener('click', async function() {
             
-            // Vai buscar os valores finais das caixas
+            // Recolhe os valores finais das caixas
             const idAnimal = inputIdAnimal.value.trim();
             const nifDono = inputNifDono.value.trim();
 
@@ -403,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.disabled = true;
 
             try {
-                // Manda para o nosso novo Backend!
+                // Envia o pedido de adocao para o backend
                 const resposta = await fetch(`${API_BASE}/adocao`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -418,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (resultado.status === 200) {
                     alert("🎉 Parabéns! O animal foi adotado e a ficha foi atualizada para o novo dono!");
                     fecharModalAdocao();
-                    carregarCartoesResgate(); // Recarrega os cartões (podes até ocultar os que já foram adotados depois)
+                    carregarCartoesResgate(); // atualiza os cartoes depois da adocao
                 } else {
                     alert("❌ Ocorreu um erro: " + resultado.message);
                 }

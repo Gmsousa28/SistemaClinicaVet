@@ -1,18 +1,13 @@
-// ==========================================
-// CONFIGURAÇÃO DA API E DADOS
-// ==========================================
 const API_URL = 'http://localhost:8008/api/animais'; 
-const NIF_CLINICA = "999999999"; // NIF provisório da Clínica Miacaomigo
+const NIF_CLINICA = "999999999"; // NIF usado quando o animal pertence a clinica
 
+// Guarda o estado usado pela tabela e pelos modais
 let animalEmEdicaoId = null;
 let idAnimalParaEliminar = null; 
-
-// A nossa nova base de dados global que vem do Backend!
 let animaisGlobais = [];
 
-// ==========================================
-// ELEMENTOS DO DOM E INICIALIZAÇÃO
-// ==========================================
+
+// So inicia quando a pagina ja tem os elementos carregados
 document.addEventListener('DOMContentLoaded', () => {
     const tabelaAnimais = document.getElementById('tabelaAnimais');
     const inputPesquisa = document.getElementById('pesquisa_animal');
@@ -26,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const tituloEdicao = document.getElementById('tituloEdicao');
     const selectEstado = document.getElementById('editEstado');
     
-    // Agora apontamos para o NIF!
     const inputNifCliente = document.getElementById('editNifCliente'); 
 
     const btnFecharModalX = document.getElementById('btn-fechar-modal-x');
@@ -37,12 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCancelarEliminar = document.getElementById('btn-cancelar-eliminar');
     const btnConfirmarEliminar = document.getElementById('btn-confirmar-eliminar');
 
-    // 1. Carrega os dados reais mal a página abre
+    // Carrega a lista inicial de animais
     carregarAnimais();
 
-    // ==========================================
-    // LÓGICA DE NEGÓCIO: ANIMAL RESGATADO
-    // ==========================================
+    // Bloqueia o NIF do cliente quando o animal fica como resgatado
     if (selectEstado && inputNifCliente) {
         selectEstado.addEventListener('change', (e) => {
             if (e.target.value === 'Resgatado') {
@@ -62,12 +54,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ==========================================
-    // EVENT LISTENERS
-    // ==========================================
+    // Filtra a tabela conforme o texto escrito na pesquisa
     if(inputPesquisa) inputPesquisa.addEventListener('input', (e) => filtrarTabela(e.target.value.toLowerCase()));
-
     if(btnNovoAnimal) btnNovoAnimal.addEventListener('click', () => {
+        // Limpa o formulario para criar um novo animal
         animalEmEdicaoId = null;
         tituloEdicao.textContent = 'Registar Novo Animal';
         formEdicaoAnimal.reset();
@@ -93,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if(formEdicaoAnimal) formEdicaoAnimal.addEventListener('submit', salvarAnimal);
 
-    // ELIMINAR ANIMAL NA BASE DE DADOS
+    // Confirma a eliminacao antes de apagar o animal
     if(btnConfirmarEliminar) btnConfirmarEliminar.addEventListener('click', async () => {
         if (!idAnimalParaEliminar) return;
 
@@ -106,9 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if(result.status === 200) {
                 alert(`Registo do animal apagado definitivamente.`);
                 fecharModal(modalConfirmacao);
-                carregarAnimais(); // Recarrega a tabela
+                carregarAnimais(); 
             } else {
-                // Apanha o nosso erro das consultas marcadas e avisa a rececionista!
                 alert("Aviso: " + result.message);
             }
         } catch (error) {
@@ -119,10 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ==========================================
-    // FUNÇÕES CRUD PRINCIPAIS
-    // ==========================================
-
+    // Carrega os animais do backend e atualiza a tabela
     async function carregarAnimais() {
         try {
             const response = await fetch(API_URL);
@@ -140,9 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
     async function salvarAnimal(e) {
         e.preventDefault();
         
-        // Limpa espaços em branco caso a pessoa digite NIFs mal
+        // Remove espacos para evitar erros no NIF
         const nifLimpo = document.getElementById('editNifCliente').value.replace(/\s/g, '');
-
         const dadosAnimal = {
             nome: document.getElementById('editNomeAnimal').value,
             nif_cliente: nifLimpo, 
@@ -157,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let url = API_URL;
             let metodo = 'POST';
 
+            // Novo animal usa post; animal existente usa put
             if (animalEmEdicaoId) {
                 url = `${API_URL}/${animalEmEdicaoId}`;
                 metodo = 'PUT';
@@ -184,11 +170,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.apagarAnimal = function(id) {
+        // Guarda o id ate o utilizador confirmar a eliminacao
         idAnimalParaEliminar = id;
         abrirModal(document.getElementById('modalConfirmacao'));
     };
 
     window.visualizarAnimal = function(id) {
+        // Usa a lista ja carregada para preencher o modal de detalhe
         const animal = animaisGlobais.find(a => a.id_animal === id);
         if(!animal) return alert('Animal não encontrado!');
 
@@ -200,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('ver_data_nascimento').value = formatarData(animal.data_nascimento);
         document.getElementById('ver_estado').value = animal.estado;
         
-        // Verifica se o HTML já foi alterado para ver_nif_cliente, senão tenta o antigo para não crashar
+        // Aceita o id novo ou antigo para evitar falhas se o HTML mudar
         const verNif = document.getElementById('ver_nif_cliente') || document.getElementById('ver_id_cliente');
         if (verNif) verNif.value = animal.nome_cliente ? `${animal.nome_cliente} (NIF: ${animal.nif_cliente || 'Sem registo'})` : `NIF: ${animal.nif_cliente || 'Sem registo'}`;
 
@@ -208,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.editarAnimal = function(id) {
+        // Preenche o formulario com os dados atuais do animal
         const animal = animaisGlobais.find(a => a.id_animal === id);
         if(!animal) return alert('Animal não encontrado!');
 
@@ -231,16 +220,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if(selectEstado) {
             selectEstado.value = animal.estado;
+            // Aplica a regra do NIF quando o estado carregado for resgatado
             selectEstado.dispatchEvent(new Event('change')); 
         }
 
         abrirModal(document.getElementById('modalEdicao'));
     };
 
-    // ==========================================
-    // RENDERIZAÇÃO DA TABELA E UTILITÁRIOS
-    // ==========================================
-
+    // Desenha a tabela com a lista recebida
     function renderizarTabela(animais) {
         if(!tabelaAnimais) return;
         tabelaAnimais.innerHTML = '';
@@ -251,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         animais.forEach(animal => {
+            // Define a cor do estado para leitura rapida
             let corEstado;
             switch(animal.estado) {
                 case 'Domestico': 
@@ -261,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 default: corEstado = '#95a5a6';
             }
 
-            // Exibe o Nome (via JOIN) ou o NIF
+            // Mostra o nome do dono quando existe; caso contrario mostra o NIF
             const donoExibicao = animal.nome_cliente ? animal.nome_cliente : (animal.nif_cliente ? `NIF: ${animal.nif_cliente}` : 'Sem Dono');
 
             const tr = document.createElement('tr');
@@ -298,6 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if(!tabelaAnimais) return;
         const linhas = tabelaAnimais.getElementsByTagName('tr');
         for (let i = 0; i < linhas.length; i++) {
+            // Pesquisa no texto completo de cada linha
             const textoLinha = linhas[i].textContent.toLowerCase();
             linhas[i].style.display = textoLinha.includes(termo) ? '' : 'none';
         }

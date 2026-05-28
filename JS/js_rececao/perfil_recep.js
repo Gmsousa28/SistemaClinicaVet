@@ -2,7 +2,7 @@ const API_BASE = "http://localhost:8008/api";
 
 document.addEventListener('DOMContentLoaded', async function() {
     
-    // 1. Ler quem fez login
+    // Le os dados guardados da sessao atual
     const utilizadorStorage = localStorage.getItem('utilizadorLogado');
 
     if (!utilizadorStorage) {
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const idColaborador = utilizadorSessao.id_colaborador;
     const emailColaborador = utilizadorSessao.email;
 
-    // 2. Preencher logo o Email e o @Username para não haver ecrãs vazios
+    // Preenche logo o email e o username para evitar campos vazios
     const elUsername = document.getElementById('perfil-username');
     const inputEmail = document.getElementById('conta-email');
     
@@ -24,13 +24,13 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     let dadosFinais = null;
 
-    // 3. Ligar à nova rota do Backend que tem a query do COALESCE
+    // Procura no backend os dados completos do colaborador
     try {
         const resposta = await fetch(`${API_BASE}/colaboradores/${idColaborador}`);
         
         if (resposta.ok) {
             const resultado = await resposta.json();
-            dadosFinais = resultado.data; // Sucesso! Recebemos a linha com o nome, nif, telefone e morada
+            dadosFinais = resultado.data; // dados completos do perfil
         } else {
             console.warn("Erro na resposta do servidor. Verifica se a rota /colaboradores/:id existe.");
         }
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.error("Servidor offline ou erro de rede:", erro);
     }
 
-    // 4. PLANO B (Caso a base de dados falhe, não quebra a página)
+    // Plano alternativo caso o backend nao devolva dados
     if (!dadosFinais) {
         const parteEmail = emailColaborador.split('@')[0];
         const nomeCapitalizado = parteEmail.charAt(0).toUpperCase() + parteEmail.slice(1).split('.')[0];
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         };
     }
 
-    // 5. Separar o Nome do Apelido
+    // Separa o primeiro nome do resto do nome
     let nomeCompleto = dadosFinais.nome || "Sem Nome";
     let primeiroNome = nomeCompleto;
     let apelido = "";
@@ -59,10 +59,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (nomeCompleto.includes(" ")) {
         const partes = nomeCompleto.trim().split(" ");
         primeiroNome = partes[0];
-        apelido = partes.slice(1).join(" "); // Junta todos os apelidos que sobrarem
+        apelido = partes.slice(1).join(" "); // junta os apelidos restantes
     }
 
-    // 6. Injetar os dados reais no HTML
+    // Preenche os campos do perfil com os dados finais
     const elNomeCompleto = document.getElementById('perfil-nome-completo');
     const inputNome = document.getElementById('conta-nome');
     const inputApelido = document.getElementById('conta-apelido');
@@ -77,9 +77,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (inputTelefone) inputTelefone.value = dadosFinais.telefone || "";
     if (inputMorada) inputMorada.value = dadosFinais.morada || "";
 
-    // -------------------------------------------------------
-    // 7. SISTEMA DE EDIÇÃO DE PERFIL
-    // -------------------------------------------------------
+    // Alterna entre modo de visualizacao e modo de edicao
     const btnEditar = document.getElementById('btn-editar-perfil');
     let modoEdicao = false;
 
@@ -87,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         btnEditar.addEventListener('click', function() {
             modoEdicao = !modoEdicao;
             
-            // Campos que a pessoa pode editar (NIF e Email ficam trancados)
+            // O NIF e o email ficam bloqueados porque identificam a conta
             const camposEditaveis = [inputNome, inputApelido, inputTelefone, inputMorada];
             
             camposEditaveis.forEach(campo => {
@@ -96,12 +94,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             if (modoEdicao) {
                 btnEditar.textContent = "Guardar Alterações";
-                btnEditar.style.backgroundColor = "#e67e22"; // Laranja para chamar a atenção
+                btnEditar.style.backgroundColor = "#e67e22"; // destaca o modo de edicao
             } else {
                 btnEditar.textContent = "Editar Perfil";
-                btnEditar.style.backgroundColor = ""; // Volta à cor normal
+                btnEditar.style.backgroundColor = ""; // volta a cor normal
                 
-                // Mostra o popup verde de sucesso
+                // Mostra feedback depois de sair do modo de edicao
                 const alerta = document.getElementById('alerta-sucesso');
                 if (alerta) {
                     alerta.style.display = 'block';

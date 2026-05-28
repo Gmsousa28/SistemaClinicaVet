@@ -1,18 +1,17 @@
-// =======================================================
-// TERMINAL DE PAGAMENTO (P.O.S.) - Clinica Miacomigo
-// =======================================================
-
 const API_BASE = "http://localhost:8008/api";
 
+// Guarda o estado usado pela faturacao, carrinho e historico
 let contasPendentesBD = [];
 let historicoPagamentos = [];
 let carrinhoAtual = [];
 let contaSelecionada = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Carrega as contas que ainda estao por pagar
     const listaPendentes = document.getElementById('lista-pendentes');
     if (listaPendentes) carregarPendentes(listaPendentes);
 
+    // Liga os botoes e inputs principais da pagina
     const btnAdd = document.getElementById('btn-add-produto');
     if (btnAdd) btnAdd.addEventListener('click', adicionarItem);
 
@@ -29,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabelaFatura = document.getElementById('itens-fatura');
     if (tabelaFatura) {
         tabelaFatura.addEventListener('click', (evento) => {
+            // O botao de lixo usa o indice do item no carrinho
             const btnLixo = evento.target.closest('.btn-lixo');
             if (btnLixo) removerItem(parseInt(btnLixo.getAttribute('data-index')));
         });
@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function escaparHTML(valor) {
+    // Evita que valores vindos da base de dados sejam interpretados como HTML
     return String(valor ?? '').replace(/[&<>"']/g, (char) => ({
         '&': '&amp;',
         '<': '&lt;',
@@ -62,6 +63,7 @@ function formatarMoeda(valor) {
 
 async function carregarPendentes(container) {
     try {
+        // Vai buscar consultas ou servicos ainda nao liquidados
         const resposta = await fetch(`${API_BASE}/faturas/pendentes`);
         const resultado = await resposta.json();
 
@@ -89,6 +91,7 @@ async function carregarPendentes(container) {
 }
 
 function renderizarListaPendentes(container) {
+    // Redesenha a lista lateral sempre com os dados atuais
     container.innerHTML = '';
 
     if (contasPendentesBD.length === 0) {
@@ -120,6 +123,7 @@ function renderizarListaPendentes(container) {
 }
 
 function abrirConta(conta) {
+    // Ao escolher uma conta, ela passa a ser a base do recibo atual
     contaSelecionada = conta;
 
     document.getElementById('cliente-nome').innerText = `Conta: ${conta.cliente}`;
@@ -141,6 +145,7 @@ function abrirConta(conta) {
 }
 
 function adicionarItem() {
+    // Adiciona produtos extra ao recibo antes do pagamento
     const selectBox = document.getElementById('select-produto');
     if (!selectBox || !selectBox.value) return alert("Selecione um produto primeiro.");
 
@@ -154,6 +159,7 @@ function adicionarItem() {
 
 function atualizarTalao() {
     try {
+        // Recalcula subtotal, iva e total sempre que o carrinho muda
         const corpoTabela = document.getElementById('itens-fatura');
         if (!corpoTabela) return;
 
@@ -210,6 +216,7 @@ function atualizarTalao() {
 }
 
 function removerItem(index) {
+    // Remove apenas o item escolhido e volta a calcular os totais
     carrinhoAtual.splice(index, 1);
     atualizarTalao();
 }
@@ -217,6 +224,7 @@ function removerItem(index) {
 async function pagar(metodo) {
     if (!contaSelecionada) return;
 
+    // O backend recebe o valor final ja com descontos aplicados
     const valorTotalTexto = document.getElementById('total-final').innerText;
     const valorTotal = Number(valorTotalTexto.replace('€', '').replace(',', '.').trim());
 
@@ -246,6 +254,7 @@ async function pagar(metodo) {
 }
 
 async function abrirHistorico() {
+    // Abre o modal e carrega as faturas ja liquidadas
     const corpoHistorico = document.getElementById('lista-historico-body');
     const modal = document.getElementById('modal-historico');
     let somaTotal = 0;

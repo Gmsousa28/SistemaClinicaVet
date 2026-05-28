@@ -1,16 +1,12 @@
-// =======================================================
-// GESTÃO DE ASSIDUIDADE - Clínica Miacãomigo
-// =======================================================
-
 document.addEventListener('DOMContentLoaded', () => {
     const containerVets = document.getElementById('container-veterinarios');
     
-    // 1. Carregar os dados reais da API
+    // Carrega os veterinarios quando a pagina abre
     if (containerVets) {
         carregarVetsDaAPI(containerVets);
     }
 
-    // 2. Listener Delegado para os botões de falta/atraso
+    // Trata os cliques nos botoes de falta e atraso
     if (containerVets) {
         containerVets.addEventListener('click', (evento) => {
             if (evento.target.classList.contains('btn-ponto')) {
@@ -22,17 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3. Listeners do Modal
+    // Liga os botoes do modal de registo
     document.getElementById('btn-cancelar-registo')?.addEventListener('click', fecharModalRegisto);
     
-    // Aqui usamos o ID correto do teu botão para chamar a função de gravar na BD
+    // Este botao grava a ocorrencia na base de dados
     document.getElementById('btn-guardar-registo')?.addEventListener('click', guardarRegistoBD);
 });
 
-// =======================================================
-// COMUNICAÇÃO COM O BACKEND PARA CARREGAR MÉDICOS
-// =======================================================
-
+// Carrega a lista de medicos a partir do backend
 async function carregarVetsDaAPI(container) {
     try {
         const resposta = await fetch('http://localhost:8008/api/veterinarios');
@@ -53,7 +46,7 @@ function renderizarVeterinarios(container, listaVets) {
     container.innerHTML = ''; 
     
     listaVets.forEach(vet => {
-        // Usa o id_colaborador ou id_veterinario dependendo de como está na tua BD
+        // Usa o id que estiver disponivel na resposta da API
         const idParaGravar = vet.id_colaborador || vet.id_veterinario;
 
         const cartaoHTML = `
@@ -80,23 +73,20 @@ function renderizarVeterinarios(container, listaVets) {
     });
 }
 
-// =======================================================
-// LÓGICA DO MODAL & INSERÇÃO NA BASE DE DADOS
-// =======================================================
-
+// Abre o modal com os dados do medico selecionado
 function abrirModalRegisto(nome, tipo, id) {
     const modal = document.getElementById('modal-registo-ponto');
     
     document.getElementById('registo_vet_nome').value = nome;
     document.getElementById('registo_tipo').value = tipo;
     
-    // Põe a data de hoje por defeito de forma formatada (YYYY-MM-DD)
+    // Preenche a data de hoje por defeito no formato usado pelo input
     const hoje = new Date().toISOString().split('T')[0];
     document.getElementById('registo_data').value = hoje;
     
     document.getElementById('registo_obs').value = '';
 
-    // Guardamos o ID do veterinário no modal para o envio final
+    // Guarda o id no modal para o envio final
     modal.dataset.idSelecionado = id;
 
     modal.style.display = 'flex';
@@ -107,6 +97,7 @@ function fecharModalRegisto() {
 }
 
 async function guardarRegistoBD() {
+    // Recolhe os dados do modal antes de enviar para a API
     const modal = document.getElementById('modal-registo-ponto');
     
     const id_vet = modal.dataset.idSelecionado;
@@ -117,7 +108,7 @@ async function guardarRegistoBD() {
     if (!data) return alert('Por favor, indique a data da ocorrência.');
     if (!id_vet) return alert('Erro: Não foi possível identificar o médico.');
 
-    // Construção do objeto para a API
+    // Objeto enviado para a rota de ocorrencias laborais
     const dadosOcorrencia = {
         id_colaborador: id_vet,
         tipo: tipo,
@@ -128,7 +119,7 @@ async function guardarRegistoBD() {
     console.log("A enviar para a BD:", dadosOcorrencia);
 
     try {
-        // Fazemos o POST para a rota certa!
+        // Regista a ocorrencia no backend
         const response = await fetch('http://localhost:8008/api/ocorrencias_laborais', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -138,10 +129,10 @@ async function guardarRegistoBD() {
         const result = await response.json();
 
         if (result.status === 201) {
-            alert(result.message); // "Registo guardado com sucesso!"
+            alert(result.message); // registo guardado com sucesso
             fecharModalRegisto();
         } else {
-            // Se já tiver falta registada, mostra o aviso da BD
+            // Mostra o aviso devolvido pela base de dados
             alert(result.message); 
         }
     } catch (error) {

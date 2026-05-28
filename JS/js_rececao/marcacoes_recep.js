@@ -1,15 +1,9 @@
-// =======================================================
-// LÓGICA DA PÁGINA DE MARCAÇÕES (Recepção) - Clínica Miacãomigo
-// =======================================================
-
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Configuração da API
+    // Endpoint base usado pelos pedidos desta pagina
     const API_BASE = "http://localhost:8008/api";
 
-    // =======================================================
-    // PASSO 1: PROCURAR ANIMAIS POR NIF (COM FILTRO DE ÓBITO)
-    // =======================================================
+    // Passo 1: procura os animais do cliente pelo NIF
     const inputNif = document.getElementById('nif_cliente');
     const containerAnimais = document.querySelector('.grid-animais-selecao');
 
@@ -24,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if(resultado.status === 200 && resultado.data.length > 0) {
                         
-                        // 🛡️ O NOSSO NOVO FILTRO: Apenas animais vivos
+                        // Apenas animais vivos podem ser escolhidos para marcacao
                         const animaisVivos = resultado.data.filter(animal => animal.estado !== 'Morto');
 
                         if (animaisVivos.length > 0) {
@@ -53,6 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderizarAnimaisDaBD(animais) {
+        // Desenha os cartoes de selecao dos animais encontrados
         containerAnimais.innerHTML = ''; 
         animais.forEach(animal => {
             let especie = animal.especie.toLowerCase();
@@ -74,9 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // =======================================================
-    // PASSO 2: CARREGAR VETERINÁRIOS REAIS
-    // =======================================================
+    // Passo 2: carrega os veterinarios disponiveis
     const containerVets = document.getElementById('container-vets');
     if (containerVets) {
         carregarVeterinariosAPI();
@@ -84,6 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function carregarVeterinariosAPI() {
         try {
+            // Inclui sempre a opcao de medico aleatorio antes da lista real
             const resposta = await fetch(`${API_BASE}/veterinarios`);
             const resultado = await resposta.json();
 
@@ -126,6 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (checkboxesServico.length > 0 && seccaoVeterinario && checkboxConsulta) {
         function validarVisibilidadeVeterinarios() {
+            // So mostra a escolha do veterinario quando o servico inclui consulta
             if (checkboxConsulta.checked) {
                 seccaoVeterinario.style.display = 'block';
                 seccaoVeterinario.style.animation = "zoom 0.3s ease-out"; 
@@ -137,9 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
         checkboxesServico.forEach(cb => cb.addEventListener('change', validarVisibilidadeVeterinarios));
     }
 
-    // =======================================================
-    // PASSO 3: DATA E HORA
-    // =======================================================
+    // Passo 3: escolhe a data e os blocos de hora
     const inputDataVisual = document.getElementById('data_marcacao_visual');
     const containerSlots = document.getElementById('container-slots-hora');
     const inputDataReal = document.getElementById('data_marcacao_real');
@@ -156,6 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         function gerarSlotsTempo() {
+            // Gera blocos de 30 minutos dentro do horario da clinica
             containerSlots.innerHTML = ''; 
             inputHoraReal.value = ''; 
             let indexBloco = 0;
@@ -169,6 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     slot.dataset.index = indexBloco; 
                     
                     slot.addEventListener('click', function() {
+                        // Cada servico escolhido ocupa um bloco de tempo
                         const servicosEscolhidos = document.querySelectorAll('input[name="servico"]:checked');
                         if (servicosEscolhidos.length === 0) { alert("Escolha primeiro os serviços no Passo 2!"); return; }
 
@@ -193,9 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // =======================================================
-    // PASSO 4: GRAVAR A MARCAÇÃO
-    // =======================================================
+    // Passo 4: grava a marcacao no backend
     const formMarcacao = document.querySelector('.formulario-marcacao');
     
     if (formMarcacao) {
@@ -206,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                               .map(cb => cb.value)
                                               .join(', ');
 
-            // Envia o Médico Escolhido ou "0" para o Backend tratar
+            // Envia o medico escolhido ou 0 para o backend escolher automaticamente
             let vetEscolhido = document.querySelector('input[name="id_veterinario"]:checked')?.value;
             if (!vetEscolhido || vetEscolhido === "0") {
                 vetEscolhido = 0; 
@@ -248,6 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 let passoAtual = 1;
 window.mudarPasso = function(direcao) {
+    // Controla a navegacao entre os passos do formulario
     if (direcao === 1) {
         if (passoAtual === 1 && !document.querySelector('input[name="id_animal"]:checked')) {
             alert("Introduza o NIF e selecione um animal."); return;
@@ -272,6 +266,7 @@ window.mudarPasso = function(direcao) {
 };
 
 window.abrirModalHistoricoMarcacoes = function() {
+    // Abre o historico e carrega os dados mais recentes
     document.getElementById('modal-historico-marcacoes').style.display = 'flex';
     carregarHistoricoAPI(); 
 };
@@ -281,6 +276,7 @@ window.fecharModalHistoricoMarcacoes = function() {
 };
 
 async function carregarHistoricoAPI() {
+    // Carrega todas as marcacoes para o modal de historico
     const tbody = document.getElementById('tabela-marcacoes-body');
     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;"><i class="fa fa-spinner fa-spin"></i> A carregar da BD...</td></tr>';
 

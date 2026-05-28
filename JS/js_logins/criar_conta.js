@@ -34,6 +34,9 @@ function voltarPasso() {
     document.getElementById('passo1').classList.remove('d-none');
 }
 
+const input = document.getElementById("inputDatanasc");
+const hoje = new Date().toISOString().split("T")[0];
+input.max = hoje;
 // =======================================================
 // 2. SUBMISSÃO FINAL DO REGISTO PARA O BACKEND
 // =======================================================
@@ -82,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             try {
-                // ATENÇÃO: Confirma se a tua rota de registo de clientes no backend é esta!
+                
                 const resposta = await fetch(`${API_BASE}/clientes/registo`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

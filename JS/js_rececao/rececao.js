@@ -1,8 +1,6 @@
 const API_BASE = "http://localhost:8008/api";
 
-// =======================================================
-// FUNÇÕES GLOBAIS DE MODAIS (ABRIR E FECHAR)
-// =======================================================
+// Funcoes usadas pelos botoes para abrir e fechar modais
 function abrirModalCliente() { 
     document.getElementById('modal-cliente').style.display = 'flex'; 
     document.body.style.overflow = 'hidden'; 
@@ -26,6 +24,7 @@ function fecharModalResgates() {
 function abrirModalAdocao() { 
     const m = document.getElementById('modal-adocao'); 
     if(m) { 
+        // Sempre que abre, limpa a validacao anterior da adocao
         m.style.display = 'flex'; 
         document.body.style.overflow = 'hidden'; 
         const form = document.getElementById('form-formalizar-adocao');
@@ -63,6 +62,7 @@ function fecharModalHistoricoAdocoes() {
 }
 
 function mudarImagemResgates() {
+    // Atualiza a imagem de exemplo conforme a especie escolhida
     const selecao = document.getElementById('especie').value;
     const imagem = document.getElementById('foto-preview');
     if (imagem) {
@@ -70,14 +70,9 @@ function mudarImagemResgates() {
     }
 }
 
-// =======================================================
-// LÓGICA PRINCIPAL DA PÁGINA (ARRANCA AO CARREGAR)
-// =======================================================
 document.addEventListener('DOMContentLoaded', function() {
     
-    // -------------------------------------------------------
-    // 1. DASHBOARD: CONSULTAS DE HOJE
-    // -------------------------------------------------------
+    // Carrega as consultas do dia no dashboard
     const tbodyConsultasHoje = document.querySelector('table tbody');
 
     if (tbodyConsultasHoje) {
@@ -85,6 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function carregarConsultasDeHoje() {
+        // Mostra apenas as consultas cuja data corresponde ao dia atual
         tbodyConsultasHoje.innerHTML = '<tr><td colspan="6" style="text-align:center;"><i class="fa fa-spinner fa-spin"></i> A carregar...</td></tr>';
         try {
             const resposta = await fetch(`${API_BASE}/consultas`);
@@ -97,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const dia = String(dataHojeLocal.getDate()).padStart(2, '0');
                 const dataDeHojeTexto = `${ano}-${mes}-${dia}`; 
 
-                // Filtra apenas as marcações de hoje
+                // Compara a data em formato local para evitar falhas de timezone
                 const consultasHoje = resultado.data.filter(c => c.data_consulta && c.data_consulta.startsWith(dataDeHojeTexto));
 
                 tbodyConsultasHoje.innerHTML = ''; 
@@ -125,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     tbodyConsultasHoje.appendChild(tr);
                 });
 
-                // Lógica de alternar os botões de validar
+                // Alterna o estado visual do botao de validacao
                 document.querySelectorAll('.btn-alternar-validar').forEach(botao => {
                     botao.addEventListener('click', function() {
                         if (this.innerText.includes('Validado')) {
@@ -145,9 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // -------------------------------------------------------
-    // 2. FICHA DE CLIENTE (PESQUISA COM FETCH GLOBAL)
-    // -------------------------------------------------------
+    // Pesquisa a ficha de cliente pelo NIF
     const btnPesquisar = document.getElementById('btn-pesquisar-cliente') || document.querySelector('.btn-pesquisar');
     const inputPesquisaNif = document.getElementById('pesquisa-nif') || document.querySelector('.input-pesquisa-nif');
     const btnFecharFicha = document.getElementById('btn-fechar-ficha');
@@ -170,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
             btnPesquisar.innerHTML = '<i class="fa fa-spinner fa-spin"></i> A procurar...';
 
             try {
-                // Puxa TODOS os clientes para a memória e procura o NIF lá dentro (resolve o erro 404 da rota em falta)
+                // Procura o NIF na lista de clientes devolvida pelo backend
                 const respostaTodosClientes = await fetch(`${API_BASE}/clientes`);
                 const resultadoTodos = await respostaTodosClientes.json();
 
@@ -204,6 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function carregarAnimaisDoCliente(nif) {
+        // Carrega os animais associados ao NIF pesquisado
         const listaAnimais = document.getElementById('lista_animais_cliente');
         if(!listaAnimais) return;
         
@@ -238,16 +233,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // -------------------------------------------------------
-    // 3. LÓGICA DO MODAL DE ADOÇÃO / RESGATES
-    // -------------------------------------------------------
+    // Valida os campos do modal de adocao
     const inputIdAnimal = document.getElementById('id_animal_resgate');
     const inputNifDono = document.getElementById('nif_novo_dono');
     const btnConfirmarAdocao = document.getElementById('btn-confirmar-adocao');
 
     if (inputIdAnimal && inputNifDono) {
         
-        // Mantive a tua Base de Dados Mockada aqui para as Adoções
+        // Dados temporarios usados para validar a adocao neste ecra
         const animaisResgatadosDB = {
             "405": { nome: "Sem Nome", especie: "Cão • Sénior", img: "../../img/icone_cao.jpg" },
             "102": { nome: "Bolinha", especie: "Cão • Adulto", img: "../../img/icone_cao.jpg" },
@@ -263,6 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let clienteValido = false;
 
         inputIdAnimal.addEventListener('input', function() {
+            // Valida se o animal existe na lista temporaria de resgates
             const id = this.value.trim();
             const zonaResultado = document.getElementById('resultado_animal_resgate');
             
@@ -295,6 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         inputNifDono.addEventListener('input', function() {
+            // Valida se o NIF existe na lista temporaria de clientes
             const nif = this.value.trim();
             const zonaResultado = document.getElementById('resultado_nif_dono');
 
@@ -323,6 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         window.validarBotaoAdocao = function(animalOk, clienteOk) {
+            // O botao so fica ativo quando animal e cliente sao validos
             if (animalOk && clienteOk) {
                 btnConfirmarAdocao.disabled = false;
                 btnConfirmarAdocao.style.opacity = "1";
