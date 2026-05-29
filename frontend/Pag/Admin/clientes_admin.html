@@ -48,11 +48,22 @@
 
     <div class="container-botao-adicionar">
       <button 
-    onclick="editarCliente('novo')"
-    class="btn-salvar"
-  >
-    Adicionar Cliente
+        onclick="editarCliente('novo')"
+        class="btn-salvar"
+      >
+        Adicionar Cliente
       </button>
+    </div>
+
+    <div class="barra-pesquisa">
+
+      <input
+        type="text"
+        id="pesquisaClientes"
+        placeholder="Pesquisar cliente..."
+        onkeyup="pesquisarClientes()"
+      >
+
     </div>
 
     <div class="tabela-container">

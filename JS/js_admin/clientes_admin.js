@@ -3,6 +3,8 @@
 // =======================================================
 let clienteEmEdicao = 'novo';
 
+let listaClientes = [];
+
 // =======================================================
 // CARREGAR CLIENTES DA API
 // =======================================================
@@ -14,7 +16,7 @@ async function carregarClientes() {
 
         const dados = await resposta.json();
 
-        const listaClientes = dados.data;
+        listaClientes = dados.data;
 
         const tabela = document.getElementById('tabelaClientes');
 
@@ -79,6 +81,84 @@ async function carregarClientes() {
 
         alert('Erro ao carregar clientes da API.');
     }
+}
+
+// =======================================================
+// PESQUISAR CLIENTES
+// =======================================================
+function pesquisarClientes() {
+
+    const textoPesquisa =
+        document.getElementById('pesquisaClientes')
+        .value
+        .toLowerCase();
+
+    const tabela =
+        document.getElementById('tabelaClientes');
+
+    if (!tabela) return;
+
+    tabela.innerHTML = '';
+
+    const clientesFiltrados =
+        listaClientes.filter(cliente =>
+
+            cliente.nome &&
+            cliente.nome
+                .toLowerCase()
+                .includes(textoPesquisa)
+        );
+
+    clientesFiltrados.forEach(cliente => {
+
+        tabela.innerHTML += `
+            <tr>
+
+                <td>${cliente.nome}</td>
+
+                <td>${cliente.morada}</td>
+
+                <td>${cliente.email}</td>
+
+                <td>${cliente.nif}</td>
+
+                <td>${cliente.contacto}</td>
+
+                <td>
+
+                    <div style="display: flex; gap: 8px; justify-content: center;">
+
+                        <button 
+                            class="btn-pequeno"
+                            onclick="editarCliente(
+                                ${cliente.id_cliente},
+                                '${cliente.nome}',
+                                '${cliente.morada}',
+                                '${cliente.email}',
+                                '${cliente.nif}',
+                                '${cliente.contacto}'
+                            )"
+                            title="Editar"
+                        >
+                            <i class="fa fa-edit"></i>
+                        </button>
+
+                        <button 
+                            class="btn-pequeno"
+                            onclick="eliminarCliente(${cliente.id_cliente})"
+                            title="Eliminar"
+                            style="background-color: #e74c3c; color: white; border: none; cursor: pointer;"
+                        >
+                            <i class="fa fa-trash"></i>
+                        </button>
+
+                    </div>
+
+                </td>
+
+            </tr>
+        `;
+    });
 }
 
 // =======================================================

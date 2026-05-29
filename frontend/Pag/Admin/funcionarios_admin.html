@@ -14,6 +14,7 @@
 <body class="com-sidebar">
 
   <section class="sidebar">
+
     <a href="../../Pag_principal.html" class="logo">
       <img src="../../img/Logo_vet.png" alt="Logo">
     </a>
@@ -31,26 +32,48 @@
 
       <hr>
 
-      <a href="#" onclick="fazerLogout(event)"><i class="fa fa-sign-out"></i> Sair</a>
+      <a href="#" onclick="fazerLogout(event)">
+        <i class="fa fa-sign-out"></i> Sair
+      </a>
+
     </nav>
+
   </section>
 
   <header class="header-admin">
+
     <h1>Funcionários</h1>
+
     <p>Gestão da equipa e especialidades veterinárias</p>
+
   </header>
 
   <main class="dashboard-main">
 
-    <h2 class="titulo-seccao">Lista de Funcionários</h2>
+    <h2 class="titulo-seccao">
+      Lista de Funcionários
+    </h2>
 
     <div class="container-botao-adicionar">
+
       <button 
         onclick="abrirModalNovoFuncionario()"
         class="btn-salvar"
       >
         Adicionar Funcionário
       </button>
+
+    </div>
+
+    <div class="barra-pesquisa">
+
+      <input
+        type="text"
+        id="pesquisaFuncionarios"
+        placeholder="Pesquisar funcionário..."
+        onkeyup="pesquisarFuncionarios()"
+      >
+
     </div>
 
     <div class="tabela-container">
@@ -58,6 +81,7 @@
       <table class="tabela-consultas">
 
         <thead>
+
           <tr>
             <th>Nome</th>
             <th>Morada</th>
@@ -67,6 +91,7 @@
             <th>Cargo</th>
             <th>Ações</th>
           </tr>
+
         </thead>
 
         <tbody id="tabelaFuncionarios">
@@ -102,6 +127,7 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 1.5rem;">
 
           <div class="grupo-input">
+
             <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">
               Nome Completo:
             </label>
@@ -113,9 +139,11 @@
               placeholder="Ex: Dr. Rui Silva"
               required
             >
+
           </div>
 
           <div class="grupo-input">
+
             <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">
               Cargo:
             </label>
@@ -126,6 +154,7 @@
               style="width: 100%; height: 45px; background: white;"
               required
             >
+
               <option value="" disabled selected>
                 Selecionar cargo...
               </option>
@@ -137,10 +166,13 @@
               <option value="Funcionário">
                 Funcionário
               </option>
+
             </select>
+
           </div>
 
           <div class="grupo-input">
+
             <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">
               Email Profissional:
             </label>
@@ -151,9 +183,11 @@
               class="input-premium"
               placeholder="Ex: rui.silva@clinica.pt"
             >
+
           </div>
 
           <div class="grupo-input">
+
             <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">
               Contacto:
             </label>
@@ -165,9 +199,11 @@
               placeholder="Ex: 912 345 678"
               required
             >
+
           </div>
 
           <div class="grupo-input">
+
             <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">
               NIF:
             </label>
@@ -178,9 +214,11 @@
               class="input-premium"
               required
             >
+
           </div>
 
           <div class="grupo-input">
+
             <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--cor-base-escura, #2c3e50);">
               Morada:
             </label>
@@ -191,6 +229,7 @@
               class="input-premium"
               placeholder="Ex: Rua das Flores, Porto"
             >
+
           </div>
 
         </div>
@@ -211,8 +250,11 @@
             class="btn-salvar"
             style="padding: 12px 30px; border-radius: 25px; font-weight: bold; display: flex; align-items: center; gap: 8px;"
           >
+
             <i class="fa fa-save"></i>
+
             Guardar Alterações
+
           </button>
 
         </div>
@@ -224,9 +266,11 @@
   </div>
 
   <footer>
+
     <p style="color: white; font-size: 0.9rem; text-align: center; padding: 20px 0;">
       Área Reservada - Clínica Miacãomigo © 2026
     </p>
+
   </footer>
 
   <script src="../../../JS/js_admin/func_admin.js"></script>

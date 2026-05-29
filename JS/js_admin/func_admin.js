@@ -81,6 +81,81 @@ async function carregarFuncionarios() {
 }
 
 // =======================================================
+// PESQUISAR FUNCIONÁRIOS
+// =======================================================
+function pesquisarFuncionarios() {
+
+    const textoPesquisa =
+        document.getElementById('pesquisaFuncionarios')
+        .value
+        .toLowerCase();
+
+    const tabela =
+        document.getElementById('tabelaFuncionarios');
+
+    if (!tabela) return;
+
+    tabela.innerHTML = '';
+
+    const funcionariosFiltrados =
+        listaFuncionarios.filter(funcionario =>
+
+            funcionario.nome &&
+            funcionario.nome
+                .toLowerCase()
+                .includes(textoPesquisa)
+        );
+
+    funcionariosFiltrados.forEach(funcionario => {
+
+        tabela.innerHTML += `
+        
+            <tr>
+
+                <td>${funcionario.nome}</td>
+
+                <td>${funcionario.morada}</td>
+
+                <td>${funcionario.email}</td>
+
+                <td>${funcionario.nif}</td>
+
+                <td>${funcionario.contacto}</td>
+
+                <td>${funcionario.cargo}</td>
+
+                <td>
+                
+                    <div style="display: flex; gap: 8px; justify-content: center;">
+
+                        <button 
+                            class="btn-pequeno"
+                            onclick="editarFuncionario(${funcionario.id_funcionario})"
+                            title="Editar"
+                        >
+                            <i class="fa fa-edit"></i>
+                        </button>
+
+                        <button 
+                            class="btn-pequeno"
+                            onclick="eliminarFuncionario(${funcionario.id_funcionario})"
+                            title="Eliminar"
+                            style="background-color: #e74c3c; color: white; border: none; cursor: pointer;"
+                        >
+                            <i class="fa fa-trash"></i>
+                        </button>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        `;
+    });
+}
+
+// =======================================================
 // EDITAR FUNCIONÁRIO
 // =======================================================
 function editarFuncionario(id) {
