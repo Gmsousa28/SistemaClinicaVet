@@ -9,7 +9,13 @@
         <link rel="stylesheet" href="../../CSS/css_rececao/rececionista.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">  
 
-
+    <script>
+        const tipoUtilizador = localStorage.getItem('tipoUtilizador');
+        if (!tipoUtilizador || tipoUtilizador !== 'funcionario') {
+            alert('Acesso negado! Área exclusiva a funcionários.');
+            window.location.href = '../Logins_Sessões/login.html';
+        }
+    </script>
 
     </head>
 

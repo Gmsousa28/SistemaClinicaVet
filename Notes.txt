@@ -106,5 +106,6 @@ Se for o Rececionista na Clínica: O teu código sabe que aquele utilizador tem 
 Dashboard Receçaoo é apenas Visual os botoes de validar a presença
 só funcionario consegue receber pagamentos
 faltou opcao de dar update á passe 
+faltou gestão de horários no admin
 
 os resgates sao so a caes e gatos
