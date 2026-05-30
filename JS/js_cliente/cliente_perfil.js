@@ -363,3 +363,96 @@ if (btnGuardarPerfil) {
         if (badge) badge.innerText = "Atualizado hoje";
     });
 }
+// ==========================================================================
+// LÓGICA DO PAINEL DE AVISOS (LEMBRETES DE CONSULTAS)
+// ==========================================================================
+async function carregarLembretesConsultas() {
+    // 1. Encontrar quem é o cliente logado
+    const dadosLoginStr = localStorage.getItem("utilizadorLogado");
+    if (!dadosLoginStr) return;
+    
+    let idClienteLogado;
+    try {
+        idClienteLogado = JSON.parse(dadosLoginStr).id_cliente;
+    } catch (e) { return; }
+
+    const containerAvisos = document.getElementById('container-avisos');
+    const badgeAvisos = document.getElementById('badge-avisos');
+
+    if (!containerAvisos || !badgeAvisos) return;
+
+    try {
+        // 2. Pedir as consultas à API
+        const resposta = await fetch(`http://localhost:8008/api/consultas/cliente/${idClienteLogado}`);
+        if (!resposta.ok) throw new Error("Sem consultas para este cliente");
+        
+        const resultado = await resposta.json();
+        const consultas = resultado.data || [];
+
+        // 3. Filtrar as consultas que acontecem nos próximos 3 dias
+        const hoje = new Date();
+        const daquiA3Dias = new Date();
+        daquiA3Dias.setDate(hoje.getDate() + 3);
+
+        const avisosFuturos = consultas.filter(consulta => {
+            const dataConsulta = new Date(consulta.data_hora);
+            return dataConsulta > hoje && dataConsulta <= daquiA3Dias;
+        });
+
+        // 4. Atualizar o Número Vermelho (Badge)
+        badgeAvisos.innerText = `${avisosFuturos.length} novo${avisosFuturos.length !== 1 ? 's' : ''}`;
+        if(avisosFuturos.length > 0) {
+            badgeAvisos.style.backgroundColor = '#e74c3c'; // Fica vermelho se houver avisos!
+            badgeAvisos.style.color = '#fff';
+        }
+
+        // 5. Mostrar a Mensagem "Vazio" ou Construir os Avisos
+        if (avisosFuturos.length === 0) {
+            containerAvisos.innerHTML = `
+                <div class="aviso-vazio" style="padding: 15px; border-left: 4px solid #2ea89c; background: #f8f9fa; margin-bottom: 10px; border-radius: 5px;">
+                    <i class="fa-solid fa-bell" style="color: #2ea89c;"></i> Não tem avisos de momento.
+                </div>`;
+            return;
+        }
+
+        // Limpa a caixa e desenha os avisos novos
+        containerAvisos.innerHTML = ''; 
+        
+        avisosFuturos.forEach(aviso => {
+            const dataObj = new Date(aviso.data_hora);
+            
+            // Criar uma frase tipo "Amanhã" ou "Quinta-feira" se der jeito, ou a data normal
+            const dataFormatada = dataObj.toLocaleDateString('pt-PT', { day: '2-digit', month: 'long' });
+            const horaFormatada = dataObj.toLocaleTimeString('pt-PT', { hour: '2-digit', minute:'2-digit' });
+
+            containerAvisos.innerHTML += `
+                <div style="padding: 12px 15px; border-left: 4px solid #f39c12; background: #fffdf7; margin-bottom: 10px; border-radius: 5px;">
+                    <div style="display: flex; gap: 10px; align-items: flex-start;">
+                        <i class="fa-solid fa-circle-exclamation" style="color: #f39c12; margin-top: 3px;"></i>
+                        <div>
+                            <span style="font-weight: 600; color: #2c3e50;">Lembrete: ${aviso.nome_animal}</span>
+                            <p style="margin: 3px 0 0; font-size: 0.85rem; color: #34495e;">
+                                Tem uma marcação para <strong>${aviso.motivo}</strong> a aproximar-se.
+                            </p>
+                            <small style="color: #7f8c8d; font-weight: 600;">
+                                <i class="fa-regular fa-calendar-check"></i> ${dataFormatada} às ${horaFormatada}
+                            </small>
+                        </div>
+                    </div>
+                </div>`;
+        });
+
+    } catch (erro) {
+        console.error("Erro ao carregar avisos:", erro);
+        // Em caso de erro com o servidor, mostra o aviso vazio normal
+        containerAvisos.innerHTML = `
+            <div class="aviso-vazio" style="padding: 15px; border-left: 4px solid #2ea89c; background: #f8f9fa; margin-bottom: 10px; border-radius: 5px;">
+                <i class="fa-solid fa-bell" style="color: #2ea89c;"></i> Não tem avisos de momento.
+            </div>`;
+    }
+}
+
+// Quando a página acabar de carregar, dispara o pedido à API!
+document.addEventListener('DOMContentLoaded', () => {
+    carregarLembretesConsultas();
+});

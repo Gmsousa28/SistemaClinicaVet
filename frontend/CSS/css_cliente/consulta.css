@@ -1,0 +1,86 @@
+
+/* =======================================================
+   ESTILOS GERAIS DE LAYOUT E TEXTO
+   ======================================================= */
+.escondido {
+    display: none;
+}
+
+.titulo-seccao-consultas {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+}
+
+.msg-carregamento {
+    color: white;
+    padding-left: 20px;
+}
+
+.msg-info-italico {
+    color: #7f8c8d;
+    width: 100%;
+    text-align: center;
+    font-style: italic;
+}
+
+.titulo-centrado {
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 25px;
+}
+
+/* =======================================================
+   MODAL E FORMULÁRIO (TAMANHOS E ESPAÇAMENTOS)
+   ======================================================= */
+.modal-marcacao {
+    max-width: 700px;
+    width: 95%;
+    margin: auto;
+}
+
+.subtitulo-passo {
+    color: var(--cor-base-escura, #2c3e50); /* Usa a tua cor base ou um cinza escuro */
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.label-destaque {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.mb-2 {
+    margin-bottom: 2.5rem;
+}
+
+/* =======================================================
+   BOTÕES E AÇÕES DO FORMULÁRIO
+   ======================================================= */
+.acoes-formulario {
+    margin-top: 3rem;
+    border-top: 1px solid #eee;
+    padding-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.espacador-flex {
+    flex-grow: 1;
+}
+
+.btn-sucesso {
+    background-color: #27ae60;
+}
+
+/* Ícones dentro dos botões (Afasta o ícone do texto) */
+.btn-secundario i {
+    margin-right: 8px;
+}
+
+.btn-primario i {
+    margin-left: 8px;
+}

@@ -3,23 +3,22 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Consultas</title>
+        <title>Consultas | Clínica Miacãomigo</title>
 
         <link rel="stylesheet" href="../../CSS/PaginaSite.css">
         <link rel="stylesheet" href="../../CSS/css_cliente/cliente.css">
+        <link rel="stylesheet" href="../../CSS/css_cliente/consulta.css">
         <link rel="stylesheet" href="../../CSS/css_cliente/header_cliente.css">
-        
-        <link rel="stylesheet" href="../../CSS/css_rececao/marcacoes_recep.css">
-        
+        <link rel="stylesheet" href="../../CSS/css_rececao/marcacoes_recep.css">        
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     </head>
 
     <body class="com-sidebar">
 
-        <header>
+       <header>
             <div class="header-texto">
                 <h1>Consultas</h1> 
-                <p>Gestão de Marcações</p>
+                <p>Acompanhe e gira as marcações dos seus patudos</p>
             </div>
         </header>
 
@@ -41,29 +40,31 @@
 
         <section class="dashboard">
 
-            <h2>Consultas 📅</h2>
+            <h2 class="titulo-seccao-consultas">
+                <i class="fa-regular fa-calendar"></i> As Minhas Consultas
+            </h2>
 
             <button class="nova-consulta btn-marcar-topo" id="btn-abrir-modal-consulta">
-                <i class="fa-solid fa-plus"></i> Marcar Nova Consulta
+                <i class="fa-solid fa-circle-plus fa-lg"></i> Marcar Nova Consulta
             </button>
 
-            <section class="filtros">
-                <button class="filtro-btn ativo" data-filtro="todas">Todas</button>
-                <button class="filtro-btn" data-filtro="futura">Futuras</button>
-                <button class="filtro-btn" data-filtro="passada">Passadas</button>
+           <section class="filtros">
+                <button class="filtro-btn ativo" data-filtro="todas"><i class="fa-solid fa-layer-group"></i> Todas</button>
+                <button class="filtro-btn" data-filtro="futura"><i class="fa-solid fa-hourglass-half"></i> Futuras</button>
+                <button class="filtro-btn" data-filtro="passada"><i class="fa-solid fa-clock-rotate-left"></i> Passadas</button>
             </section>
 
             <section class="lista-consultas" id="container-consultas">
-                <p style="color: white; padding-left: 20px;">A carregar consultas da base de dados...</p>
+                <p class="msg-carregamento">A carregar consultas da base de dados...</p>
             </section>
 
         </section>
 
         <div id="modal-nova-consulta" class="modal-overlay">
             
-            <div class="modal-content" style="max-width: 800px; width: 95%;">
+            <div class="modal-content modal-marcacao">
                 <span class="fechar-modal-consulta"><i class="fa fa-times"></i></span>
-                <h2 class="modal-titulo" style="text-align: center; margin-top: 10px; margin-bottom: 25px;">Nova Marcação</h2>
+                <h2 class="modal-titulo titulo-centrado">Nova Marcação</h2>
                 
                 <div class="barra-passos">
                     <div class="passo ativo" id="indicador-passo-1">
@@ -85,19 +86,19 @@
                 <form id="form-marcacao-cliente" class="formulario-marcacao">
                     
                     <div class="conteudo-passo" id="passo-1">
-                        <h3 style="color: var(--cor-base-escura); margin-bottom: 1.5rem; text-align: center;">Selecione o seu Animal</h3>
+                        <h3 class="subtitulo-passo">Selecione o seu Animal</h3>
                         
                         <div class="grid-animais-selecao" id="grid-animais-cliente">
-                            <p style="color: #7f8c8d; width: 100%; text-align: center; font-style: italic;">A carregar os seus animais...</p>
+                            <p class="msg-info-italico">A carregar os seus animais...</p>
                         </div>
                     </div> 
 
-                    <div class="conteudo-passo" id="passo-2" style="display: none;">
-                        <h3 style="color: var(--cor-base-escura); margin-bottom: 1.5rem; text-align: center;">Detalhes do Serviço</h3>
+                    <div class="conteudo-passo escondido" id="passo-2">
+                        <h3 class="subtitulo-passo">Detalhes do Serviço</h3>
 
-                        <label style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">1. Serviço Pretendido (Pode escolher vários):</label>
+                        <label class="label-destaque">1. Serviço Pretendido (Pode escolher vários):</label>
                         
-                        <div class="grid-opcoes-selecao" style="margin-bottom: 2.5rem;">
+                        <div class="grid-opcoes-selecao mb-2">
                             <label class="cartao-opcao-radio">
                                 <input type="checkbox" name="servico" value="consulta" class="esconder-radio" id="check-consulta">
                                 <div class="conteudo-cartao-opcao">
@@ -123,26 +124,26 @@
                             </label>
                         </div>
                         
-                        <div id="seccao-veterinario" style="display: none;">
-                            <label style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">2. Veterinário (Opcional):</label>
+                        <div id="seccao-veterinario" class="escondido">
+                            <label class="label-destaque">2. Veterinário (Opcional):</label>
                             <div class="grid-opcoes-selecao" id="container-vets">
-                                <p style="color: #7f8c8d; font-style: italic;">A carregar veterinários...</p>
+                                <p class="msg-info-italico">A carregar veterinários...</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="conteudo-passo" id="passo-3" style="display: none;">
-                        <h3 style="color: var(--cor-base-escura); margin-bottom: 1.5rem; text-align: center;">Data e Hora da Consulta</h3>
+                    <div class="conteudo-passo escondido" id="passo-3">
+                        <h3 class="subtitulo-passo">Data e Hora da Consulta</h3>
 
                         <div class="grid-data-hora">
                             <div class="seccao-data">
-                                <label for="data_marcacao_visual" style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">1. Escolha o dia:</label>
+                                <label for="data_marcacao_visual" class="label-destaque">1. Escolha o dia:</label>
                                 <input type="date" id="data_marcacao_visual" class="input-data-premium" required>
                                 <input type="hidden" name="data_marcacao" id="data_marcacao_real">
                             </div>
 
                             <div class="seccao-hora">
-                                <label style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">2. Escolha a hora (Slots 30 min):</label>
+                                <label class="label-destaque">2. Escolha a hora (Slots 30 min):</label>
                                 <div id="container-slots-hora" class="grid-slots">
                                     <p class="mensagem-espera-data">Por favor, selecione primeiro um dia para ver os horários disponíveis.</p>
                                 </div>
@@ -151,14 +152,14 @@
                         </div>
                     </div>
                     
-                    <div class="acoes-formulario" style="margin-top: 3rem; border-top: 1px solid #eee; padding-top: 1.5rem; display: flex; justify-content: space-between;">
-                        <button type="button" class="btn-secundario" id="btn-voltar" onclick="mudarPasso(-1)" style="display:none;"><i class="fa fa-arrow-left" style="margin-right: 8px;"></i> Recuar</button>
+                    <div class="acoes-formulario">
+                        <button type="button" class="btn-secundario escondido" id="btn-voltar" onclick="mudarPasso(-1)"><i class="fa fa-arrow-left"></i> Recuar</button>
                         
-                        <div style="flex-grow: 1;"></div> 
+                        <div class="espacador-flex"></div> 
 
-                        <button type="button" class="btn-primario" id="btn-avancar" onclick="mudarPasso(1)">Seguinte <i class="fa fa-arrow-right" style="margin-left: 8px;"></i></button>
+                        <button type="button" class="btn-primario" id="btn-avancar" onclick="mudarPasso(1)">Seguinte <i class="fa fa-arrow-right"></i></button>
                         
-                        <button type="button" class="btn-primario" id="btn-confirmar" style="display:none; background-color: #27ae60;">Confirmar Marcação <i class="fa fa-check" style="margin-left: 8px;"></i></button>
+                        <button type="button" class="btn-primario btn-sucesso escondido" id="btn-confirmar">Confirmar Marcação <i class="fa fa-check"></i></button>
                     </div>
 
                 </form>

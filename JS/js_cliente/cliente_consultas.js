@@ -232,6 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const section = document.createElement('section');
                 section.className = 'consulta';
                 section.setAttribute('data-status', status);
+                section.setAttribute('data-id', consulta.id_consulta);
                 section.innerHTML = `
                     <div class="info">
                         <p class="nome">🐾 ${consulta.nome_animal}</p>
@@ -396,30 +397,64 @@ document.addEventListener('DOMContentLoaded', function() {
             const cartaoConsulta = botao.closest('.consulta');
             if (!cartaoConsulta) return;
 
+            // Apanhamos o ID que escondemos no Passo 1!
+            const idConsulta = cartaoConsulta.getAttribute('data-id');
+
+            // ==========================================
+            // 1. BOTÃO CANCELAR
+            // ==========================================
             if (botao.classList.contains('btn-cancelar')) {
                 const confirmacao = confirm("Tem a certeza que deseja cancelar esta consulta?");
                 if (confirmacao) {
-                    cartaoConsulta.style.opacity = '0';
-                    setTimeout(() => { cartaoConsulta.remove(); }, 300);
+                    // Manda a ordem para a API apagar
+                    fetch(`http://localhost:8008/api/consultas/${idConsulta}`, {
+                        method: 'DELETE'
+                    })
+                    .then(resposta => {
+                        if(resposta.ok) {
+                            cartaoConsulta.style.opacity = '0';
+                            setTimeout(() => { cartaoConsulta.remove(); }, 300);
+                            alert("Consulta cancelada com sucesso!");
+                        } else {
+                            alert("Erro ao cancelar. Verifique a consola.");
+                        }
+                    })
+                    .catch(erro => console.error("Erro grave:", erro));
                 }
             }
 
+            // ==========================================
+            // 2. BOTÃO REMARCAR
+            // ==========================================
             if (botao.classList.contains('btn-editar')) {
-                alert("A redirecionar para o calendário de remarcações...");
-            }
-
-            if (botao.classList.contains('btn-repetir')) {
-                if (modalConsulta) {
-                    modalConsulta.classList.add('ativo');
-                    document.body.classList.add('no-scroll');
-                    carregarAnimaisParaModal();
-                    carregarVeterinariosParaModal();
+                const confirmacao = confirm("Para remarcar, a consulta atual será cancelada. Deseja escolher um novo horário?");
+                if (confirmacao) {
+                    // Primeiro apaga a consulta antiga...
+                    fetch(`http://localhost:8008/api/consultas/${idConsulta}`, { method: 'DELETE' })
+                    .then(resposta => {
+                        if(resposta.ok) {
+                            cartaoConsulta.remove(); // Tira do ecrã
+                            
+                            // ...Depois abre o menu para marcar a nova!
+                            if (modalConsulta) {
+                                modalConsulta.classList.add('ativo');
+                                document.body.classList.add('no-scroll');
+                                carregarAnimaisParaModal();
+                                carregarVeterinariosParaModal();
+                                if(window.resetarPassos) window.resetarPassos();
+                            }
+                        }
+                    });
                 }
             }
 
+            // ==========================================
+            // 3. BOTÃO VER (DETALHES)
+            // ==========================================
             if (botao.classList.contains('btn-detalhes')) {
                 cartaoSendoVistoRef = cartaoConsulta; 
 
+                // Lê os textos do cartão para preencher a janela
                 const infoParagrafos = cartaoConsulta.querySelectorAll('.info p');
                 detalheNome.innerText = infoParagrafos[0].innerText.replace('🐾 ', '');
                 detalheData.innerText = infoParagrafos[1].innerText.replace('📅 ', '');
