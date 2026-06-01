@@ -1,13 +1,16 @@
 // =======================================================
 // LISTA DE RESGATES
 // =======================================================
+// Guarda todos os resgates carregados da API.
 let listaResgates = [];
 
+// Guarda o ID do resgate que esta a ser editado no modal.
 let idResgateAtual = null;
 
 // =======================================================
 // CARREGAR RESGATES
 // =======================================================
+// Vai buscar os resgates a API e mostra-os na tabela.
 async function carregarResgates() {
 
     try {
@@ -116,6 +119,7 @@ async function carregarResgates() {
 // =======================================================
 // EDITAR RESGATE
 // =======================================================
+// Procura o resgate escolhido e preenche o modal com os seus dados.
 function editarResgate(id) {
 
     const resgate =
@@ -188,6 +192,8 @@ function editarResgate(id) {
 // =======================================================
 // GUARDAR ALTERAÇÕES
 // =======================================================
+// Guarda as alteracoes do resgate.
+// Mantem os dados que nao sao editados neste modal.
 async function salvarEdicao() {
 
     try {
@@ -274,6 +280,7 @@ async function salvarEdicao() {
 // =======================================================
 // ELIMINAR RESGATE
 // =======================================================
+// Elimina um resgate depois de confirmar com o utilizador.
 async function eliminarResgate(id) {
 
     const confirmar = confirm(
@@ -325,6 +332,7 @@ async function eliminarResgate(id) {
 // =======================================================
 // FECHAR MODAL
 // =======================================================
+// Fecha o modal de edicao e volta a permitir scroll na pagina.
 function fecharModalEdicao() {
 
     const modal =
@@ -345,4 +353,5 @@ function fecharModalEdicao() {
 // =======================================================
 // INICIAR
 // =======================================================
+// Carrega os resgates quando a pagina abre.
 window.onload = carregarResgates;

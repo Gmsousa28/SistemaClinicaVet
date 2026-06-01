@@ -1,11 +1,13 @@
 // =======================================================
 // LISTA DE FATURAS
 // =======================================================
+// Guarda todas as faturas carregadas da API.
 let listaFaturas = [];
 
 // =======================================================
 // CARREGAR FATURAS DA API
 // =======================================================
+// Vai buscar as faturas a API e mostra-as na tabela.
 async function carregarFaturas() {
 
     try {
@@ -58,6 +60,7 @@ async function carregarFaturas() {
 // =======================================================
 // FECHAR MODAL
 // =======================================================
+// Fecha o modal, caso exista nesta pagina.
 function fecharModalEdicao() {
 
     const modal =
@@ -74,4 +77,5 @@ function fecharModalEdicao() {
 // =======================================================
 // INICIAR PÁGINA
 // =======================================================
+// Carrega as faturas quando a pagina abre.
 window.onload = carregarFaturas;

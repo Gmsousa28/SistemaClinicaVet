@@ -1,13 +1,18 @@
 // =======================================================
 // CLIENTE EM EDIÇÃO
 // =======================================================
+// Guarda o cliente que esta a ser editado.
+// O valor 'novo' indica que o formulario esta a criar um cliente.
 let clienteEmEdicao = 'novo';
 
+// Guarda todos os clientes carregados da API.
+// Esta lista tambem e usada para pesquisar sem chamar a API outra vez.
 let listaClientes = [];
 
 // =======================================================
 // CARREGAR CLIENTES DA API
 // =======================================================
+// Vai buscar os clientes a API e mostra-os na tabela.
 async function carregarClientes() {
 
     try {
@@ -86,6 +91,7 @@ async function carregarClientes() {
 // =======================================================
 // PESQUISAR CLIENTES
 // =======================================================
+// Filtra os clientes pelo nome escrito na caixa de pesquisa.
 function pesquisarClientes() {
 
     const textoPesquisa =
@@ -164,6 +170,7 @@ function pesquisarClientes() {
 // =======================================================
 // ABRIR MODAL NOVO CLIENTE
 // =======================================================
+// Abre o modal vazio para adicionar um novo cliente.
 function abrirModalNovoCliente() {
 
     clienteEmEdicao = 'novo';
@@ -188,6 +195,7 @@ function abrirModalNovoCliente() {
 // =======================================================
 // EDITAR CLIENTE
 // =======================================================
+// Abre o modal com os dados do cliente escolhido.
 function editarCliente(id, nome, morada, email, nif, contacto) {
 
     clienteEmEdicao = id;
@@ -217,6 +225,7 @@ function editarCliente(id, nome, morada, email, nif, contacto) {
 // =======================================================
 // FECHAR MODAL
 // =======================================================
+// Fecha o modal de edicao e volta a permitir scroll na pagina.
 function fecharModalEdicao() {
 
     const modal = document.getElementById('modalEdicao');
@@ -232,6 +241,8 @@ function fecharModalEdicao() {
 // =======================================================
 // GUARDAR ALTERAÇÕES
 // =======================================================
+// Guarda os dados do formulario.
+// Se for um cliente novo, cria; se ja existir, atualiza.
 async function salvarEdicao() {
 
     const nome = document.getElementById('editNome').value;
@@ -296,6 +307,7 @@ async function salvarEdicao() {
 // =======================================================
 // ELIMINAR CLIENTE
 // =======================================================
+// Elimina um cliente depois de confirmar com o utilizador.
 async function eliminarCliente(id) {
 
     const confirmar = confirm('Deseja eliminar este cliente?');
@@ -328,6 +340,7 @@ async function eliminarCliente(id) {
 // =======================================================
 // FECHAR MODAL EDIÇÃO CLIENTE
 // =======================================================
+// Fecha o modal de cliente quando o HTML chama esta funcao especifica.
 function fecharModalEdicaoCliente() {
 
     const modal =
@@ -344,4 +357,5 @@ function fecharModalEdicaoCliente() {
 // =======================================================
 // INICIAR
 // =======================================================
+// Carrega os clientes quando a pagina abre.
 window.onload = carregarClientes;

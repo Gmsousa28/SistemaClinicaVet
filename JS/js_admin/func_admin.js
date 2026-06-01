@@ -1,13 +1,18 @@
 // =======================================================
 // VARIÁVEIS GLOBAIS
 // =======================================================
+// Guarda o funcionario que esta a ser editado.
+// O valor 'novo' indica que o formulario esta a criar um funcionario.
 let funcionarioEmEdicao = 'novo';
 
+// Guarda todos os funcionarios carregados da API.
+// Esta lista tambem e usada para pesquisar sem chamar a API outra vez.
 let listaFuncionarios = [];
 
 // =======================================================
 // CARREGAR FUNCIONÁRIOS DA API
 // =======================================================
+// Vai buscar os funcionarios a API e mostra-os na tabela.
 async function carregarFuncionarios() {
 
     try {
@@ -83,6 +88,7 @@ async function carregarFuncionarios() {
 // =======================================================
 // PESQUISAR FUNCIONÁRIOS
 // =======================================================
+// Filtra os funcionarios pelo nome escrito na caixa de pesquisa.
 function pesquisarFuncionarios() {
 
     const textoPesquisa =
@@ -158,6 +164,7 @@ function pesquisarFuncionarios() {
 // =======================================================
 // EDITAR FUNCIONÁRIO
 // =======================================================
+// Procura o funcionario escolhido e preenche o modal com os seus dados.
 function editarFuncionario(id) {
 
     funcionarioEmEdicao = id;
@@ -198,6 +205,7 @@ function editarFuncionario(id) {
 // =======================================================
 // NOVO FUNCIONÁRIO
 // =======================================================
+// Abre o modal vazio para adicionar um novo funcionario.
 function abrirModalNovoFuncionario() {
 
     funcionarioEmEdicao = 'novo';
@@ -226,6 +234,7 @@ function abrirModalNovoFuncionario() {
 // =======================================================
 // FECHAR MODAL
 // =======================================================
+// Fecha o modal de edicao e volta a permitir scroll na pagina.
 function fecharModalEdicao() {
 
     document.getElementById('modalEdicao').style.display =
@@ -237,6 +246,8 @@ function fecharModalEdicao() {
 // =======================================================
 // GUARDAR ALTERAÇÕES
 // =======================================================
+// Guarda os dados do formulario.
+// Se for um funcionario novo, cria; se ja existir, atualiza.
 async function salvarEdicao() {
 
     const dadosFuncionario = {
@@ -306,6 +317,7 @@ async function salvarEdicao() {
 // =======================================================
 // ELIMINAR FUNCIONÁRIO
 // =======================================================
+// Elimina um funcionario depois de confirmar com o utilizador.
 async function eliminarFuncionario(id) {
 
     const confirmar =
@@ -344,4 +356,5 @@ async function eliminarFuncionario(id) {
 // =======================================================
 // INICIAR
 // =======================================================
+// Carrega os funcionarios quando a pagina abre.
 window.onload = carregarFuncionarios;

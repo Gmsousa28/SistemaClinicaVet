@@ -1,8 +1,7 @@
 const API_BASE = "http://localhost:8008/api";
 
-// =======================================================
-// 1. NAVEGAÇÃO ENTRE OS PASSOS DO FORMULÁRIO
-// =======================================================
+
+// NAVEGAÇÃO ENTRE OS PASSOS DO FORMULÁRIO
 
 // Função chamada pelo botão "Continuar" do Passo 1
 function avancarPasso() {
@@ -37,10 +36,10 @@ function voltarPasso() {
 const input = document.getElementById("inputDatanasc");
 const hoje = new Date().toISOString().split("T")[0];
 input.max = hoje;
-// =======================================================
-// 2. SUBMISSÃO FINAL DO REGISTO PARA O BACKEND
-// =======================================================
 
+
+
+// SUBMISSÃO FINAL DO REGISTO PARA O BACKEND
 document.addEventListener('DOMContentLoaded', function() {
     const formRegisto = document.getElementById('formRegisto');
 
