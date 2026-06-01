@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error("Erro ao carregar dados dinâmicos (Animais/Consultas):", erro);
         }
     }
-    
+
     carregarAnimaisEConsultas();
 
     function ligarBotaoAdicionar() {
@@ -252,48 +252,104 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // ==========================================================================
+    // NOVO: GUARDAR NOVO ANIMAL COM TODOS OS DADOS DO FORMULÁRIO!
+    // ==========================================================================
     const btnGuardarNovo = document.getElementById('btn-guardar-animal');
+    
+    // ==========================================================================
+    // NOVO: BLOQUEAR DATAS FUTURAS NO CALENDÁRIO
+    // ==========================================================================
+    const inputDataNascimento = document.getElementById('modal-nascimento');
+    if (inputDataNascimento) {
+        const dataHoje = new Date().toISOString().split('T')[0]; // Dá-nos o formato YYYY-MM-DD de hoje
+        inputDataNascimento.setAttribute('max', dataHoje);
+    }
     if (btnGuardarNovo) {
         btnGuardarNovo.addEventListener('click', async function() {
-            const nomeInput = document.getElementById('novo-nome').value.trim();
-            const especieInput = document.getElementById('nova-especie').value.trim();
+            // 1. Apanhar os valores REAIS do teu novo modal
+            const nomeInput = document.getElementById('modal-nome').value.trim();
+            const especieInput = document.getElementById('modal-especie').value.trim();
+            const sexoInput = document.getElementById('modal-sexo').value;
+            const racaInput = document.getElementById('modal-raca').value.trim();
+            const nascimentoInput = document.getElementById('modal-nascimento').value;
 
-            if (nomeInput !== '' && especieInput !== '') {
-                const novoAnimalDados = {
-                    id_cliente: parseInt(idClienteAtual),
-                    nome: nomeInput,
-                    especie: especieInput,
-                    raca: "Não definida",
-                    sexo: "Desconhecido",
-                    data_nascimento: null,
-                    estado: "Ativo"
-                };
+           // 2. Validação: Nome, Espécie e Sexo são obrigatórios!
+            if (nomeInput === '' || especieInput === '' || sexoInput === '') {
+                alert("Por favor, preencha pelo menos o Nome, Espécie e Sexo do animal!");
+                return;
+            }
 
-                try {
-                    const resposta = await fetch(urlApiAnimais, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(novoAnimalDados)
-                    });
-                    
-                    const resultado = await resposta.json();
-
-                    if (resultado.status === 201) {
-                        carregarAnimaisEConsultas(); // Recarrega tudo
-                        document.getElementById('novo-nome').value = '';
-                        document.getElementById('nova-especie').value = '';
-                        
-                        modalAdd.classList.remove('ativo');
-                        modalAdd.setAttribute("aria-hidden", "true");
-                        document.body.classList.remove('no-scroll');
-                    } else {
-                        alert("Erro ao criar animal: " + resultado.message);
-                    }
-                } catch (erro) {
-                    console.error("Erro no POST do animal:", erro);
+            // ==========================================================================
+            // NOVO: VALIDAÇÃO SE A DATA ESTÁ NO FUTURO (CASO ESCREVA MANUALMENTE)
+            // ==========================================================================
+            if (nascimentoInput !== '') {
+                const dataEscolhida = new Date(nascimentoInput);
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0); 
+                
+                if (dataEscolhida > hoje) {
+                    alert("A data de nascimento não pode estar no futuro. Tens a certeza que é um viajante do tempo? 🕰️🐾");
+                    return; 
                 }
-            } else {
-                alert("Preencha o nome e a espécie do animal!");
+            }
+
+            // Apanhar o NIF e forçar a ser NÚMERO
+            const nifDoCliente = parseInt(document.getElementById('input-nif').value.trim()) || 0;
+
+            
+           // 3. Preparar os dados para enviar para o Backend
+           const novoAnimalDados = {
+                id_cliente: parseInt(idClienteAtual),
+                nif: nifDoCliente,                 
+                nif_cliente: nifDoCliente,         
+                nome: nomeInput,
+                especie: especieInput,
+                raca: racaInput !== '' ? racaInput : "Não definida",
+                sexo: sexoInput,
+                data_nascimento: nascimentoInput !== '' ? nascimentoInput : null, 
+                estado: "Domestico" 
+            };
+
+            // 4. Mudar o botão para dar feedback visual de carregamento
+            const textoOriginal = btnGuardarNovo.innerHTML;
+            btnGuardarNovo.innerHTML = '<i class="fa fa-spinner fa-spin"></i> A guardar...';
+            btnGuardarNovo.disabled = true;
+
+            try {
+                // 5. Enviar o POST para a API
+                const resposta = await fetch(urlApiAnimais, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(novoAnimalDados)
+                });
+                
+                const resultado = await resposta.json();
+
+                if (resultado.status === 201 || resultado.status === 200) {
+                    // Magia: Recarrega os cartões instantaneamente!
+                    carregarAnimaisEConsultas(); 
+                    
+                    // Limpar o formulário todo de uma vez
+                    document.getElementById('form-animal').reset();
+                    
+                    // Fechar a janela modal
+                    modalAdd.classList.remove('ativo');
+                    modalAdd.setAttribute("aria-hidden", "true");
+                    document.body.classList.remove('no-scroll');
+                    
+                    // Pequeno delay para a janela fechar antes do alerta
+                    setTimeout(() => alert("🐾 Patudo registado com sucesso!"), 300);
+                } else {
+                    alert("Erro ao criar animal: " + (resultado.message || "Verifique a consola"));
+                }
+            } catch (erro) {
+                console.error("Erro no POST do animal:", erro);
+                alert("Erro grave ao tentar comunicar com o servidor da clínica.");
+            } finally {
+                // Devolver o estado normal ao botão
+                btnGuardarNovo.innerHTML = textoOriginal;
+                btnGuardarNovo.disabled = false;
             }
         });
     }
@@ -328,7 +384,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ==========================================================================
+  // ==========================================================================
     // --- 4. UI EXTRAS (Foto de perfil, Botão Editar e Avisos) ---
     // ==========================================================================
     const btnEditarPerfilLateral = document.querySelector('.perfil .editar');
@@ -343,20 +399,46 @@ document.addEventListener('DOMContentLoaded', function() {
         botao.addEventListener("click", () => botao.closest(".aviso").remove());
     });
 
+    // ==========================================================================
+    // MAGIA DA FOTO DE PERFIL (COM MEMÓRIA)
+    // ==========================================================================
     const inputFoto = document.getElementById('input-foto');
     const fotoPerfil = document.getElementById('foto-perfil');
+    
     if (inputFoto && fotoPerfil) {
+        // 1. Carregar foto guardada anteriormente (se existir para este cliente)
+        const fotoGuardada = localStorage.getItem('fotoPerfilCliente_' + idClienteAtual);
+        if (fotoGuardada) {
+            fotoPerfil.src = fotoGuardada;
+        }
+
+        // 2. Ligar o clique do Lápis ao Input de ficheiros escondido
+        // Procura o elemento que está à beira da foto (o lápis)
+        const btnLapis = fotoPerfil.parentElement; 
+        if (btnLapis) {
+            btnLapis.style.cursor = 'pointer'; // Muda o rato para a mãozinha
+            btnLapis.addEventListener('click', (e) => {
+                e.preventDefault(); 
+                inputFoto.click(); // Dá a ordem de abrir a janela do Windows/Mac
+            });
+        }
+
+        // 3. Quando o cliente escolhe a foto nova do computador...
         inputFoto.addEventListener('change', function(evento) {
             const ficheiro = evento.target.files[0];
             if (ficheiro) {
                 const leitor = new FileReader();
-                leitor.onload = function(e) { fotoPerfil.src = e.target.result; }
+                leitor.onload = function(e) { 
+                    // Muda a imagem no ecrã imediatamente
+                    fotoPerfil.src = e.target.result; 
+                    // Guarda na memória do navegador para sobreviver ao F5!
+                    localStorage.setItem('fotoPerfilCliente_' + idClienteAtual, e.target.result);
+                }
                 leitor.readAsDataURL(ficheiro);
             }
         });
     }
 });
-
 // 1. A função calculadora
 function formatarTempoAtualizacao(dataGuardada) {
     if (!dataGuardada) return "Sem atualizações recentes";
@@ -390,7 +472,7 @@ if (btnGuardarPerfil) {
 }
 
 // ==========================================================================
-// LÓGICA DO PAINEL DE AVISOS (LEMBRETES DE CONSULTAS)
+// LÓGICA DO PAINEL DE AVISOS (LEMBRETES DE CONSULTAS E SERVIÇOS)
 // ==========================================================================
 async function carregarLembretesConsultas() {
     const dadosLoginStr = localStorage.getItem("utilizadorLogado");
@@ -407,21 +489,76 @@ async function carregarLembretesConsultas() {
     if (!containerAvisos || !badgeAvisos) return;
 
     try {
-        const resposta = await fetch(`http://localhost:8008/api/consultas/cliente/${idClienteLogado}`);
-        if (!resposta.ok) throw new Error("Sem consultas para este cliente");
-        
-        const resultado = await resposta.json();
-        const consultas = resultado.data || [];
+        // Os 3 caminhos da nossa clínica
+        const urlConsultas = `http://localhost:8008/api/consultas/cliente/${idClienteLogado}`;
+        const urlServicos = `http://localhost:8008/api/servicos`;
+        const urlAnimais = `http://localhost:8008/api/animais/cliente/${idClienteLogado}`;
 
+        let todasAsMarcacoes = [];
+        let meusAnimaisIDs = [];
+        let mapaAnimais = {};
+
+        // 1. Descobrir os animais deste cliente
+        try {
+            const resAnimais = await fetch(urlAnimais);
+            if (resAnimais.ok) {
+                const dadosA = await resAnimais.json();
+                if (dadosA.data) {
+                    dadosA.data.forEach(animal => {
+                        meusAnimaisIDs.push(animal.id_animal);
+                        mapaAnimais[animal.id_animal] = animal.nome;
+                    });
+                }
+            }
+        } catch (e) { console.warn("Aviso: Falha ao carregar animais para os lembretes."); }
+
+        // 2. Vai buscar as Consultas Médicas
+        try {
+            const resConsultas = await fetch(urlConsultas);
+            if (resConsultas.ok) {
+                const dadosC = await resConsultas.json();
+                if (dadosC.data) {
+                    const consultasFormatadas = dadosC.data.map(c => ({
+                        nome_animal: c.nome_animal || mapaAnimais[c.id_animal] || 'Animal',
+                        data_hora: c.data_hora || c.data_consulta,
+                        motivo: c.motivo || 'Consulta'
+                    }));
+                    todasAsMarcacoes.push(...consultasFormatadas);
+                }
+            }
+        } catch (e) { console.warn("Aviso: Falha ao carregar consultas para os lembretes."); }
+
+        // 3. Vai buscar os Banhos e Tosquias (e filtra só os deste cliente!)
+        try {
+            const resServicos = await fetch(urlServicos);
+            if (resServicos.ok) {
+                const dadosS = await resServicos.json();
+                if (dadosS.data) {
+                    const meusServicos = dadosS.data.filter(s => meusAnimaisIDs.includes(s.id_animal));
+                    const servicosFormatados = meusServicos.map(s => ({
+                        nome_animal: mapaAnimais[s.id_animal] || 'Animal', 
+                        data_hora: s.data_servicos, 
+                        motivo: s.tipo_servico || 'Serviço'
+                    }));
+                    todasAsMarcacoes.push(...servicosFormatados);
+                }
+            }
+        } catch (e) { console.warn("Aviso: Falha ao carregar serviços para os lembretes."); }
+
+        // 4. Lógica de filtrar apenas os que acontecem nos próximos 3 dias
         const hoje = new Date();
         const daquiA3Dias = new Date();
         daquiA3Dias.setDate(hoje.getDate() + 3);
 
-        const avisosFuturos = consultas.filter(consulta => {
-            const dataConsulta = new Date(consulta.data_hora);
-            return dataConsulta > hoje && dataConsulta <= daquiA3Dias;
+        const avisosFuturos = todasAsMarcacoes.filter(marcacao => {
+            const dataMarcacao = new Date(marcacao.data_hora);
+            return dataMarcacao > hoje && dataMarcacao <= daquiA3Dias;
         });
 
+        // Ordenar do mais urgente para o menos urgente
+        avisosFuturos.sort((a, b) => new Date(a.data_hora) - new Date(b.data_hora));
+
+        // 5. Atualizar o Ecrã
         badgeAvisos.innerText = `${avisosFuturos.length} novo${avisosFuturos.length !== 1 ? 's' : ''}`;
         if(avisosFuturos.length > 0) {
             badgeAvisos.style.backgroundColor = '#e74c3c'; 
