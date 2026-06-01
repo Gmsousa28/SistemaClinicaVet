@@ -177,10 +177,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             <td style="padding: 15px; border-bottom: 1px solid #ecf0f1;">${adocao.nome_dono}</td>
                             <td style="padding: 15px; border-bottom: 1px solid #ecf0f1;">${adocao.nif}</td>
                             <td style="padding: 15px; border-bottom: 1px solid #ecf0f1; text-align: center;">
-                                <i class="fa fa-file-pdf" style="color: #e74c3c; cursor: pointer; font-size: 1.2rem;" title="Ver Documento"></i>
+                                <i class="fa-solid fa-file" style="color: #e74c3c; cursor: pointer; font-size: 1.2rem;" title="Ver Documento"></i>
                             </td>
                         </tr>
-                    `;
+                    `; 
                 });
             } else {
                 tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Ainda não existem adoções registadas.</td></tr>';

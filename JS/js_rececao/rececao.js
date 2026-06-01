@@ -70,6 +70,7 @@ function mudarImagemResgates() {
     }
 }
 
+
 document.addEventListener('DOMContentLoaded', function() {
     
     // Carrega as consultas do dia no dashboard
@@ -198,6 +199,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+
+
+    // Carrega os animais associados ao NIF pesquisado
     async function carregarAnimaisDoCliente(nif) {
         // Carrega os animais associados ao NIF pesquisado
         const listaAnimais = document.getElementById('lista_animais_cliente');
