@@ -9,15 +9,13 @@ const server = express();
 const port = 8008;
 
 
-// ===================================================================
-// 1. MIDDLEWARES - Têm de vir PRIMEIRO (A "Porta de Segurança")
-// ===================================================================
+
+// 1. MIDDLEWARES - Têm de vir PRIMEIRO 
 server.use(cors()); // Dá permissão ao navegador imediatamente!
 server.use(express.json()); // Permite ler dados dos formulários
 
-// ===================================================================
-// 2. FICHEIROS ESTÁTICOS
-// ===================================================================
+
+// FICHEIROS ESTÁTICOS
 server.use(express.static(path.join(__dirname, 'frontend')));
 
 // Permitir pedidos do frontend
@@ -31,14 +29,12 @@ server.use(express.urlencoded({ extended: true }));
 
 // Servir ficheiros estáticos
 server.use(express.static(path.join(__dirname, 'frontend')));
-server.use(cors()); // Habilita CORS para todas as rotas
+server.use(cors()); // Habilita o CORS 
 
 
 
 
-/* ======================================================
-   IMPORTAÇÃO DAS ROTAS
-====================================================== */
+/*IMPORTAÇÃO DAS ROTAS*/
 
 const animaisRouter = require('./backend/routes/animais_rotas.js');
 const clientesRouter = require('./backend/routes/clientes_rotas.js');
@@ -56,9 +52,7 @@ const ocorrenciasLaboraisRouter = require('./backend/routes/ocorrencias_laborais
 const resgatesRouter = require('./backend/routes/resgates_rotas.js');
 const prescreveRouter = require('./backend/routes/prescreve_rotas.js');
 
-/* ======================================================
-   ROTAS API
-====================================================== */
+/* ROTAS API */
 
 server.use('/api', animaisRouter);
 server.use('/api', clientesRouter);
@@ -98,9 +92,7 @@ server.get('/', async (req, res) => {
     }
 });
 
-/* ======================================================
-   TRATAMENTO DE ERROS
-====================================================== */
+/*TRATAMENTO DE ERROS*/
 
 server.use((err, req, res, next) => {
 
@@ -112,9 +104,7 @@ server.use((err, req, res, next) => {
     });
 });
 
-/* ======================================================
-   INICIAR SERVIDOR
-====================================================== */
+/* INICIAR SERVIDOR */
 
 server.listen(port, () => {
     console.log(`Servidor a correr em http://localhost:${port}`);
