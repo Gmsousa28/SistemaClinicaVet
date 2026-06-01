@@ -1,3 +1,4 @@
+/* Layout da faturacao */
 .layout-faturacao {
     display: grid;
     grid-template-columns: 1fr 1.2fr;
@@ -32,6 +33,7 @@
 .item-pendente:hover { background: #f1f8f7; border-color: #2ea89c; }
 .item-pendente.active { border-left: 5px solid #2ea89c; background: #e0f2f1; }
 
+/* Detalhes do recibo */
 .recibo-header {
     border-bottom: 2px dashed #eee;
     padding-bottom: 15px;
@@ -65,6 +67,7 @@
 .tabela-recibo td { padding: 10px 0; border-bottom: 1px solid #f9f9f9; }
 .txt-dir { text-align: right; }
 
+/* Totais e pagamento */
 .checkout-footer {
     background: #2c3e50;
     color: white;
@@ -96,7 +99,7 @@
 .btn-checkout:hover:not(:disabled) { background: #2ea89c; border-color: #2ea89c; }
 .btn-checkout:disabled { opacity: 0.3; cursor: not-allowed; }
 
-/* --- Botão Lixo (Tabela) --- */
+/* Botao remover item */
 .btn-lixo {
     background: none;
     border: none;
@@ -112,13 +115,13 @@
 
 .btn-lixo:hover {
     color: #c0392b;
-    transform: scale(1.15); /* Aumenta ligeiramente ao passar o rato */
+    transform: scale(1.15); 
 }
 
 
-/* --- Modal Histórico --- */
+/* Modal do historico */
 .modal-overlay {
-    display: none; /* Escondido por padrão */
+    display: none; 
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;

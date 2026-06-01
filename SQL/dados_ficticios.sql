@@ -23,8 +23,6 @@ TRUNCATE TABLE
 	RESTART IDENTITY CASCADE;
 	
 	
-	
-
 -- 1. CLÍNICA E LOGINS
 INSERT INTO public.horario_clinica (dia_semana, hora_abertura, hora_fecho) VALUES 
 ('Segunda', '08:00', '22:00'), ('Terça', '08:00', '22:00'), ('Quarta', '08:00', '22:00'),
@@ -77,12 +75,14 @@ INSERT INTO public.exame (id_exame, nome, valor_cobrado) VALUES
 (9, 'Teste Rápido FIV/FeLV', 30.00), (10, 'Análise de Urina', 20.00),
 (11, 'Citologia Cutânea', 35.00), (12, 'Biópsia', 120.00);
 
+-- ADICIONADO O FUNCIONÁRIO 6 (ADMIN) PARA NÃO QUEBRAR A CONSTRAINT!
 INSERT INTO public.funcionario (id_funcionario, nome, morada, email, nif, contacto, cargo) VALUES 
 (1, 'Pedro Soares', 'Rua A, 1', 'pedro.func@vidaanimal.pt', 220000001, 910000001, 'Rececionista'),
 (2, 'Sofia Reis', 'Rua B, 2', 'sofia.func@vidaanimal.pt', 220000002, 910000002, 'Groomer'),
 (3, 'Rita Sousa', 'Rua C, 3', 'rita.func@vidaanimal.pt', 220000003, 910000003, 'Auxiliar Veterinária'),
 (4, 'Tiago Mendes', 'Rua D, 4', 'tiago.func@vidaanimal.pt', 220000004, 910000004, 'Auxiliar Veterinário'),
-(5, 'Hugo Lima', 'Rua E, 5', 'hugo.func@vidaanimal.pt', 220000005, 910000005, 'Estagiário');
+(5, 'Hugo Lima', 'Rua E, 5', 'hugo.func@vidaanimal.pt', 220000005, 910000005, 'Estagiário'),
+(6, 'Administrador', 'Sede', 'admin@vidaanimal.pt', 999999999, 999999999, 'Administração');
 
 INSERT INTO public.veterinario (id_veterinario, nome, morada, contacto, email, nif, especialidade) VALUES 
 (1, 'Dr. Carlos Neves', 'Av 1', 920000001, 'carlos.vet@vidaanimal.pt', 230000001, 'Clínica Geral'),
@@ -90,9 +90,18 @@ INSERT INTO public.veterinario (id_veterinario, nome, morada, contacto, email, n
 (3, 'Dr. João Martins', 'Av 3', 920000003, 'joao.vet@vidaanimal.pt', 230000003, 'Dermatologia'),
 (4, 'Dra. Maria Castro', 'Av 4', 920000004, 'maria.vet@vidaanimal.pt', 230000004, 'Cardiologia e Ecografia');
 
-INSERT INTO public.colaborador (id_colaborador, id_login_colaborador, id_funcionario, id_veterinario) VALUES 
-(1, 2, NULL, 1), (2, 3, NULL, 2), (3, 4, NULL, 3), (4, 5, NULL, 4), 
-(5, 6, 1, NULL), (6, 7, 2, NULL), (7, 8, 3, NULL), (8, 9, 4, NULL), (9, 10, 5, NULL);
+-- ADICIONADA A COLUNA CARGO E O ADMIN NA LINHA 10
+INSERT INTO public.colaborador (id_colaborador, id_login_colaborador, id_funcionario, id_veterinario, cargo) VALUES 
+(1, 2, NULL, 1, 'Veterinário'), 
+(2, 3, NULL, 2, 'Veterinário'), 
+(3, 4, NULL, 3, 'Veterinário'), 
+(4, 5, NULL, 4, 'Veterinário'), 
+(5, 6, 1, NULL, 'Funcionário'), 
+(6, 7, 2, NULL, 'Funcionário'), 
+(7, 8, 3, NULL, 'Funcionário'), 
+(8, 9, 4, NULL, 'Funcionário'), 
+(9, 10, 5, NULL, 'Funcionário'),
+(10, 1, 6, NULL, 'Admin'); 
 
 -- 3. CLIENTES UNIFICADOS
 INSERT INTO public.cliente (id_cliente, id_login_cliente, nome, morada, email, nif, contacto) VALUES 
@@ -402,3 +411,97 @@ INSERT INTO public.prescreve (id_consulta, id_medicamento, quantidade, descricao
 (3, 9, 20.00, 'Tomar 1/2 comprimido de 12h/12h para controlo da comichão.'), (3, 13, 1.00, 'Dar banho de 3 em 3 dias com este champô durante 2 semanas.'),
 (4, 12, 30.00, '1 comprimido de 12 em 12 horas, uso contínuo.'), (5, 11, 2.00, 'Injeção administrada na clínica para travar os vómitos.'),
 (5, 7, 14.00, '1 comprimido de 12 em 12 horas durante 7 dias.');
+
+
+
+
+INSERT INTO public.horario (id_colaborador, dia_semana, hora_entrada, hora_saida) VALUES 
+-- ==========================================
+-- FUNCIONÁRIOS FIXOS (Segunda a Sexta, 09:00 às 18:30)
+-- Sofia (6), Tiago (8) e Administrador (10)
+-- ==========================================
+(6, 'Segunda', '09:00', '18:30'), (8, 'Segunda', '09:00', '18:30'), (10, 'Segunda', '09:00', '18:30'),
+(6, 'Terça', '09:00', '18:30'),   (8, 'Terça', '09:00', '18:30'),   (10, 'Terça', '09:00', '18:30'),
+(6, 'Quarta', '09:00', '18:30'),  (8, 'Quarta', '09:00', '18:30'),  (10, 'Quarta', '09:00', '18:30'),
+(6, 'Quinta', '09:00', '18:30'),  (8, 'Quinta', '09:00', '18:30'),  (10, 'Quinta', '09:00', '18:30'),
+(6, 'Sexta', '09:00', '18:30'),   (8, 'Sexta', '09:00', '18:30'),   (10, 'Sexta', '09:00', '18:30'),
+
+-- ==========================================
+-- FUNCIONÁRIOS ROTATIVOS (Noites, Madrugadas e Sábado)
+-- Pedro (5), Rita (7) e Hugo (9)
+-- ==========================================
+-- Segunda-feira
+(5, 'Segunda', '18:30', '23:59'), -- Pedro (Noite)
+(7, 'Segunda', '00:00', '09:00'), -- Rita (Madrugada)
+
+-- Terça-feira
+(9, 'Terça', '18:30', '23:59'),   -- Hugo (Noite)
+(5, 'Terça', '00:00', '09:00'),   -- Pedro (Madrugada)
+
+-- Quarta-feira
+(7, 'Quarta', '18:30', '23:59'),  -- Rita (Noite)
+(9, 'Quarta', '00:00', '09:00'),  -- Hugo (Madrugada)
+
+-- Quinta-feira
+(5, 'Quinta', '18:30', '23:59'),  -- Pedro (Noite)
+(7, 'Quinta', '00:00', '09:00'),  -- Rita (Madrugada)
+
+-- Sexta-feira
+(9, 'Sexta', '18:30', '23:59'),   -- Hugo (Noite)
+(5, 'Sexta', '00:00', '09:00'),   -- Pedro (Madrugada)
+
+-- Sábado (Cobertura total do dia, noite e madrugada)
+(7, 'Sábado', '09:00', '18:30'),  -- Rita (Dia)
+(9, 'Sábado', '18:30', '23:59'),  -- Hugo (Noite)
+(5, 'Sábado', '00:00', '09:00');  -- Pedro (Madrugada)
+
+
+
+INSERT INTO public.horario (id_colaborador, dia_semana, hora_entrada, hora_saida) VALUES 
+-- ==========================================
+-- SEGUNDA-FEIRA
+-- ==========================================
+(1, 'Segunda', '09:00', '18:30'), -- Dr. Carlos (Dia todo - Marcações)
+(2, 'Segunda', '09:00', '18:30'), -- Dra. Ana (Dia todo - Marcações)
+(3, 'Segunda', '18:30', '23:59'), -- Dr. João (Noite - Urgências)
+(4, 'Segunda', '00:00', '09:00'), -- Dra. Maria (Madrugada - Urgências)
+
+-- ==========================================
+-- TERÇA-FEIRA (Rodam para descansar do turno de dia)
+-- ==========================================
+(3, 'Terça', '09:00', '18:30'),   -- Dr. João (Dia todo - Marcações)
+(4, 'Terça', '09:00', '18:30'),   -- Dra. Maria (Dia todo - Marcações)
+(1, 'Terça', '18:30', '23:59'),   -- Dr. Carlos (Noite - Urgências)
+(2, 'Terça', '00:00', '09:00'),   -- Dra. Ana (Madrugada - Urgências)
+
+-- ==========================================
+-- QUARTA-FEIRA (Misturamos as duplas)
+-- ==========================================
+(1, 'Quarta', '09:00', '18:30'),  -- Dr. Carlos (Dia todo - Marcações)
+(3, 'Quarta', '09:00', '18:30'),  -- Dr. João (Dia todo - Marcações)
+(2, 'Quarta', '18:30', '23:59'),  -- Dra. Ana (Noite - Urgências)
+(4, 'Quarta', '00:00', '09:00'),  -- Dra. Maria (Madrugada - Urgências)
+
+-- ==========================================
+-- QUINTA-FEIRA
+-- ==========================================
+(2, 'Quinta', '09:00', '18:30'),  -- Dra. Ana (Dia todo - Marcações)
+(4, 'Quinta', '09:00', '18:30'),  -- Dra. Maria (Dia todo - Marcações)
+(3, 'Quinta', '18:30', '23:59'),  -- Dr. João (Noite - Urgências)
+(1, 'Quinta', '00:00', '09:00'),  -- Dr. Carlos (Madrugada - Urgências)
+
+-- ==========================================
+-- SEXTA-FEIRA
+-- ==========================================
+(1, 'Sexta', '09:00', '18:30'),   -- Dr. Carlos (Dia todo - Marcações)
+(2, 'Sexta', '09:00', '18:30'),   -- Dra. Ana (Dia todo - Marcações)
+(4, 'Sexta', '18:30', '23:59'),   -- Dra. Maria (Noite - Urgências)
+(3, 'Sexta', '00:00', '09:00'),   -- Dr. João (Madrugada - Urgências)
+
+-- ==========================================
+-- SÁBADO
+-- ==========================================
+(3, 'Sábado', '09:00', '18:30'),  -- Dr. João (Dia todo - Marcações)
+(4, 'Sábado', '09:00', '18:30'),  -- Dra. Maria (Dia todo - Marcações)
+(2, 'Sábado', '18:30', '23:59'),  -- Dra. Ana (Noite - Urgências)
+(1, 'Sábado', '00:00', '09:00');  -- Dr. Carlos (Madrugada - Urgências)

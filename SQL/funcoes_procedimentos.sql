@@ -1,19 +1,48 @@
 --FUNCAO que bloqueia operacoes com animais mortos
---FUNCAO que valida adocoes(so podem ser animais resgatados)
+--FUNCAO que valida adocoes
 --FUNCAO que passa o estado para resgatado apos o resgate
 --FUNCAO que passa o estado para adotado apos a adocao
 --FUNCAO com as verificacoes para marcar uma consulta
---FUNCAO com as verificacoes para marcar uma servicos
+--FUNCAO com as verificacoes para marcar servicos
 --FUNCAO sobreposicao ferias e folgas veterinarios
 --FUNCAO sobreposicao ferias e folgas funcionarios
 --FUNCAO para bloquear sobreposição de consultas do mesmo animal
 --FUNCAO sobreposicao de horario
---FUNCAO de Validação da Escala
+--FUNCAO de validacao da escala
+--FUNCAO autenticacao login colaborador
+--FUNCAO logout manual colaborador
+--FUNCAO logout de todas as sessoes colaborador
+--FUNCAO logout automatico colaborador
+--FUNCAO alterar palavra passe colaborador
+--FUNCAO alterar email colaborador
+--FUNCAO verificar sessao aberta colaborador
+--FUNCAO suspender/desativar conta colaborador
+--FUNCAO reativar conta colaborador
+--FUNCAO autenticacao login cliente
+--FUNCAO logout cliente
+--FUNCAO logout de todas as sessoes cliente
+--FUNCAO alterar palavra passe cliente
+--FUNCAO alterar email cliente
+--FUNCAO verificar emails duplicados
+--FUNCAO desativar conta cliente
+--FUNCAO reativar conta cliente
+--FUNCAO eliminar consulta
+--FUNCAO cancelar consulta
+--FUNCAO cancelar servico
+--FUNCAO garantir cliente igual na faturacao
+--FUNCAO faturacao total mensal
+--FUNCAO faturacao mensal consultas
+--FUNCAO faturacao mensal servicos
+--FUNCAO definir preco automatico dos servicos
+--FUNCAO validar estado antes da faturacao
+--FUNCAO inserir animal
+--PROCEDURE verificar estado dos animais
+--FUNCAO obter funcionario disponivel automaticamente
+--FUNCAO obter veterinario disponivel automaticamente
+--FUNCAO listar consultas de um veterinario
+--FUNCAO para dar um vet de forma random para uma consulta
+--FUNCAO para dar um func de forma random para um servico
 
-
-
---FUNCAO
---Bloquear Operações em Animais Mortos
 
 ALTER TABLE public.consulta DISABLE TRIGGER ALL;
 ALTER TABLE public.servicos DISABLE TRIGGER ALL;
@@ -39,7 +68,7 @@ ALTER TABLE public.login_cliente ENABLE TRIGGER ALL;
 
 
 
-
+--Bloquear Operações em Animais Mortos
 CREATE OR REPLACE FUNCTION public.verificar_animal_morto()
 RETURNS TRIGGER 
 LANGUAGE plpgsql
@@ -59,6 +88,7 @@ BEGIN
 END;
 $$;
 
+
 --TRIGGERS
 --(na consulta)
 CREATE TRIGGER trg_bloquear_consulta_animal_morto
@@ -75,7 +105,6 @@ CREATE TRIGGER trg_bloquear_resgate_animal_morto
 BEFORE INSERT ON public.resgate
 FOR EACH ROW EXECUTE FUNCTION verificar_animal_morto();
 
---(animal)
 
 
 
@@ -98,13 +127,15 @@ BEGIN
 END;
 $$;
 
--- 2. O Gatilho (O que liga a função à tabela)
+
+--Ligar com a tabela
 CREATE TRIGGER trg_validar_data_consulta
 BEFORE INSERT OR UPDATE ON public.consulta
 FOR EACH ROW
 EXECUTE FUNCTION public.validar_data_consulta();
 
---teste de marcar no passado
+
+--teste de marcar no passado tbm funcionaria com um update simples
 INSERT INTO public.consulta (id_animal, id_veterinario, data_consulta, motivo) 
 VALUES (1, 1, '2020-01-01 10:00:00', 'Vacina');
 
@@ -116,7 +147,7 @@ RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    -- Verifica se é um novo serviço (INSERT) ou se estão a alterar a data de um já existente (UPDATE)
+    
     IF (TG_OP = 'INSERT') OR (TG_OP = 'UPDATE' AND NEW.data_servicos <> OLD.data_servicos) THEN
         IF NEW.data_servicos < CURRENT_TIMESTAMP THEN
             RAISE EXCEPTION 'Operação bloqueada: Não é possível marcar ou reagendar serviços para o passado (%).', NEW.data_servicos;
@@ -127,19 +158,15 @@ BEGIN
 END;
 $$;
 
--- 2. O Gatilho
+-- conectar
 CREATE TRIGGER trg_validar_data_servicos
 BEFORE INSERT OR UPDATE ON public.servicos
 FOR EACH ROW
 EXECUTE FUNCTION public.validar_data_servicos();
 
--- Tem de falhar
+-- Teste
 INSERT INTO public.servicos (id_animal, id_funcionario, data_servicos, tipo_servico, preco) 
 VALUES (1, 1, '2020-01-01 10:00:00', 'Banho', 25.00);
-
-
-
-
 
 
 
@@ -163,14 +190,20 @@ BEGIN
 END;
 $$;
 
---TRIGGERS
-
+--conexao trigger
 CREATE TRIGGER trg_verificar_adocao
 BEFORE INSERT ON public.adocao
 FOR EACH ROW EXECUTE FUNCTION public.verificar_adocao();
 
---Atualizar o Estado Automaticamente (RESGATE)
+select *
+from public.animal
 
+INSERT INTO public.adocao (id_animal)
+VALUES (2);
+
+
+
+--Atualizar o Estado Automaticamente (RESGATE)
 CREATE OR REPLACE FUNCTION public.update_estado_resgate()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -181,14 +214,15 @@ BEGIN
 END;
 $$;
 
---TRIGGER
-
+--Trigger automatico após inserção na tabela resgate
 CREATE TRIGGER trg_update_estado_resgate
 AFTER INSERT ON public.resgate
 FOR EACH ROW EXECUTE FUNCTION public.update_estado_resgate();
 
---Atualizar o Estado Automaticamente (ADOCAO)
 
+
+
+--Atualizar o Estado Automaticamente (ADOCAO) IGUAL AO ANTERIOR
 CREATE OR REPLACE FUNCTION public.update_estado_adocao()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -199,14 +233,14 @@ BEGIN
 END;
 $$;
 
---TRIGGER
-
+--TRIGGER 
 CREATE TRIGGER trg_update_estado_adocao
 AFTER INSERT ON public.adocao
 FOR EACH ROW EXECUTE FUNCTION public.update_estado_adocao();
 
---Marcar consulta
 
+
+--Marcaçao de consulta
 CREATE OR REPLACE FUNCTION public.marcar_consulta_restrisoes()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -219,25 +253,25 @@ DECLARE
     consulta_existente BOOLEAN;
 
 BEGIN
-    -- REGRA 1: Viagem no Tempo
+    -- nao marcar no passado
     IF NEW.data_consulta < CURRENT_TIMESTAMP THEN
         RAISE EXCEPTION 'Operação bloqueada: Não é possível marcar consultas no passado (%).', NEW.data_consulta;
     END IF;
 
-    -- ********************************************************************
-    -- PASSO CHAVE: Obter o id_colaborador correspondente ao id_veterinario
-    -- ********************************************************************
+
+    -- Obter o id_colaborador correspondente ao id_veterinario
     SELECT id_colaborador 
 	INTO v_id_colaborador
     FROM public.colaborador
     WHERE id_veterinario = NEW.id_veterinario;
-
+	
+	--qualquer vet é sempre registado como colaborador no entanto tem aqui uma testagem
     IF v_id_colaborador IS NULL THEN
         RAISE EXCEPTION 'Operação bloqueada: O veterinário (ID %) não está registado como colaborador.', NEW.id_veterinario;
     END IF;
 
-    -- REGRA 2: Horário de Trabalho
-    -- Converter o DOW (Day of Week) para o formato do teu ENUM
+    -- Horário de Trabalho
+    -- Converter o DOW (Day of Week) para o formato do ENUM
     v_dia_semana := CASE EXTRACT(DOW FROM NEW.data_consulta)
         WHEN 0 THEN CAST('Domingo' AS public.dia_semana)
 		WHEN 1 THEN CAST('Segunda' AS public.dia_semana)
@@ -248,25 +282,25 @@ BEGIN
 		WHEN 6 THEN CAST('Sábado' AS public.dia_semana)
     END;
 
-    -- Verifica se o veterinário tem turno e se a consulta CABE inteira no turno
+    -- Verifica se o veterinário tem turno e se a consulta cabe inteira no turno
     horario_valido := EXISTS (
         SELECT 1
         FROM public.horario
-        WHERE id_colaborador = v_id_colaborador  -- Usa o ID correto!
+        WHERE id_colaborador = v_id_colaborador  -- id que temos agora
           AND dia_semana = v_dia_semana
-          AND CAST(NEW.data_consulta AS TIME) >= hora_entrada
-          AND CAST((NEW.data_consulta + INTERVAL '30 minutes') AS TIME) <= hora_saida
+          AND CAST(NEW.data_consulta AS TIME) >= hora_entrada --confirma se é maior que a data de entrada 
+          AND CAST((NEW.data_consulta + INTERVAL '30 minutes') AS TIME) <= hora_saida --trata sempre o bloco de 30min
     );
 
     IF NOT horario_valido THEN
         RAISE EXCEPTION 'Operação bloqueada: A consulta está fora do horário de trabalho do veterinário ou é dia de folga.';
     END IF;
 
-    -- REGRA 3: Verifica se o veterinário está de Férias ou Falta
+    -- Verificar se o veterinário está de Férias ou Falta
     	veterinario_indisponivel := EXISTS(
         SELECT 1
         FROM public.ocorrencia_laboral
-        WHERE id_colaborador = v_id_colaborador  -- Usa o ID correto!
+        WHERE id_colaborador = v_id_colaborador  -- id atual
           -- Faz o cast de TIMESTAMP para DATE para comparar corretamente
 		  AND CAST (NEW.data_consulta AS DATE) >= data_inicio
           AND CAST (NEW.data_consulta AS DATE) <= data_fim
@@ -276,7 +310,7 @@ BEGIN
         RAISE EXCEPTION 'Operação bloqueada: O veterinário encontra-se indisponível (Férias/Faltas/Folga) na data solicitada.';
     END IF;
     
-    -- REGRA 4: Sobreposição de Consultas (30 minutos)
+    -- Sobreposição de Consultas (30 minutos)
     consulta_existente := EXISTS (
         SELECT 1 
         FROM public.consulta
@@ -294,8 +328,7 @@ BEGIN
 END;
 $$;
 
---TRIGGER
-
+--TRIGGER conectado a tabela cosnsulta
 CREATE TRIGGER trg_marcar_consulta_restrisoes
 BEFORE INSERT OR UPDATE ON public.consulta
 FOR EACH ROW EXECUTE FUNCTION public.marcar_consulta_restrisoes();
@@ -315,12 +348,12 @@ DECLARE
     servico_existente BOOLEAN;
 
 BEGIN
-    -- REGRA DE OURO PARA CANCELAMENTOS: Se for um UPDATE apenas para cancelar, deixa passar logo!
+    -- Se for um UPDATE apenas para cancelar, deixa passar logo
     IF TG_OP = 'UPDATE' AND NEW.estado = 'Cancelado' THEN
         RETURN NEW;
     END IF;
 
-    -- REGRA 1: Viagem no Tempo
+    -- 
     IF NEW.data_servicos < CURRENT_TIMESTAMP THEN
         RAISE EXCEPTION 'Operação bloqueada: Não é possível marcar serviços no passado (%).', NEW.data_servicos; -- <-- ESTAVA AQUI O ERRO (data_consulta)
     END IF;
@@ -334,7 +367,7 @@ BEGIN
         RAISE EXCEPTION 'Operação bloqueada: O funcionário (ID %) não está registado como colaborador.', NEW.id_funcionario;
     END IF;
 
-    -- REGRA 2: Horário de Trabalho
+    -- Horário de Trabalho
     v_dia_semana := CASE EXTRACT(DOW FROM NEW.data_servicos)
         WHEN 0 THEN CAST('Domingo' AS public.dia_semana)
         WHEN 1 THEN CAST('Segunda' AS public.dia_semana)
@@ -357,7 +390,7 @@ BEGIN
         RAISE EXCEPTION 'Operação bloqueada: O serviço está fora do horário de trabalho do funcionário ou é dia de folga.';
     END IF;
 
-    -- REGRA 3: Verifica se o funcionário está de Férias ou Falta
+    -- Verifica se o funcionário está de Férias ou Falta
     funcionario_indisponivel := EXISTS(
         SELECT 1 FROM public.ocorrencia_laboral
         WHERE id_colaborador = v_id_colaborador
@@ -369,7 +402,7 @@ BEGIN
         RAISE EXCEPTION 'Operação bloqueada: O funcionário encontra-se indisponível (Férias/Faltas/Folga) na data solicitada.';
     END IF;
     
-    -- REGRA 4: Sobreposição de Serviços (Ignora os cancelados)
+    -- Sobreposição de Serviços (Ignora os cancelados)
     servico_existente := EXISTS (
         SELECT 1 
         FROM public.servicos
@@ -388,39 +421,39 @@ BEGIN
 END;
 $$;
 
---TRIGGER
-
+--TRIGGER na de servicos
 CREATE TRIGGER trg_marcar_servicos_restrisoes
 BEFORE INSERT OR UPDATE ON public.servicos
 FOR EACH ROW EXECUTE FUNCTION public.marcar_servicos_restrisoes();
 
---funcao sobreposicao ferias veterinario
 
+
+--funcao sobreposicao ferias veterinario
 CREATE OR REPLACE FUNCTION public.validar_sobreposicao_ferias_folgas_vet()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_id_veterinario INT;  -- <-- AQUI ESTÁ A CORREÇÃO! Declaramos a variável.
+    v_id_veterinario INT;  
     sobreposicao_existente BOOLEAN;
 BEGIN
 
-    -- 1. Só validar férias/folgas
+    -- Só validar férias/folgas
     IF NEW.tipo NOT IN ('Ferias', 'Folgas') THEN
         RETURN NEW;
     END IF;
 
-    -- 2. Verificar se é veterinário
+    -- Verificar se é veterinário
     SELECT id_veterinario INTO v_id_veterinario
     FROM public.colaborador
     WHERE id_colaborador = NEW.id_colaborador;
 
-    -- Se o ID for NULL (não é veterinário) → deixa passar
+    -- Se o ID for NULL (não é veterinário) deixa passar
     IF v_id_veterinario IS NULL THEN
         RETURN NEW;
     END IF;
 
-    -- 3. Verificar sobreposição
+    -- Verificar sobreposição
     sobreposicao_existente := EXISTS (
         SELECT 1
         FROM public.ocorrencia_laboral
@@ -441,10 +474,12 @@ BEGIN
 END;
 $$;
 
---trigger
+--trigger na tabela de ocorrencias
 CREATE TRIGGER trg_validar_sobreposicao_ferias_folgas_vet
 BEFORE INSERT OR UPDATE ON public.ocorrencia_laboral
 FOR EACH ROW EXECUTE FUNCTION public.validar_sobreposicao_ferias_folgas_vet();
+
+
 
 --funcao sobreposicao funcionario
 CREATE OR REPLACE FUNCTION public.validar_sobreposicao_ferias_folgas_func()
@@ -452,26 +487,26 @@ RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    f_id_funcionario INT;  -- <-- AQUI ESTÁ A CORREÇÃO! Declaramos a variável.
+    f_id_funcionario INT;  
     sobreposicao_existente BOOLEAN;
 BEGIN
 
-    -- 1. Só validar férias/folgas
+    --Só validar férias/folgas
     IF NEW.tipo NOT IN ('Ferias', 'Folgas') THEN
         RETURN NEW;
     END IF;
 
-    -- 2. Verificar se é funcionario
+    -- Verificar se é funcionario
     SELECT id_funcionario INTO f_id_funcionario
     FROM public.colaborador
     WHERE id_colaborador = NEW.id_colaborador;
 
-    -- Se o ID for NULL (não é funcionario) → deixa passar
+    -- Se o ID for NULL (não é funcionario) deixa passar
     IF f_id_funcionario IS NULL THEN
         RETURN NEW;
     END IF;
 
-    -- 3. Verificar sobreposição
+    -- Verificar sobreposição
     sobreposicao_existente := EXISTS (
         SELECT 1
         FROM public.ocorrencia_laboral
@@ -492,7 +527,7 @@ BEGIN
 END;
 $$;
 
---trigger
+--trigger na mesma tabela mas pra funcionario
 CREATE TRIGGER trg_validar_sobreposicao_ferias_folgas_func
 BEFORE INSERT OR UPDATE ON public.ocorrencia_laboral
 FOR EACH ROW EXECUTE FUNCTION public.validar_sobreposicao_ferias_folgas_func();
@@ -525,16 +560,13 @@ BEGIN
 END;
 $$;
 
---trigger
+--trigger na consulta
 CREATE TRIGGER trg_validar_sobreposicao_consulta_animal
 BEFORE INSERT OR UPDATE ON public.consulta
 FOR EACH ROW EXECUTE FUNCTION public.validar_sobreposicao_consulta_animal();
 
-DROP FUNCTION public.validar_sobreposicao_consulta_animal
-DROP TRIGGER trg_validar_sobreposicao_consulta_animal ON public.consulta;
 
 --FUNCAO sobreposicao de horario
-
 CREATE OR REPLACE FUNCTION public.validar_sobreposicao_horario()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -561,17 +593,13 @@ BEGIN
 END;
 $$;
 
---TRIGGER
+--TRIGGER na tabela horario
 CREATE TRIGGER trg_validar_sobreposicao_horario
 BEFORE INSERT OR UPDATE ON public.horario
 FOR EACH ROW EXECUTE FUNCTION public.validar_sobreposicao_horario();
 
-DROP FUNCTION public.validar_sobreposicao_horario
-DROP TRIGGER trg_validar_sobreposicao_horario ON public.horario;
 
-
--- Função de Validação da Escala
-
+-- Função de Validação da Escala(disponibilidade no fundo)
 CREATE OR REPLACE FUNCTION public.verificar_escalas_dia(dia_alvo dia_semana)
 RETURNS TEXT
 LANGUAGE plpgsql
@@ -599,7 +627,7 @@ BEGIN
 	hora_atual_f := hora_abertura_f;
 	WHILE hora_atual_f < hora_fecho_f LOOP
 
-	-- Teste A: Há algum Veterinário a trabalhar a esta hora?
+	-- Há algum Veterinário a trabalhar a esta hora?
 		
 		SELECT COUNT (v.id_veterinario) INTO total_vets
 		FROM public.horario h
@@ -618,7 +646,7 @@ BEGIN
             RAISE EXCEPTION 'Escala Inválida: Falta um Veterinário à % às %.', dia_alvo, hora_atual_f;
         END IF;
 			
-	-- Teste B: Há algum Funcionario a trabalhar a esta hora?
+	-- Há algum Funcionario a trabalhar a esta hora?
 
 		SELECT COUNT (f.id_funcionario) INTO total_funci
 		FROM public.horario h
@@ -674,7 +702,11 @@ BEGIN
 
 END;
 $$;
-SELECT public.verificar_escalas_dia('Segunda');
+
+
+
+
+
 --***********************************************************************************
 --Login colab
 --***********************************************************************************
@@ -947,7 +979,6 @@ $$;
 
 
 --funcao autenticacao de login(email e passe)
-drop function public.realizar_login_cliente
 
 CREATE OR REPLACE FUNCTION public.realizar_login_cliente(
     p_email VARCHAR(200),
@@ -1225,8 +1256,6 @@ BEGIN
 END;
 $$;
 
-
-SELECT public.eliminar_consulta(1);
 
 
 
@@ -1535,231 +1564,388 @@ SELECT public.inserir_animal(
 -- Dá reset ao SERIAL
 SELECT setval(pg_get_serial_sequence('public.animal', 'id_animal'), COALESCE(MAX(id_animal), 1)) FROM public.animal;
 
-
-
-
--- Funções de UPDATE de dados em tabelas
-
-
-
-
--- Update aniaml geral
-CREATE OR REPLACE FUNCTION public.atualizar_animal_geral(
-    p_id_animal INT,
-    p_id_cliente INT,
-    p_nome VARCHAR DEFAULT NULL,
-    p_especie VARCHAR DEFAULT NULL,
-    p_raca VARCHAR DEFAULT NULL,
-    p_sexo sexo DEFAULT NULL,
-    p_data_nascimento DATE DEFAULT NULL,
-    p_estado estado DEFAULT NULL
-)
-RETURNS BOOLEAN
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    -- O UPDATE com a dupla verificação de segurança ID do animal e ID do dono
-    -- O COALESCE garante que se o site enviar NULL, mantém o valor que já lá estava
-    UPDATE public.animal
-    SET 
-        nome = COALESCE(p_nome, nome),
-        especie = COALESCE(p_especie, especie),
-        raca = COALESCE(p_raca, raca),
-        sexo = COALESCE(p_sexo, sexo),
-        data_nascimento = COALESCE(p_data_nascimento, data_nascimento),
-        estado = COALESCE(p_estado, estado)
-    WHERE id_animal = p_id_animal 
-      AND id_cliente = p_id_cliente;
-
-    -- O comando FOUND do PostgreSQL verifica se a operação afetou alguma linha.
-    -- Se afetou, retorna TRUE (sucesso). Se não afetou (ex: animal não é daquele cliente), retorna FALSE.
-    IF FOUND THEN
-        RETURN TRUE;
-    ELSE
-        RETURN FALSE;
-    END IF;
-END;
-$$;
-
 select *
-from public.animal
-
-SELECT public.atualizar_animal_geral(
-    1,                  -- 1. ID do Animal
-    1,                  -- 2. ID do Cliente
-    'Qimk',             -- 3. Nome (Faltava este!)
-    'Cão',              -- 4. Espécie
-    NULL ,          -- 5. Raça
-    'F',                -- 6. Sexo
-    '2022-05-10',       -- 7. Data de Nascimento
-    'Resgatado'         -- 8. Estado
-);
+from public.horario h inner join public
 
 
 
--- Update tabela cliente com coalesce TESTADA
--- especial cuidado com o nif pois não pode ser trocado com 2 tretas
-CREATE OR REPLACE FUNCTION public.atualizar_cliente_geral(
-    p_id_cliente INT,
-    p_nome VARCHAR DEFAULT NULL,
-    p_morada VARCHAR DEFAULT NULL,
-    p_email VARCHAR DEFAULT NULL,
-    p_nif BIGINT DEFAULT NULL,      -- Permitimos o nif para correções
-    p_contacto BIGINT DEFAULT NULL
-)
-RETURNS BOOLEAN
+CREATE OR REPLACE PROCEDURE public.verificar_estado_animais()
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    v_animal RECORD;
+    
+    -- declarar o crusosr diretamente na tabela que queremos
+    c_animais CURSOR FOR 
+        SELECT id_animal, nome, especie, estado 
+        FROM public.animal 
+        ORDER BY id_animal;
 BEGIN
-    -- O COALESCE mantém o valor antigo se o novo for NULL (não enviado)
-    UPDATE public.cliente
-    SET 
-        nome = COALESCE(p_nome, nome),
-        morada = COALESCE(p_morada, morada),
-        email = COALESCE(p_email, email),
-        nif = COALESCE(p_nif, nif),
-        contacto = COALESCE(p_contacto, contacto)
-    WHERE id_cliente = p_id_cliente;
+    RAISE NOTICE '--- INÍCIO DO RELATÓRIO DE ESTADO DOS ANIMAIS ---';
 
-    IF FOUND THEN
-        RETURN TRUE;
-    ELSE
-        RETURN FALSE;
-    END IF;
-EXCEPTION 
-    WHEN unique_violation THEN
-        -- Se o novo NIF ou Email já existirem noutro cliente, a função trava aqui
-        RAISE EXCEPTION 'Erro: O NIF ou Email introduzido já pertence a outro cliente.';
-    WHEN check_violation THEN
-        -- Se o NIF/Contacto não tiver 9 dígitos
-        RAISE EXCEPTION 'Erro: O NIF ou Contacto deve ter exatamente 9 dígitos.';
-END;
-$$;
+    -- abrir o cursor declarado
+    OPEN c_animais;
 
-select *
-from public.cliente
+    --Vamos percorre a lista
+    LOOP
+        -- Tira a próxima linha da memória e guarda na variável 'v_animal'
+        FETCH c_animais INTO v_animal;
 
-SELECT public.atualizar_cliente_geral(
-    1,                               -- ID do cliente a alterar
-    'Carlos Mendes Atualizado',      -- Novo nome
-    'Rua da Base de Dados, 404',     -- Nova morada
-    'carlos.novo@email.com',         -- Novo email
-    123456789,                       -- NIF válido
-    987654321                        -- Contacto válido
-);
+        
+        EXIT WHEN NOT FOUND;
 
+        
+        IF v_animal.estado = 'Morto' THEN
+            RAISE NOTICE '[ID: %] O animal % (%) encontra-se registado como FALECIDO.', 
+                         v_animal.id_animal, v_animal.nome, v_animal.especie;
+                         
+        ELSIF v_animal.estado = 'Adotado' THEN
+            RAISE NOTICE '[ID: %] Sucesso: O animal % (%) já foi felizmente ADOTADO.', 
+                         v_animal.id_animal, v_animal.nome, v_animal.especie;
+                         
+        ELSIF v_animal.estado = 'Resgatado' THEN
+            RAISE NOTICE '[ID: %] Ação Necessária: O animal % (%) está RESGATADO na clínica.', 
+                         v_animal.id_animal, v_animal.nome, v_animal.especie;
+                         
+        ELSE 
+            RAISE NOTICE '[ID: %] Info: O animal % (%) é um animal DOMÉSTICO acompanhado.', 
+                         v_animal.id_animal, v_animal.nome, v_animal.especie;
+        END IF;
 
+    END LOOP;
 
--- Update tabela funcionario TESTADA
-CREATE OR REPLACE FUNCTION public.atualizar_funcionario_geral(
-    p_id_funcionario INT,
-    p_nome VARCHAR DEFAULT NULL,
-    p_morada VARCHAR DEFAULT NULL,
-    p_email VARCHAR DEFAULT NULL,
-    p_nif BIGINT DEFAULT NULL,
-    p_contacto BIGINT DEFAULT NULL,
-    p_cargo VARCHAR DEFAULT NULL
-)
-RETURNS BOOLEAN
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    -- O COALESCE mantém o valor antigo se o site enviar NULL num dos campos
-    UPDATE public.funcionario
-    SET 
-        nome = COALESCE(p_nome, nome),
-        morada = COALESCE(p_morada, morada),
-        email = COALESCE(p_email, email),
-        nif = COALESCE(p_nif, nif),
-        contacto = COALESCE(p_contacto, contacto),
-        cargo = COALESCE(p_cargo, cargo)
-    WHERE id_funcionario = p_id_funcionario;
-
-    -- Confirma se encontrou o funcionário e atualizou
-    IF FOUND THEN
-        RETURN TRUE;
-    ELSE
-        RETURN FALSE;
-    END IF;
-EXCEPTION 
-    WHEN unique_violation THEN
-        -- Proteção contra roubo de NIF ou Contacto de outro colega
-        RAISE EXCEPTION 'Erro: O NIF ou Contacto introduzido já pertence a outro funcionário.';
-    WHEN check_violation THEN
-        -- Proteção dos 9 dígitos
-        RAISE EXCEPTION 'Erro: O NIF ou Contacto deve ter exatamente 9 dígitos.';
+    -- fechamos o cursor após ser usado
+    CLOSE c_animais;
+    
+    RAISE NOTICE '--- FIM DO RELATÓRIO ---';
 END;
 $$;
 
 
-select *
-from public.funcionario
 
---teste de alterar so uma coisa forma mais simples de atualizar apenas oq queremos
-SELECT public.atualizar_funcionario_geral(
-    p_id_funcionario => 1,
-    p_cargo => 'Diretor Clínico'
-);
-
-
--- MEsma coisa pro veterinario  TESTADA
-CREATE OR REPLACE FUNCTION public.atualizar_veterinario_geral(
-    p_id_veterinario INT,
-    p_nome VARCHAR DEFAULT NULL,
-    p_morada VARCHAR DEFAULT NULL,
-    p_contacto BIGINT DEFAULT NULL,
-    p_email VARCHAR DEFAULT NULL,
-    p_nif BIGINT DEFAULT NULL,
-    p_especialidade VARCHAR DEFAULT NULL
+-- obtem um funcionario de forma aleatória de acordo com o horário disponivel(para servicos)TESTADA
+CREATE OR REPLACE FUNCTION public.obter_funcionario_disponivel(
+    p_datas_verificacao TIMESTAMP[], 
+    p_data_inicio TIMESTAMP,         
+    p_multiplicador_duracao INT      
 )
-RETURNS BOOLEAN
+RETURNS INT 
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    v_id_funcionario INT;
 BEGIN
-    -- O COALESCE mantém o valor antigo se o site/sistema enviar NULL
-    UPDATE public.veterinario
-    SET 
-        nome = COALESCE(p_nome, nome),
-        morada = COALESCE(p_morada, morada),
-        contacto = COALESCE(p_contacto, contacto),
-        email = COALESCE(p_email, email),
-        nif = COALESCE(p_nif, nif),
-        especialidade = COALESCE(p_especialidade, especialidade)
-    WHERE id_veterinario = p_id_veterinario;
+    SELECT c.id_funcionario 
+    INTO v_id_funcionario
+    FROM public.colaborador c
+    JOIN public.horario h ON c.id_colaborador = h.id_colaborador
+    WHERE c.id_funcionario IS NOT NULL
+      -- 2. Verifica se o dia da semana bate certo com o turno do funcionário
+      AND h.dia_semana = CASE EXTRACT(DOW FROM p_data_inicio)
+          WHEN 0 THEN CAST('Domingo' AS public.dia_semana)
+          WHEN 1 THEN CAST('Segunda' AS public.dia_semana)
+          WHEN 2 THEN CAST('Terça' AS public.dia_semana)
+          WHEN 3 THEN CAST('Quarta' AS public.dia_semana)
+          WHEN 4 THEN CAST('Quinta' AS public.dia_semana)
+          WHEN 5 THEN CAST('Sexta' AS public.dia_semana)
+          WHEN 6 THEN CAST('Sábado' AS public.dia_semana)
+      END
+      -- 3. Verifica se a duração total dos serviços cabe dentro do turno
+      AND CAST(p_data_inicio AS TIME) >= h.hora_entrada
+      AND CAST((p_data_inicio + (p_multiplicador_duracao * INTERVAL '30 minutes')) AS TIME) <= h.hora_saida
+      -- 4. Garante que ele não está noutro banho/tosquia
+      AND c.id_funcionario NOT IN (
+          SELECT id_funcionario 
+          FROM public.servicos 
+          WHERE data_servicos = ANY(p_datas_verificacao)
+          AND id_funcionario IS NOT NULL
+      )
+    ORDER BY RANDOM() 
+    LIMIT 1;
 
-    -- Confirma se encontrou o veterinário e atualizou
-    IF FOUND THEN
-        RETURN TRUE;
-    ELSE
-        RETURN FALSE;
-    END IF;
-EXCEPTION 
-    WHEN unique_violation THEN
-        -- Trava se tentarem usar um NIF, Email ou Contacto que já exista noutro vet
-        RAISE EXCEPTION 'Erro: O NIF, Contacto ou Email introduzido já pertence a outro veterinário.';
-    WHEN check_violation THEN
-        -- Trava se o NIF ou Contacto não tiverem 9 dígitos
-        RAISE EXCEPTION 'Erro: O NIF ou Contacto deve ter exatamente 9 dígitos.';
+    RETURN v_id_funcionario;
 END;
 $$;
 
-select*
-from public.veterinario
 
-SELECT public.atualizar_veterinario_geral(
-    1,                               -- ID do veterinário
-    'Dra. Sofia Martins',            -- Novo nome
-    'Rua dos Animais, 123',          -- Nova morada
-    912345678,                       -- Contacto
-    'sofia.martins@clinica.pt',      -- Email
-    222333444,                       -- NIF
-    'Cirurgia Geral'                 -- Especialidade
-);
+-- igual mas para alocar um veterinario aleatoriamente So usamos a data de inicio pq so temos consultas de 30min sempre
+CREATE OR REPLACE FUNCTION public.obter_veterinario_disponivel(
+    p_data_inicio TIMESTAMP 
+)
+RETURNS INT 
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_id_veterinario INT;
+BEGIN
+    SELECT c.id_veterinario 
+    INTO v_id_veterinario
+    FROM public.colaborador c
+    JOIN public.horario h ON c.id_colaborador = h.id_colaborador
+    WHERE c.id_veterinario IS NOT NULL
+      -- Verifica se o dia da semana bate certo com o turno do veterinário
+      AND h.dia_semana = CASE EXTRACT(DOW FROM p_data_inicio)
+          WHEN 0 THEN CAST('Domingo' AS public.dia_semana)
+          WHEN 1 THEN CAST('Segunda' AS public.dia_semana)
+          WHEN 2 THEN CAST('Terça' AS public.dia_semana)
+          WHEN 3 THEN CAST('Quarta' AS public.dia_semana)
+          WHEN 4 THEN CAST('Quinta' AS public.dia_semana)
+          WHEN 5 THEN CAST('Sexta' AS public.dia_semana)
+          WHEN 6 THEN CAST('Sábado' AS public.dia_semana)
+      END
+      -- Verifica se a consulta (assumindo duração fixa de 30 mins) cabe dentro do turno
+      AND CAST(p_data_inicio AS TIME) >= h.hora_entrada
+      AND CAST((p_data_inicio + INTERVAL '30 minutes') AS TIME) <= h.hora_saida
+      -- Garante que não há sobreposição com outras consultas do mesmo veterinário
+      AND NOT EXISTS (
+          SELECT 1 FROM public.consulta con
+          WHERE con.id_veterinario = c.id_veterinario
+            AND (con.data_consulta, con.data_consulta + INTERVAL '30 minutes') 
+                OVERLAPS (p_data_inicio, p_data_inicio + INTERVAL '30 minutes')
+      )
+    ORDER BY RANDOM() 
+    LIMIT 1;
 
-SELECT public.atualizar_veterinario_geral(
-    p_id_veterinario => 1,
-    p_especialidade => 'Ortopedia'
-);
+    RETURN v_id_veterinario;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.listar_consultas_veterinario(
+    p_id_veterinario INT -- Corresponde ao $1
+)
+RETURNS TABLE (
+    data_consulta TIMESTAMP,
+    motivo VARCHAR,        -- Ajusta para o tipo exato da tua tabela (ex: TEXT ou VARCHAR(255))
+    nome_cliente VARCHAR,  -- Corresponde a cl.nome
+    nome_animal VARCHAR,   -- Corresponde a a.animal
+    especie VARCHAR,
+    raca VARCHAR
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        c.data_consulta,
+        c.motivo,
+        cl.nome,
+        a.animal,
+        a.especie,
+        a.raca
+    FROM public.veterinario v
+    INNER JOIN public.consulta c
+        ON v.id_veterinario = c.id_veterinario
+    INNER JOIN public.animal a
+        ON c.id_animal = a.id_animal
+    INNER JOIN public.cliente cl
+        ON a.id_cliente = cl.id_cliente
+    WHERE v.id_veterinario = p_id_veterinario
+    ORDER BY c.data_consulta DESC;
+END;
+$$;
+
+-- Substitui o "1" pelo ID de um veterinário que tenhas na base de dados
+SELECT * FROM public.listar_consultas_veterinario(4);
 
 
--- O mesmo para outr0o
+
+-- obter um veterinario de forma aleatória para uma consulta
+CREATE OR REPLACE FUNCTION obter_veterinario_consulta_random(p_data_consulta TIMESTAMP) 
+RETURNS INT 
+LANGUAGE sql 
+AS $$
+    SELECT c.id_veterinario 
+    FROM public.colaborador c
+    JOIN public.horario h ON c.id_colaborador = h.id_colaborador
+    WHERE c.id_veterinario IS NOT NULL
+      AND h.dia_semana = CASE EXTRACT(DOW FROM p_data_consulta)
+          WHEN 0 THEN 'Domingo'::public.dia_semana
+          WHEN 1 THEN 'Segunda'::public.dia_semana
+          WHEN 2 THEN 'Terça'::public.dia_semana
+          WHEN 3 THEN 'Quarta'::public.dia_semana
+          WHEN 4 THEN 'Quinta'::public.dia_semana
+          WHEN 5 THEN 'Sexta'::public.dia_semana
+          WHEN 6 THEN 'Sábado'::public.dia_semana
+      END
+      AND p_data_consulta::TIME >= h.hora_entrada
+      AND (p_data_consulta + INTERVAL '30 minutes')::TIME <= h.hora_saida
+      AND NOT EXISTS (
+          SELECT 1 FROM public.consulta con
+          WHERE con.id_veterinario = c.id_veterinario
+            AND (con.data_consulta, con.data_consulta + INTERVAL '30 minutes') 
+                OVERLAPS (p_data_consulta, p_data_consulta + INTERVAL '30 minutes')
+      )
+    ORDER BY RANDOM() 
+    LIMIT 1;
+$$;
+
+
+--Obter funcionario aleatório para um servico
+CREATE OR REPLACE FUNCTION obter_funcionario_servico_random(
+    p_timestamps_blocos TIMESTAMP[], 
+    p_data_inicio TIMESTAMP, 
+    p_total_blocos INT
+) 
+RETURNS INT 
+LANGUAGE sql 
+AS $$
+    SELECT c.id_funcionario 
+    FROM public.colaborador c
+    JOIN public.horario h ON c.id_colaborador = h.id_colaborador
+    WHERE c.id_funcionario IS NOT NULL
+      AND h.dia_semana = CASE EXTRACT(DOW FROM p_data_inicio)
+          WHEN 0 THEN 'Domingo'::public.dia_semana
+          WHEN 1 THEN 'Segunda'::public.dia_semana
+          WHEN 2 THEN 'Terça'::public.dia_semana
+          WHEN 3 THEN 'Quarta'::public.dia_semana
+          WHEN 4 THEN 'Quinta'::public.dia_semana
+          WHEN 5 THEN 'Sexta'::public.dia_semana
+          WHEN 6 THEN 'Sábado'::public.dia_semana
+      END
+      AND p_data_inicio::TIME >= h.hora_entrada
+      AND (p_data_inicio + (p_total_blocos * INTERVAL '30 minutes'))::TIME <= h.hora_saida
+      AND c.id_funcionario NOT IN (
+          SELECT id_funcionario 
+          FROM public.servicos 
+          WHERE data_servicos = ANY(p_timestamps_blocos)
+      )
+    ORDER BY RANDOM() 
+    LIMIT 1;
+$$;
+
+
+
+
+CALL public.gerar_cursor_relatorio_mensal();
+
+
+SELECT * 
+FROM public.relatorio_clinico_mensal;
+
+
+
+-- Esta funcional no entanto tem um problema, ao usar o loop para um exemplo de 10mil consultas vou ter problemas de otimização, no entanto
+CREATE OR REPLACE PROCEDURE public.gerar_cursor_relatorio_mensal()
+LANGUAGE plpgsql
+AS $$
+DECLARE -- cursor declarado
+    v_cursor CURSOR FOR 
+        SELECT 
+            c.nome AS nome_cliente, 
+            a.nome AS nome_animal, 
+            EXTRACT(MONTH FROM cons.data_consulta) AS mes, -- mes e ano de cada consulta
+            EXTRACT(YEAR FROM cons.data_consulta) AS ano,
+            cons.id_consulta
+        FROM public.consulta cons
+        INNER JOIN public.animal a ON cons.id_animal = a.id_animal
+        INNER JOIN public.cliente c ON a.id_cliente = c.id_cliente;
+        
+    -- ve onde ta o cursor atualmente
+    v_linha RECORD;
+    
+    v_string_prescricoes TEXT;
+    v_string_exames TEXT;
+BEGIN
+    -- Limpa a tabela de destino
+    TRUNCATE TABLE public.relatorio_clinico_mensal RESTART IDENTITY;
+
+    -- Abrir o cursor declarado
+    OPEN v_cursor;
+    
+    -- Inicia o loop de procurar 
+    LOOP
+        -- Ler a próxima linha e carregar os dados para a v_linha
+        FETCH v_cursor INTO v_linha;
+        
+        -- Sair sempre que nao há nada
+        EXIT WHEN NOT FOUND;
+        
+        -- Construir a string de Prescrições medicamentos + quantidade
+        SELECT string_agg(m.nome || ' (Qtd: ' || p.quantidade || ')', ', ') --agrega todas
+        INTO v_string_prescricoes
+        FROM public.prescreve p
+        INNER JOIN public.medicamento m ON p.id_medicamento = m.id_medicamento
+        WHERE p.id_consulta = v_linha.id_consulta; -- no fundo coloca naas variaveis a nossa String com todos os dados
+
+        -- mesma função da anterior só que para os exames
+        SELECT string_agg(e.nome || ' - ' || o.descricao, ', ')
+        INTO v_string_exames
+        FROM public.orienta o
+        INNER JOIN public.exame e ON o.id_exame = e.id_exame
+        WHERE o.id_consulta = v_linha.id_consulta;
+        
+        -- Guarda tudo na tabela
+        -- usamos coalesce para evitar dados nulos zeros e afins, passando a "sem prescrições" " sem exames"
+        INSERT INTO public.relatorio_clinico_mensal 
+            (nome_cliente, nome_animal, mes, ano, lista_prescricoes, lista_exames)
+        VALUES (
+            v_linha.nome_cliente, 
+            v_linha.nome_animal, 
+            v_linha.mes, 
+            v_linha.ano, 
+            COALESCE(v_string_prescricoes, 'Sem prescrições'),
+            COALESCE(v_string_exames, 'Sem exames')
+        );
+        
+    END LOOP;
+    
+    CLOSE v_cursor;
+END;
+$$;
+
+
+
+-- so para ver
+SELECT 
+    c.id_consulta,
+    a.nome AS nome_animal,
+    c.motivo,
+    c.estado,
+    c.data_consulta AS data_atual,
+    
+    -- LAG para ir buscar a data da última vez que cá veio
+    LAG(c.data_consulta) OVER (
+        PARTITION BY c.id_animal 
+        ORDER BY c.data_consulta
+    ) AS data_ultima_consulta,
+
+    -- Calcula os dias exatos que passaram entre as duas consultas
+    EXTRACT(DAY FROM (
+        c.data_consulta - LAG(c.data_consulta) OVER (
+            PARTITION BY c.id_animal 
+            ORDER BY c.data_consulta
+        )
+    )) AS dias_entre_consultas
+
+FROM 
+    public.consulta c
+INNER JOIN 
+    public.animal a ON c.id_animal = a.id_animal
+ORDER BY 
+    a.nome, c.data_consulta;
+
+
+
+
+
+
+-- rank de consultas dos veterinarios
+WITH RankingVeterinarios AS (
+    SELECT 
+        v.id_veterinario,
+        v.nome AS nome_veterinario,
+        COUNT(c.id_consulta) AS total_consultas,
+        
+        DENSE_RANK() OVER (
+            ORDER BY COUNT(c.id_consulta) DESC
+        ) AS posicao_ranking
+        
+    FROM 
+        public.consulta c
+    INNER JOIN 
+        public.veterinario v ON c.id_veterinario = v.id_veterinario
+    GROUP BY 
+        v.id_veterinario, v.nome
+)
+
+SELECT * FROM RankingVeterinarios;

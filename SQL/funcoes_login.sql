@@ -1,31 +1,47 @@
 --***********************************************************************************
---Login colab
+--Login colaborador
 --***********************************************************************************
+
 --funcao autenticacao de login(email e passe)
 --funcao logout manual do dispositivo
 --funcao logout de todos os dispositivos
 --funcao logout automatico 12h(sessao fantasma)
 --funcao para alterar palavra passe
+--funcao alterar email colaborador
 --funcao verificar se a sessao esta aberta
 --funcao de suspender conta(despedimento)
 --funcao reativar conta colab
 
+--***********************************************************************************
+--Login cliente
+--***********************************************************************************
 
 --funcao autenticacao de login(email e passe)
+--funcao logout no dispositivo
+--funcao logout em tds os dispositivos cli
+--funcao para alterar palavra passe
+--funcao alterar email
+--funcao verificar se o email ja foi registado(colab e cli)
+--funcao desativar conta cliente
+--funcao reativar conta cliente
 
+
+--funcao login
 CREATE OR REPLACE FUNCTION public.realizar_login_colab(
     p_email VARCHAR(200),
     p_palavra_passe VARCHAR(200)
 )
-RETURNS TABLE (id_resultado INT) 
+-- MUDANÇA AQUI: Agora devolvemos duas colunas para o teu Node.js
+RETURNS TABLE (id_colaborador INT, id_sessao INT) 
 LANGUAGE plpgsql
 AS $$
 DECLARE 
-	--1. Variaveis 
+    --1. Variaveis 
     v_id INT;
     v_conta_ativa BOOLEAN;
     v_sessao_aberta INT;
     v_login_anterior TIMESTAMP;
+    v_nova_sessao INT; -- MUDANÇA AQUI: Variável para guardar o ID gerado
 BEGIN
     -- 2. Validar as credenciais e ir buscar o estado da conta
     SELECT id_login_colaborador, conta_ativa
@@ -66,15 +82,17 @@ BEGIN
         END IF;
     END IF;
 
-    -- 7. Registar a nova entrada na tabela de logs
+    -- 7. MUDANÇA AQUI: Registar a nova entrada e "agarrar" o ID gerado com o RETURNING
     INSERT INTO public.logs (id_login_colaborador, data_hora_login)
-    VALUES (v_id, CURRENT_TIMESTAMP);
+    VALUES (v_id, CURRENT_TIMESTAMP)
+    RETURNING id_logs INTO v_nova_sessao;
 
-    -- 8. Retornar resultado
-    RETURN QUERY SELECT v_id;
+    -- 8. MUDANÇA AQUI: Retornar ambos os IDs
+    RETURN QUERY SELECT v_id, v_nova_sessao;
 
 END;
 $$;
+
 
 
 --funcao logout manual do dispositivo
