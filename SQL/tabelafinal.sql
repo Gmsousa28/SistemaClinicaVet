@@ -8,14 +8,12 @@ CREATE TYPE idade_aprox AS ENUM('Bebé','Juvenil','Adulto','Velho');
 CREATE TYPE tipo_ocorrencia AS ENUM('Falta','Atraso','Folgas','Ferias');
 CREATE TYPE dia_semana AS ENUM ('Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo');
 CREATE TYPE servico AS ENUM ('Banho', 'Tosquia', 'Banho e Tosquia');
-CREATE TYPE estado_consulta AS ENUM ('Agendada', 'Realizada', 'Cancelada');
 CREATE TYPE estado_servico AS ENUM ('Agendado', 'Realizado', 'Cancelado');
 
 
 -- ****************************************************************************
 -- 1. TABELAS INDEPENDENTES (Não dependem de outras tabelas - Sem Foreign Keys)
 -- ****************************************************************************
-
 CREATE TABLE public.horario_clinica (
     dia_semana dia_semana NOT NULL,
     hora_abertura TIME NOT NULL,
@@ -24,6 +22,8 @@ CREATE TABLE public.horario_clinica (
     CONSTRAINT chk_abertura_fecho CHECK (hora_fecho > hora_abertura)
 );
 
+select *
+from public.horario_clinica
 
 CREATE TABLE public.login_colaborador(
     id_login_colaborador SERIAL UNIQUE,
@@ -33,6 +33,9 @@ CREATE TABLE public.login_colaborador(
     CONSTRAINT login_colaborador_pk PRIMARY KEY(id_login_colaborador)
 );
 
+select *
+from public.login_colaborador
+
 CREATE TABLE public.login_cliente(
     id_login_cliente SERIAL UNIQUE,
     email VARCHAR(150) NOT NULL UNIQUE,
@@ -40,21 +43,28 @@ CREATE TABLE public.login_cliente(
 	conta_ativa BOOLEAN DEFAULT TRUE,
     CONSTRAINT login_cliente_pk PRIMARY KEY(id_login_cliente)
 );
+
+select *
+from public.login_cliente
 	
 CREATE TABLE public.medicamento(
     id_medicamento SERIAL UNIQUE,
     nome VARCHAR(150) NOT NULL,
-	valor_cobrado NUMERIC(10,2) NOT NULL
     CONSTRAINT medic_pk PRIMARY KEY(id_medicamento)
 );
 
-
+select *
+from public.medicamento
 
 CREATE TABLE public.exame(
     id_exame SERIAL UNIQUE,
     nome VARCHAR(150) NOT NULL,
+	valor_cobrado NUMERIC(10,2) NOT NULL
     CONSTRAINT exa_pk PRIMARY KEY(id_exame)
 );
+
+select *
+from public.exame
 
 CREATE TABLE public.funcionario (
     id_funcionario SERIAL UNIQUE,
@@ -67,7 +77,8 @@ CREATE TABLE public.funcionario (
     CONSTRAINT funci_pk PRIMARY KEY (id_funcionario)
 );
 
-
+select *
+from public.funcionario
 
 CREATE TABLE public.veterinario (
     id_veterinario SERIAL UNIQUE,
@@ -80,10 +91,13 @@ CREATE TABLE public.veterinario (
     CONSTRAINT veteri_pk PRIMARY KEY (id_veterinario)
 );
 
+select *
+from public.veterinario
+
 
 
 -- ****************************************************************************
--- 2. TABELAS DEPENDENTES (Contêm Foreign Keys para as tabelas independentes)
+-- TABELAS DEPENDENTES (Contêm Foreign Keys para as tabelas independentes)
 -- ****************************************************************************
 CREATE TABLE public.logs(
 	id_logs SERIAL UNIQUE,
@@ -92,21 +106,36 @@ CREATE TABLE public.logs(
 	CONSTRAINT logs_pk PRIMARY KEY(id_logs)
 );
 
-ALTER TABLE public.logs ADD COLUMN id_login_colaborador INT NULL;
+select *
+from public.logs
 
+ALTER TABLE public.logs ADD COLUMN id_login_colaborador INT NULL;
 ALTER TABLE public.logs
 ADD CONSTRAINT logs_log_colab_fk 
 FOREIGN KEY (id_login_colaborador)
 REFERENCES public.login_colaborador(id_login_colaborador);
 
-ALTER TABLE public.logs ADD COLUMN id_login_cliente INT NULL;
 
+ALTER TABLE public.logs ADD COLUMN id_login_cliente INT NULL;
 ALTER TABLE public.logs
 ADD CONSTRAINT logs_log_cli_fk 
 FOREIGN KEY (id_login_cliente)
 REFERENCES public.login_cliente(id_login_cliente);
 
 
+
+CREATE TABLE public.logs_gerais (
+    id_log_geral SERIAL UNIQUE,
+    id_logs INT NOT NULL, 
+    tabela_afetada VARCHAR(150) NOT NULL,
+    acao VARCHAR(50) NOT NULL,
+    dados_anteriores JSONB NOT NULL, -- Guarda toda a informação mexida
+    data_hora_acao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT logs_gerais_pk PRIMARY KEY (id_log_geral),
+    CONSTRAINT logs_gerais_sessao_fk FOREIGN KEY (id_logs) REFERENCES public.logs(id_logs)
+);
+
+--cliente
 CREATE TABLE public.cliente(
     id_cliente SERIAL UNIQUE,
     id_login_cliente INT NOT NULL UNIQUE, 
@@ -118,6 +147,9 @@ CREATE TABLE public.cliente(
     CONSTRAINT clien_pk PRIMARY KEY(id_cliente),
     CONSTRAINT colab_login_cli_fk FOREIGN KEY (id_login_cliente) REFERENCES public.login_cliente(id_login_cliente)
 );
+
+select *
+from public.cliente
 
 CREATE TABLE public.colaborador (
     id_colaborador SERIAL UNIQUE,
@@ -134,6 +166,11 @@ CREATE TABLE public.colaborador (
     )
 );
 
+alter table public.colaborador
+add column cargo cargo_log_col NOT NULL
+select *
+from public.colaborador
+
 CREATE TABLE public.horario (
     id_colaborador INT NOT NULL,
     dia_semana dia_semana NOT NULL,
@@ -143,6 +180,10 @@ CREATE TABLE public.horario (
     CONSTRAINT horar_colab_fk FOREIGN KEY (id_colaborador) REFERENCES public.colaborador(id_colaborador),
     CONSTRAINT chk_hora_valida CHECK (hora_saida > hora_entrada)
 );
+
+select *
+from public.horario
+
 
 
 CREATE TABLE public.ocorrencia_laboral (
@@ -156,6 +197,10 @@ CREATE TABLE public.ocorrencia_laboral (
     CONSTRAINT chk_datas_ocorrencia CHECK (data_fim >= data_inicio)
 );
 
+select *
+from public.ocorrencia_laboral
+
+
 CREATE TABLE public.animal(
     id_animal SERIAL UNIQUE,
     id_cliente INT NOT NULL, 
@@ -168,13 +213,14 @@ CREATE TABLE public.animal(
     CONSTRAINT ani_pk PRIMARY KEY(id_animal),
     CONSTRAINT ani_cli_fk FOREIGN KEY (id_cliente) REFERENCES public.cliente(id_cliente)
 );
+
+select *
+from public.animal
+
 ALTER TABLE public.animal 
 ADD CONSTRAINT chk_data_nascimento_valida 
 CHECK (data_nascimento <= CURRENT_DATE);
 
-
-INSERT INTO public.animal (id_cliente, nome, especie, raca, sexo, data_nascimento, estado) 
-VALUES (1, 'Viajante do Tempo', 'Cão', 'Rafeiro', 'M', '2027-01-01', 'Domestico');
 
 CREATE TABLE public.resgate(
     id_resgate SERIAL UNIQUE,
@@ -191,11 +237,6 @@ ALTER TABLE public.resgate
 ADD CONSTRAINT chk_data_resgate_valida 
 CHECK (data_resgate <= CURRENT_DATE);
 
---tem de dar erro
-INSERT INTO public.resgate (id_animal, id_funcionario, data_resgate, idade) 
-VALUES (1, 1, '2027-01-01', 'Jovem');
-
-
 select *
 from public.resgate
 
@@ -211,6 +252,11 @@ CREATE TABLE public.adocao(
     CONSTRAINT ado_func_fk FOREIGN KEY (id_funcionario) REFERENCES public.funcionario(id_funcionario)
 );
 
+select *
+from public.adocao
+
+
+
 ALTER TABLE public.adocao 
 ADD CONSTRAINT chk_data_adocao_valida 
 CHECK (data_adocao <= CURRENT_DATE);
@@ -218,7 +264,6 @@ CHECK (data_adocao <= CURRENT_DATE);
 
 INSERT INTO public.adocao (id_animal, id_funcionario, data_adocao) 
 VALUES (1, 1, '2026-12-25');
-
 
 
 CREATE TABLE public.consulta(
@@ -235,10 +280,14 @@ CREATE TABLE public.consulta(
     CONSTRAINT cons_vet_fk FOREIGN KEY (id_veterinario) REFERENCES public.veterinario(id_veterinario)
 );
 
-
 select *
 from public.consulta
 
+
+SELECT setval(
+    pg_get_serial_sequence('public.consulta', 'id_consulta'), 
+    COALESCE((SELECT MAX(id_consulta) FROM public.consulta), 1)
+);
 
 CREATE TABLE public.servicos(
 	id_servicos SERIAL UNIQUE,
@@ -247,11 +296,14 @@ CREATE TABLE public.servicos(
 	data_servicos TIMESTAMP NOT NULL,
 	tipo_servico servico NOT NULL,
 	estado estado_servico DEFAULT 'Agendado',
-	preco NUMERIC(10,2) NOT NULL
+	preco NUMERIC(10,2) NOT NULL,
 	CONSTRAINT serv_pk PRIMARY KEY(id_servicos),
 	CONSTRAINT serv_ani_fk FOREIGN KEY(id_animal) REFERENCES public.animal(id_animal),
 	CONSTRAINT serv_func_fk FOREIGN KEY(id_funcionario) REFERENCES public.funcionario(id_funcionario)
 );
+
+select *
+from public.servicos
 
 
 
@@ -265,6 +317,8 @@ CREATE TABLE public.fatura(
     CONSTRAINT fat_serv_fk FOREIGN KEY (id_servicos) REFERENCES public.servicos(id_servicos),
     CONSTRAINT chk_fatura_associacao CHECK (id_consulta IS NOT NULL OR id_servicos IS NOT NULL)
 );
+
+
 
 -- ****************************************************************************
 -- 3. TABELAS DE RELACIONAMENTO (N:M) (Puramente associativas, unem outras tabelas dependentes/independentes)
@@ -290,11 +344,11 @@ CREATE TABLE public.orienta(
 );
 
 select *
-from public.prescreve
+from public.orienta
 
 
 
--- Desafios Random podem ser uteis
+-- Desafios que podem ser uteis
 CREATE TABLE public.alerta(
 	id_alerta SERIAL UNIQUE,
     id_cliente INT NOT NULL,

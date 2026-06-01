@@ -57,6 +57,8 @@ function escaparHTML(valor) {
     }[char]));
 }
 
+
+
 function formatarMoeda(valor) {
     return Number(valor || 0).toFixed(2) + " €";
 }
@@ -90,6 +92,8 @@ async function carregarPendentes(container) {
     }
 }
 
+
+
 function renderizarListaPendentes(container) {
     // Redesenha a lista lateral sempre com os dados atuais
     container.innerHTML = '';
@@ -122,6 +126,8 @@ function renderizarListaPendentes(container) {
     });
 }
 
+
+
 function abrirConta(conta) {
     // Ao escolher uma conta, ela passa a ser a base do recibo atual
     contaSelecionada = conta;
@@ -144,6 +150,8 @@ function abrirConta(conta) {
     atualizarTalao();
 }
 
+
+
 function adicionarItem() {
     // Adiciona produtos extra ao recibo antes do pagamento
     const selectBox = document.getElementById('select-produto');
@@ -156,6 +164,8 @@ function adicionarItem() {
     atualizarTalao();
     selectBox.value = '';
 }
+
+
 
 function atualizarTalao() {
     try {
@@ -215,11 +225,15 @@ function atualizarTalao() {
     }
 }
 
+
+
 function removerItem(index) {
     // Remove apenas o item escolhido e volta a calcular os totais
     carrinhoAtual.splice(index, 1);
     atualizarTalao();
 }
+
+
 
 async function pagar(metodo) {
     if (!contaSelecionada) return;
@@ -252,6 +266,7 @@ async function pagar(metodo) {
         alert("Erro ao registar pagamento na BD.");
     }
 }
+
 
 async function abrirHistorico() {
     // Abre o modal e carrega as faturas ja liquidadas

@@ -284,9 +284,7 @@ footer a:hover {
     width: 100%;
 }
 
-/* =======================================================
-   SIDEBAR (Com Z-index Supremo e Sombra Premium)
-   ======================================================= */
+/* SIDEBAR  */
 .sidebar {
     position: fixed;
     left: 0;
@@ -300,9 +298,9 @@ footer a:hover {
     padding: 25px 20px;
     
     color: white;
-    border: none; /* Removi o border-right para a sombra brilhar mais */
+    border: none; 
     
-    /* A SOMBRA MÁGICA: Resolve a "invasão" do bloco verde */
+    
     box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4); 
     
     background-color: #2c3e50;
@@ -317,14 +315,12 @@ footer a:hover {
     overflow-x: hidden;
 }
 
-/* =======================================================
-   MATAR A BARRA CINZA DE SCROLL DO NAVEGADOR
-   ======================================================= */
+
 .sidebar::-webkit-scrollbar {
     width: 6px; /* Muito fininha */
 }
 .sidebar::-webkit-scrollbar-track {
-    background: transparent; /* Remove o cinza feio do fundo */
+    background: transparent;
 }
 .sidebar::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.15); /* Barrinha semi-transparente elegante */
@@ -351,9 +347,9 @@ footer a:hover {
 .logo:hover img {
     transform: scale(1.05);
 }
-/* =======================================================
-   MENU DA SIDEBAR (Ajuste para o botão não bater na margem)
-   ======================================================= */
+
+/*
+   MENU DA SIDEBAR  */
 .menu {
     margin-top: 10px;
     display: flex;
@@ -371,7 +367,6 @@ footer a:hover {
     gap: 10px;
     transition: all 0.3s ease;
     
-    /* O SEGREDO DO BOTÃO: Tiramos 5px à largura para compensar o avanço */
     width: calc(100% - 5px); 
 }
 
@@ -384,7 +379,6 @@ footer a:hover {
     background: #2ea89c;
     transform: translateX(5px);
     border-radius: 10px;
-    /* BÓNUS: Uma sombra no botão ativo dá um ar super profissional */
     box-shadow: 0 4px 10px rgba(46, 168, 156, 0.4); 
 }
 

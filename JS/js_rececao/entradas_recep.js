@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-guardar-registo')?.addEventListener('click', guardarRegistoBD);
 });
 
+
+
 // Carrega a lista de medicos a partir do backend
 async function carregarVetsDaAPI(container) {
     try {
@@ -41,6 +43,8 @@ async function carregarVetsDaAPI(container) {
         container.innerHTML = "<p style='color: gray;'>Não foi possível carregar a equipa médica. Verifica se o servidor está ativo.</p>";
     }
 }
+
+
 
 function renderizarVeterinarios(container, listaVets) {
     container.innerHTML = ''; 
@@ -73,6 +77,8 @@ function renderizarVeterinarios(container, listaVets) {
     });
 }
 
+
+
 // Abre o modal com os dados do medico selecionado
 function abrirModalRegisto(nome, tipo, id) {
     const modal = document.getElementById('modal-registo-ponto');
@@ -92,9 +98,14 @@ function abrirModalRegisto(nome, tipo, id) {
     modal.style.display = 'flex';
 }
 
+
+
 function fecharModalRegisto() {
     document.getElementById('modal-registo-ponto').style.display = 'none';
 }
+
+
+
 
 async function guardarRegistoBD() {
     // Recolhe os dados do modal antes de enviar para a API
