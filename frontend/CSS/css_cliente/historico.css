@@ -1,0 +1,104 @@
+/* ========================================================= */
+/* ✨ UPGRADE VISUAL: CARTÕES DO HISTÓRICO (COMPACTOS) ✨ */
+/* ========================================================= */
+
+/* O fundo do cartão com uma borda lateral */
+.consulta.historico {
+    background: #ffffff;
+    border-radius: 10px; 
+    padding: 5px; /* Reduzido para a caixa ficar menor */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 5px solid #2ea89c; 
+    position: relative;
+    max-width: 400px;
+    margin: 10px;
+}
+
+/* O efeito de levitar quando o rato passa por cima */
+.consulta.historico:hover {
+    transform: translateY(-3px); /* Movimento mais subtil */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Espaçamento entre as linhas de texto - BASTANTE REDUZIDO */
+.consulta.historico .info p {
+    margin: 4px 0; /* Linhas muito mais juntinhas */
+    color: #555;
+    font-size: 0.9rem; /* Letra ligeiramente mais pequena */
+    display: flex;
+    align-items: center;
+    gap: 6px; /* Menos espaço entre os ícones e a palavra */
+}
+
+/* Destacar o nome do animal com uma linha por baixo */
+.consulta.historico .info .nome {
+    font-size: 1.15rem; 
+    font-weight: 800;
+    color: #2c3e50;
+    border-bottom: 2px solid #f1f2f6;
+    padding-bottom: 6px; 
+    margin-bottom: 8px; /* Mais colado ao resto do texto */
+}
+
+/* A Etiqueta (Badge) de Concluído - Versão Mini */
+.consulta.historico .status {
+    display: inline-block;
+    background-color: #e8f8f5; 
+    color: #27ae60; 
+    padding: 4px 10px; 
+    border-radius: 15px; 
+    font-size: 0.75rem; 
+    font-weight: bold;
+    margin-top: 8px; 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: fit-content;
+}
+
+/* Zona dos botões */
+.consulta.historico .acoes {
+    display: flex;
+    gap: 10px; 
+    margin-top: 12px; /* Mais colado ao texto de cima */
+    border-top: 2px solid #f1f2f6;
+    padding-top: 12px; 
+}
+
+/* Botões mais fininhos */
+.consulta.historico .acoes button {
+    flex: 1; 
+    padding: 8px; /* Altura do botão reduzida */
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+}
+
+/* Botão Ver (Secundário) */
+.consulta.historico .acoes .btn-detalhes {
+    background-color: transparent;
+    color: #2c3e50;
+    border: 2px solid #dcdde1;
+}
+
+.consulta.historico .acoes .btn-detalhes:hover {
+    background-color: #f1f2f6;
+    border-color: #bdc3c7;
+}
+
+/* Botão Repetir (Principal) */
+.consulta.historico .acoes .btn-repetir {
+    background-color: #2ea89c;
+    color: white;
+    border: 2px solid #2ea89c;
+}
+
+.consulta.historico .acoes .btn-repetir:hover {
+    background-color: #258f85;
+    border-color: #258f85;
+}

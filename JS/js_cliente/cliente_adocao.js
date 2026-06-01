@@ -9,7 +9,16 @@ function abrirModalPedidoAdocao(idAnimal) {
     const modal = document.getElementById('modal-pedido-adocao');
     const animal = animaisDisponiveis.find(item => String(item.id_animal) === String(idAnimal));
 
-    if (!modal || !animal) return;
+    console.log("A tentar abrir modal para o animal ID:", idAnimal); // Aviso na consola para testarmos
+
+    if (!modal) {
+        alert("Erro: O HTML do Modal não foi encontrado!");
+        return;
+    }
+    if (!animal) {
+        alert("Erro: Os dados do animal não foram encontrados na memória!");
+        return;
+    }
 
     animalSelecionado = animal;
 
@@ -45,16 +54,26 @@ function abrirModalPedidoAdocao(idAnimal) {
         `;
     }
     
-   modal.classList.add('aberto');
+    // 🔥 O TRUQUE PARA FORÇAR O CSS A MOSTRAR A JANELA 🔥
+    modal.classList.add('aberto');
+    modal.style.display = 'flex';
+    modal.style.opacity = '1';
+    modal.style.visibility = 'visible';
     document.body.classList.add('modal-aberto');
+    document.body.style.overflow = 'hidden'; // Bloqueia o scroll do fundo
 }
 
 function fecharModalPedidoAdocao() {
     const modal = document.getElementById('modal-pedido-adocao');
     if (!modal) return;
 
-   modal.classList.remove('aberto');
+    // 🔥 O TRUQUE PARA ESCONDER A JANELA NA PERFEIÇÃO 🔥
+    modal.classList.remove('aberto');
+    modal.style.display = 'none';
+    modal.style.opacity = '0';
+    modal.style.visibility = 'hidden';
     document.body.classList.remove('modal-aberto');
+    document.body.style.overflow = ''; // Devolve o scroll ao fundo
     animalSelecionado = null;
 }
 
@@ -197,13 +216,13 @@ function renderizarAnimaisDisponiveis() {
         `;
     }).join('');
 }
+
 async function enviarPedidoAdocao(evento) {
     evento.preventDefault();
 
     if (!animalSelecionado) return;
 
     const estado = document.getElementById('estado-pedido-adocao');
-    const botao = document.getElementById('btn-enviar-pedido-adocao');
     const mensagemInput = document.getElementById('mensagem-pedido-adocao');
     const nifManual = document.getElementById('nif-cliente-manual');
 
@@ -211,61 +230,32 @@ async function enviarPedidoAdocao(evento) {
 
     if (!/^\d{9}$/.test(nifCliente)) {
         if (estado) {
-            estado.innerHTML = '<p class="mensagem-formulario mensagem-formulario-erro">Indica um NIF válido com 9 dígitos.</p>';
+            estado.innerHTML =
+                '<p class="mensagem-formulario mensagem-formulario-erro">Indica um NIF válido com 9 dígitos.</p>';
         }
         return;
     }
 
-    const textoOriginal = botao ? botao.innerHTML : '';
-
-    if (botao) {
-        botao.innerHTML = '<i class="fa fa-spinner fa-spin"></i> A enviar...';
-        botao.disabled = true;
-    }
-
-    const payload = {
-        id_animal: animalSelecionado.id_animal,
-        nif_cliente: nifCliente,
-        id_cliente: obterIdCliente(clienteSessao),
+    console.log("Interesse em adoção registado:", {
+        animal: animalSelecionado.id_animal,
+        nif: nifCliente,
         mensagem: mensagemInput ? mensagemInput.value.trim() : ''
-    };
+    });
 
-    try {
-        const resposta = await fetch(ENDPOINT_PEDIDO_ADOCAO, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        const resultado = await lerRespostaJson(resposta);
-
-        if (resposta.ok || resultado.status === 200 || resultado.status === 201) {
-            if (estado) {
-                estado.innerHTML = '<p class="mensagem-formulario mensagem-formulario-sucesso"><i class="fa fa-check-circle"></i> Pedido enviado com sucesso. A clínica entrará em contacto contigo.</p>';
-            }
-
-            setTimeout(fecharModalPedidoAdocao, 1200);
-            return;
-        }
-
-        throw new Error(resultado.message || 'Não foi possível enviar o pedido.');
-    } catch (erro) {
-        console.error('Erro ao enviar pedido de adoção:', erro);
-
-        if (estado) {
-            estado.innerHTML = `
-                <p class="mensagem-formulario mensagem-formulario-erro">
-                    ${escapeHtml(erro.message || 'Erro de comunicação com o servidor.')}
-                </p>
-            `;
-        }
-    } finally {
-        if (botao) {
-            botao.innerHTML = textoOriginal;
-            botao.disabled = false;
-        }
+    if (estado) {
+        estado.innerHTML = `
+            <p class="mensagem-formulario mensagem-formulario-sucesso">
+                <i class="fa fa-check-circle"></i>
+                Obrigado pelo interesse! Dirija-se à clínica para obter mais informações sobre a adoção.
+            </p>
+        `;
     }
+
+    setTimeout(() => {
+        fecharModalPedidoAdocao();
+    }, 2000);
 }
+
 function obterClienteSessao() {
     const guardado = localStorage.getItem('utilizadorLogado');
     if (!guardado) return null;
