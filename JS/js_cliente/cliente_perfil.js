@@ -1,713 +1,612 @@
 document.addEventListener('DOMContentLoaded', function() {
+
+    // ==========================================================================
+    // --- SEGURANÇA E LIGAÇÃO À BASE DE DADOS ---
+    // ==========================================================================
     
-    // 1. Apanhar o objeto completo do utilizador
-    const dadosLoginStr = localStorage.getItem("utilizadorLogado");
-    let idClienteLogado = null;
+    // 1. Vai à gaveta nova que o auth.js criou ler os dados do utilizador
+    const dadosSessao = localStorage.getItem("utilizadorLogado");
+    let idClienteAtual = null;
 
-    if (dadosLoginStr) {
-        const dadosLogin = JSON.parse(dadosLoginStr);
-        idClienteLogado = dadosLogin.id_cliente;
-    }
-
-    if (!idClienteLogado) {
-        console.error("ERRO: Não foi possível encontrar o ID!");
-        document.getElementById('container-consultas').innerHTML = '<p style="color: red;">Erro: Não foi possível identificar o utilizador.</p>';
-        return;
-    }
-    
-    const containerConsultas = document.getElementById('container-consultas');
-
-    // ==========================================================================
-    // VARIÁVEL GLOBAL PARA A MEMÓRIA DO CALENDÁRIO
-    // ==========================================================================
-    let marcacoesGlobais = []; 
-
-    // ==========================================================================
-    // --- PREENCHER O MODAL: ANIMAIS E VETERINÁRIOS ---
-    // ==========================================================================
-
-    async function carregarAnimaisParaModal() {
-        const gridAnimais = document.getElementById('grid-animais-cliente');
-        if (!gridAnimais || !idClienteLogado) return;
-
+    if (dadosSessao) {
         try {
-            const resposta = await fetch(`http://localhost:8008/api/animais/cliente/${idClienteLogado}`);
-            if (!resposta.ok) throw new Error("Erro na API");
-            
-            const resultado = await resposta.json();
-            const animais = resultado.data;
-
-            gridAnimais.innerHTML = ''; 
-
-            if (!animais || animais.length === 0) {
-                gridAnimais.innerHTML = '<p style="color: #e74c3c; width: 100%; text-align: center;">Não tem animais registados. Adicione um animal no seu perfil primeiro.</p>';
-                return;
-            }
-
-            let contadorAnimaisVivos = 0;
-
-            animais.forEach(animal => {
-                const estado = animal.estado ? animal.estado.toLowerCase() : '';
-                if (estado === 'falecido' || estado === 'morto' || estado === 'inativo' || animal.vivo === false) {
-                    return; 
-                }
-
-                contadorAnimaisVivos++;
-
-                const label = document.createElement('label');
-                label.className = 'cartao-opcao-radio';
-                label.style.cursor = 'pointer'; 
-                
-                label.innerHTML = `
-                    <input type="radio" name="animal_selecionado" value="${animal.id_animal}" class="esconder-radio" required>
-                    <div class="conteudo-cartao-opcao">
-                        <i class="fa fa-paw icon-opcao"></i>
-                        <div style="display: flex; flex-direction: column; text-align: center; gap: 5px;">
-                            <span style="font-weight: bold; font-size: 16px; color: #2c3e50;">${animal.nome}</span>
-                            <span style="font-size: 12px; color: #7f8c8d;">${animal.raca || animal.especie || 'Animal'}</span>
-                        </div>
-                    </div>
-                `;
-                gridAnimais.appendChild(label);
-            });
-
-            if (contadorAnimaisVivos === 0) {
-                gridAnimais.innerHTML = '<p style="color: #e74c3c; width: 100%; text-align: center;">Não tem animais ativos de momento.</p>';
-            }
-
-        } catch (erro) {
-            console.error("Erro ao carregar animais no modal:", erro);
+            const utilizador = JSON.parse(dadosSessao);
+            idClienteAtual = utilizador.id_cliente; // Extrai o ID do JSON
+        } catch (e) {
+            console.error("Erro ao ler os dados da sessão.");
         }
     }
 
-    async function carregarVeterinariosParaModal() {
-        const containerVets = document.getElementById('container-vets');
-        if (!containerVets) return;
+    // 2. Expulsa quem não tem login (ou se não houver um id_cliente válido)!
+    if (!idClienteAtual) {
+        alert("Acesso negado! Por favor, faça login para ver o seu perfil.");
+        window.location.href = "../../Pag/Logins_Sessões/login.html"; 
+        return; 
+    }
 
+    const urlApiClientes = `http://localhost:8008/api/clientes`; 
+    const urlApiAnimais = `http://localhost:8008/api/animais`; 
+    const urlApiConsultas = `http://localhost:8008/api/consultas`; 
+
+    // Variável Global para os IDs dos animais (para o filtro das consultas)
+    let meusAnimaisIDs = [];
+
+    // ==========================================================================
+    // --- 1. DADOS DO PERFIL ---
+    // ==========================================================================
+    async function carregarPerfil() {
         try {
-            const resposta = await fetch(`http://localhost:8008/api/veterinarios`);
+            const resposta = await fetch(`${urlApiClientes}/id/${idClienteAtual}`);
+            if (!resposta.ok) return; 
+
             const resultado = await resposta.json();
 
-            containerVets.innerHTML = `
-                <label class="cartao-opcao-radio">
-                    <input type="radio" name="veterinario_selecionado" value="0" class="esconder-radio" checked>
-                    <div class="conteudo-cartao-opcao">
-                        <i class="fa fa-user-md icon-opcao"></i>
-                        <div style="display: flex; flex-direction: column; text-align: center; gap: 5px;">
-                            <span style="font-weight: bold; font-size: 14px; color: #2c3e50;">Qualquer Médico</span>
-                            <span style="font-size: 11px; color: #7f8c8d;">Aleatório / Disponível</span>
-                        </div>
-                    </div>
-                </label>
-            `;
+            if (resultado.status === 200 && resultado.data) {
+                const cliente = resultado.data;
+                const partesNome = (cliente.nome || "").split(' ');
+                const primeiroNome = partesNome[0] || "";
+                const apelido = partesNome.length > 1 ? partesNome.slice(1).join(' ') : "";
 
-            if (resultado.data) {
-                resultado.data.forEach(vet => {
-                    const label = document.createElement('label');
-                    label.className = 'cartao-opcao-radio';
-                    label.innerHTML = `
-                        <input type="radio" name="veterinario_selecionado" value="${vet.id_veterinario}" class="esconder-radio">
-                        <div class="conteudo-cartao-opcao">
-                            <i class="fa fa-user-md icon-opcao"></i>
-                            <div style="display: flex; flex-direction: column; text-align: center; gap: 5px;">
-                                <span style="font-weight: bold; font-size: 14px; color: #2c3e50;">${vet.nome}</span>
-                                <span style="font-size: 11px; color: #7f8c8d;">Veterinário</span>
+                if(document.getElementById('input-nome')) document.getElementById('input-nome').value = primeiroNome;
+                if(document.getElementById('input-apelido')) document.getElementById('input-apelido').value = apelido;
+                if(document.getElementById('input-email')) document.getElementById('input-email').value = cliente.email || "";
+                if(document.getElementById('input-nif')) document.getElementById('input-nif').value = cliente.nif || "";
+                if(document.getElementById('input-contacto')) document.getElementById('input-contacto').value = cliente.contacto || "";
+                if(document.getElementById('input-morada')) document.getElementById('input-morada').value = cliente.morada || "";
+                
+                if(document.getElementById('nome-lateral')) document.getElementById('nome-lateral').innerText = cliente.nome;
+                if(document.getElementById('user-lateral')) document.getElementById('user-lateral').innerText = `@${primeiroNome.toLowerCase()}`; 
+            }
+        } catch (erro) {
+            console.error("Erro ao carregar Perfil:", erro);
+        }
+    }
+
+    carregarPerfil();
+
+    // Guardar Perfil
+    const btnGuardarPerfil = document.getElementById('btn-guardar-perfil');
+    const alertaSucesso = document.getElementById('alerta-sucesso'); 
+
+    if (btnGuardarPerfil) {
+        btnGuardarPerfil.addEventListener('click', async () => {
+            const nomeInput = document.getElementById('input-nome').value.trim();
+            const apelidoInput = document.getElementById('input-apelido').value.trim();
+            const nomeCompleto = nomeInput + (apelidoInput ? " " + apelidoInput : "");
+
+            const dadosAtualizados = {
+                nome: nomeCompleto,
+                email: document.getElementById('input-email').value,
+                nif: document.getElementById('input-nif').value,
+                contacto: document.getElementById('input-contacto').value,
+                morada: document.getElementById('input-morada').value
+            };
+
+            try {
+                const resposta = await fetch(`${urlApiClientes}/${idClienteAtual}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dadosAtualizados)
+                });
+
+                const resultado = await resposta.json();
+
+                if (resultado.status === 200) {
+                    const perfilNome = document.getElementById('nome-lateral');
+                    const perfilUser = document.getElementById('user-lateral');
+                    if(perfilNome) perfilNome.innerText = nomeCompleto;
+                    if(perfilUser) perfilUser.innerText = `@${nomeInput.toLowerCase()}`;
+
+                    if(alertaSucesso) {
+                        alertaSucesso.classList.add('mostrar');
+                        setTimeout(() => { alertaSucesso.classList.remove('mostrar'); }, 2500);
+                    }
+                } else {
+                    alert("Erro ao atualizar: " + resultado.message);
+                }
+            } catch (erro) {
+                console.error("Erro ao guardar perfil:", erro);
+            }
+        });
+    }
+
+    // ==========================================================================
+    // --- 2. GESTÃO DOS ANIMAIS E 3. CONTADOR DE CONSULTAS ---
+    // ==========================================================================
+    const listaAnimais = document.querySelector('.animais-lista');
+    const modalAdd = document.getElementById('modal-animal');
+    
+    const htmlBotaoAdicionar = `
+        <button class="animal-card adicionar" type="button">
+            <span class="circulo-add"><i class="fa fa-plus"></i></span>
+            <p>Adicionar</p>
+        </button>
+    `;
+
+    async function carregarAnimaisEConsultas() {
+        if (!listaAnimais) return;
+
+        try {
+            // --- A) Buscar os Animais ---
+            const respostaAnimais = await fetch(urlApiAnimais);
+            if (!respostaAnimais.ok) return;
+
+            const resultadoAnimais = await respostaAnimais.json();
+
+            if (resultadoAnimais.status === 200 && Array.isArray(resultadoAnimais.data)) {
+                
+                // Vai buscar TODOS os animais deste cliente
+                const todosMeusAnimais = resultadoAnimais.data.filter(a => a.id_cliente == idClienteAtual);
+                
+                // Variável para guardar apenas os IDs dos que estão vivos!
+                let animaisAtivosIDs = [];
+
+                listaAnimais.innerHTML = ''; // Limpa a lista antes de desenhar
+
+                todosMeusAnimais.forEach(animal => {
+                    // Verificar o estado do animal
+                    const estadoTexto = animal.estado ? animal.estado.toLowerCase() : '';
+                    const isMorto = (estadoTexto === 'falecido' || estadoTexto === 'morto' || estadoTexto === 'inativo' || animal.vivo === false);
+
+                    // Se estiver vivo, adiciona à lista de ativos
+                    if (!isMorto) {
+                        animaisAtivosIDs.push(animal.id_animal);
+                    }
+
+                    // Foto default (cão ou gato)
+                    let fotoSrc = animal.especie.toLowerCase() === 'gato' 
+                        ? 'https://images.unsplash.com/photo-1573865526739-10659fec78a5?auto=format&fit=crop&w=240&q=80' 
+                        : 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=240&q=80';
+                    
+                    // ==========================================
+                    // MAGIA DO DESIGN: Se estiver morto, fica a cinzento!
+                    // ==========================================
+                    const estiloImagem = isMorto ? 'filter: grayscale(100%); opacity: 0.6;' : '';
+                    const estiloTexto = isMorto ? 'color: #95a5a6;' : '';
+                    const tagFalecido = isMorto ? '<span style="display:block; color:#7f8c8d; font-size:11px; font-weight:bold; margin-top:2px;">Falecido 🕊️</span>' : '';
+                    
+                    // Se estiver morto, tiramos o botão de Editar, deixamos só o de apagar
+                    const botaoEditar = !isMorto ? `<button class="btn-editar-animal" type="button" aria-label="Editar ${animal.nome}"><i class="fa fa-pen"></i></button>` : '';
+
+                    const cartao = document.createElement('div');
+                    cartao.className = 'animal-card';
+                    if (isMorto) cartao.style.opacity = '0.8';
+
+                    cartao.innerHTML = `
+                        <div class="foto-animal-wrapper">
+                            <img src="${fotoSrc}" alt="${animal.nome}" style="${estiloImagem}">
+                            <div class="acoes-animal">
+                                ${botaoEditar}
+                                <button class="btn-apagar-animal" data-id="${animal.id_animal}" type="button" aria-label="Apagar ${animal.nome}"><i class="fa fa-trash"></i></button>
                             </div>
                         </div>
+                        <p style="${estiloTexto}">${animal.nome}</p>
+                        <small style="${estiloTexto}">${animal.especie}</small>
+                        ${tagFalecido}
                     `;
-                    containerVets.appendChild(label);
-                });
-            }
-        } catch (erro) {}
-    }
-
-    // ==========================================================================
-    // --- GESTÃO DE DATAS E HORAS (COM BLOQUEIO DE SOBREPOSIÇÃO!) ---
-    // ==========================================================================
-    const inputDataVisual = document.getElementById('data_marcacao_visual');
-    const containerSlots = document.getElementById('container-slots-hora');
-    const inputDataReal = document.getElementById('data_marcacao_real');
-    const inputHoraReal = document.getElementById('hora_marcacao_real');
-
-    if (inputDataVisual && containerSlots) {
-        const hoje = new Date();
-        const ano = hoje.getFullYear();
-        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-        const dia = String(hoje.getDate()).padStart(2, '0');
-        
-        inputDataVisual.setAttribute('min', `${ano}-${mes}-${dia}`);
-
-        inputDataVisual.addEventListener('change', function() {
-            inputDataReal.value = this.value; 
-            if (this.value) {
-                gerarSlotsTempo();
-            } else {
-                containerSlots.innerHTML = '<p class="mensagem-espera-data">Selecione primeiro um dia para ver os horários disponíveis.</p>';
-            }
-        });
-
-        function gerarSlotsTempo() {
-            containerSlots.innerHTML = ''; 
-            inputHoraReal.value = ''; 
-            let indexBloco = 0;
-
-            const dataSelecionada = inputDataReal.value; // Formato YYYY-MM-DD
-
-            // 1. Descobrir as horas já ocupadas neste dia!
-            const horasOcupadas = marcacoesGlobais
-                .filter(m => m.data_hora && m.data_hora.startsWith(dataSelecionada))
-                .map(m => {
-                    const dateObj = new Date(m.data_hora);
-                    return dateObj.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+                    listaAnimais.appendChild(cartao);
                 });
 
-            for (let h = 9; h < 18; h++) {
-                ['00', '30'].forEach(minuto => {
-                    const horaFormatada = h.toString().padStart(2, '0') + ':' + minuto;
-                    const slot = document.createElement('div');
-                    slot.className = 'slot-hora';
-                    slot.innerText = horaFormatada;
-                    slot.dataset.index = indexBloco; 
-                    
-                    // 2. SE A HORA ESTIVER NA LISTA DE OCUPADAS, BLOQUEIA O BOTÃO!
-                    if (horasOcupadas.includes(horaFormatada)) {
-                        slot.classList.add('indisponivel');
-                        slot.style.backgroundColor = '#dcdde1'; // Cinzento
-                        slot.style.color = '#7f8c8d';
-                        slot.style.border = '1px dashed #bdc3c7';
-                        slot.style.cursor = 'not-allowed';
-                        slot.title = "Horário indisponível";
-                    } else {
-                        // Se estiver livre, deixa clicar
-                        slot.addEventListener('click', function() {
-                            const servicosEscolhidos = document.querySelectorAll('input[name="servico"]:checked');
-                            
-                            if (servicosEscolhidos.length === 0) { 
-                                alert("Erro: Não escolheu nenhum serviço no Passo 2!"); 
-                                return; 
-                            }
+                // Atualizar o array global com os vivos para as consultas
+                meusAnimaisIDs = animaisAtivosIDs;
 
-                            const blocosNecessarios = servicosEscolhidos.length;
-                            const meuIndex = parseInt(this.dataset.index);
+                // Atualizar Contadores (apenas para os VIVOS)
+                const statsAnimais = document.querySelector('.perfil-stats span:first-child strong');
+                const badgeAnimais = document.querySelector('.meus-animais .badge');
+                if (statsAnimais) statsAnimais.innerText = animaisAtivosIDs.length;
+                if (badgeAnimais) badgeAnimais.innerText = `${animaisAtivosIDs.length} ativos`;
 
-                            if (meuIndex + blocosNecessarios > 18) { 
-                                alert("Não há tempo suficiente antes do fecho da clínica. Escolha uma hora mais cedo."); 
-                                return;
-                            }
-
-                            // 3. Verifica se os próximos blocos que a consulta precisa também estão livres
-                            const todosSlots = document.querySelectorAll('.slot-hora');
-                            let espacoLivre = true;
-                            for (let i = 0; i < blocosNecessarios; i++) {
-                                if(todosSlots[meuIndex + i] && todosSlots[meuIndex + i].classList.contains('indisponivel')) {
-                                    espacoLivre = false;
-                                }
-                            }
-
-                            if(!espacoLivre) {
-                                alert("Aviso: O tempo da marcação choca com outra consulta existente. Escolha um horário com mais tempo livre a seguir.");
-                                return;
-                            }
-
-                            document.querySelectorAll('.slot-hora').forEach(el => el.classList.remove('selecionado'));
-                            
-                            for (let i = 0; i < blocosNecessarios; i++) {
-                                if(todosSlots[meuIndex + i]) {
-                                    todosSlots[meuIndex + i].classList.add('selecionado');
-                                }
-                            }
-                            
-                            inputHoraReal.value = horaFormatada; 
-                        });
-                    }
-                    
-                    containerSlots.appendChild(slot);
-                    indexBloco++;
-                });
+                // Colocar o botão de "Adicionar" no fim da lista
+                listaAnimais.insertAdjacentHTML('beforeend', htmlBotaoAdicionar);
+                ligarBotaoAdicionar();
             }
+
+            // --- B) Buscar as Consultas (só para os animais vivos!) ---
+            const respostaConsultas = await fetch(urlApiConsultas);
+            if (!respostaConsultas.ok) return;
+
+            const resultadoConsultas = await respostaConsultas.json();
+
+            if (resultadoConsultas.status === 200 && Array.isArray(resultadoConsultas.data)) {
+                const consultasFuturas = resultadoConsultas.data.filter(c => 
+                    meusAnimaisIDs.includes(c.id_animal) && 
+                    c.estado && 
+                    (c.estado.toLowerCase() === 'agendada' || c.estado.toLowerCase() === 'pendente')
+                );
+
+                const statsConsultas = document.getElementById('stats-consultas');
+                if (statsConsultas) {
+                    statsConsultas.innerText = consultasFuturas.length;
+                }
+            }
+
+        } catch (erro) {
+            console.error("Erro ao carregar dados dinâmicos (Animais/Consultas):", erro);
         }
     }
 
+    carregarAnimaisEConsultas();
+
+    function ligarBotaoAdicionar() {
+        const btnAdicionarNovo = document.querySelector('.animal-card.adicionar');
+        if (btnAdicionarNovo && modalAdd) {
+            btnAdicionarNovo.addEventListener('click', () => {
+                modalAdd.classList.add('ativo');
+                modalAdd.setAttribute("aria-hidden", "false");
+                document.body.classList.add('no-scroll');
+            });
+        }
+    }
+
+  // Fechar o modal quando clica no X, no Cancelar, ou fora da caixa preta
+    document.querySelectorAll(".fechar-modal-javascript, .modal-overlay").forEach((elemento) => {
+        elemento.addEventListener("click", (evento) => {
+            if (evento.target !== elemento && !elemento.classList.contains("fechar-modal-javascript")) return;
+            
+            const modalAdd = document.getElementById('modal-animal');
+            if (modalAdd) {
+                modalAdd.classList.remove('ativo'); 
+                modalAdd.setAttribute("aria-hidden", "true");
+                document.body.classList.remove("no-scroll"); 
+            }
+        });
+    });
 
     // ==========================================================================
-    // 1. CARREGAR CONSULTAS E SERVIÇOS (MIX)
+    // NOVO: GUARDAR NOVO ANIMAL COM TODOS OS DADOS DO FORMULÁRIO!
     // ==========================================================================
-    async function carregarConsultasReais() {
-        if (!containerConsultas) return;
+    const btnGuardarNovo = document.getElementById('btn-guardar-animal');
+    
+    // ==========================================================================
+    // NOVO: BLOQUEAR DATAS FUTURAS NO CALENDÁRIO
+    // ==========================================================================
+    const inputDataNascimento = document.getElementById('modal-nascimento');
+    if (inputDataNascimento) {
+        const dataHoje = new Date().toISOString().split('T')[0]; // Dá-nos o formato YYYY-MM-DD de hoje
+        inputDataNascimento.setAttribute('max', dataHoje);
+    }
+    if (btnGuardarNovo) {
+        btnGuardarNovo.addEventListener('click', async function() {
+            // 1. Apanhar os valores REAIS do teu novo modal
+            const nomeInput = document.getElementById('modal-nome').value.trim();
+            const especieInput = document.getElementById('modal-especie').value.trim();
+            const sexoInput = document.getElementById('modal-sexo').value;
+            const racaInput = document.getElementById('modal-raca').value.trim();
+            const nascimentoInput = document.getElementById('modal-nascimento').value;
 
-        try {
-            const urlConsultas = `http://localhost:8008/api/consultas/cliente/${idClienteLogado}`;
-            const urlServicos = `http://localhost:8008/api/servicos`; 
-            const urlAnimais = `http://localhost:8008/api/animais/cliente/${idClienteLogado}`;
-
-            let todasAsMarcacoes = [];
-            let meusAnimaisIDs = [];
-            let mapaAnimais = {}; 
-
-            try {
-                const resAnimais = await fetch(urlAnimais);
-                if (resAnimais.ok) {
-                    const dadosA = await resAnimais.json();
-                    if (dadosA.data) {
-                        dadosA.data.forEach(animal => {
-                            meusAnimaisIDs.push(animal.id_animal);
-                            mapaAnimais[animal.id_animal] = animal.nome; 
-                        });
-                    }
-                }
-            } catch (e) {}
-
-            try {
-                const resConsultas = await fetch(urlConsultas);
-                if (resConsultas.ok) {
-                    const dadosC = await resConsultas.json();
-                    if (dadosC.data) {
-                        const consultasFormatadas = dadosC.data.map(c => ({
-                            id: c.id_consulta,
-                            tipo: 'consulta',
-                            nome_animal: c.nome_animal || mapaAnimais[c.id_animal] || 'Animal',
-                            data_hora: c.data_hora || c.data_consulta,
-                            motivo: c.motivo || 'Consulta',
-                            profissional: c.nome_veterinario || 'Sem médico atribuído',
-                            estado: c.estado
-                        }));
-                        todasAsMarcacoes.push(...consultasFormatadas);
-                    }
-                }
-            } catch (e) {}
-
-            try {
-                const resServicos = await fetch(urlServicos);
-                if (resServicos.ok) {
-                    const dadosS = await resServicos.json();
-                    if (dadosS.data) {
-                        const meusServicos = dadosS.data.filter(s => meusAnimaisIDs.includes(s.id_animal));
-                        const servicosFormatados = meusServicos.map(s => ({
-                            id: s.id_servicos || s.id_servico,
-                            tipo: 'servico',
-                            nome_animal: mapaAnimais[s.id_animal] || 'Animal', 
-                            data_hora: s.data_servicos, 
-                            motivo: s.tipo_servico || 'Serviço',
-                            profissional: 'Equipa da Clínica',
-                            estado: s.estado_servico || s.estado || 'Agendado'
-                        }));
-                        todasAsMarcacoes.push(...servicosFormatados);
-                    }
-                }
-            } catch (e) {}
-
-            // GUARDA NA MEMÓRIA GLOBAL PARA O CALENDÁRIO SABER
-            marcacoesGlobais = todasAsMarcacoes;
-
-            containerConsultas.innerHTML = ''; 
-            if (todasAsMarcacoes.length === 0) {
-                containerConsultas.innerHTML = '<p style="color: white; padding-left: 20px;">Não tem consultas nem serviços marcados de momento.</p>';
+           // 2. Validação: Nome, Espécie e Sexo são obrigatórios!
+            if (nomeInput === '' || especieInput === '' || sexoInput === '') {
+                alert("Por favor, preencha pelo menos o Nome, Espécie e Sexo do animal!");
                 return;
             }
 
-            todasAsMarcacoes.sort((a, b) => new Date(a.data_hora) - new Date(b.data_hora));
-            const dataAtual = new Date();
-
-            todasAsMarcacoes.forEach(marcacao => {
-                const dataMarcacao = new Date(marcacao.data_hora); 
-                let status = "futura";
-                let botoesAcao = `
-                    <button class="btn btn-detalhes">Ver</button>
-                    <button class="btn btn-editar">Remarcar</button>
-                    <button class="btn btn-cancelar">Cancelar</button>
-                `;
-
-                if (dataMarcacao < dataAtual) {
-                    status = "passada";
-                    botoesAcao = `
-                        <button class="btn btn-detalhes">Ver</button>
-                        <button class="btn btn-repetir">Repetir</button>
-                    `;
-                }
-
-                const diaMes = dataMarcacao.toLocaleDateString('pt-PT', { day: 'numeric', month: 'long' });
-                const hora = dataMarcacao.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
-                const icone = marcacao.tipo === 'servico' ? '🛁' : '💉';
-
-                const section = document.createElement('section');
-                section.className = 'consulta';
-                section.setAttribute('data-status', status);
-                section.setAttribute('data-id', marcacao.id);
-                section.setAttribute('data-tipo', marcacao.tipo); 
-                section.innerHTML = `
-                    <div class="info">
-                        <p class="nome">🐾 ${marcacao.nome_animal}</p>
-                        <p>📅 ${diaMes} - ${hora}</p>
-                        <p>${icone} ${marcacao.motivo}</p>
-                        <p class="medico-escondido" style="display:none;">${marcacao.profissional}</p> 
-                    </div>
-                    <div class="acoes">
-                        ${botoesAcao}
-                    </div>
-                `;
-                containerConsultas.appendChild(section);
-            });
-
-            aplicarFiltroAtivo();
-
-        } catch (erro) {
-            console.error("Erro geral ao carregar marcações:", erro);
-        }
-    }
-
-    if (idClienteLogado) {
-        carregarConsultasReais();
-    }
-
-    // ==========================================================================
-    // 2. LÓGICA DA JANELA DE MARCAR CONSULTA (E GRAVAÇÃO NA BD!)
-    // ==========================================================================
-    const modalConsulta = document.getElementById('modal-nova-consulta');
-    const btnAbrirModal = document.getElementById('btn-abrir-modal-consulta');
-    const btnConfirmar = document.getElementById('btn-confirmar'); 
-
-    if (modalConsulta && btnAbrirModal) {
-        btnAbrirModal.addEventListener('click', () => {
-            modalConsulta.classList.add('ativo');
-            document.body.classList.add('no-scroll');
-            
-            carregarAnimaisParaModal();
-            carregarVeterinariosParaModal();
-            
-            if(window.resetarPassos) window.resetarPassos();
-        });
-
-        modalConsulta.querySelector('.fechar-modal-consulta').addEventListener('click', () => {
-            modalConsulta.classList.remove('ativo');
-            document.body.classList.remove('no-scroll');
-        });
-
-        if (btnConfirmar) {
-                    btnConfirmar.addEventListener('click', async () => {
-                        
-                        const dataEscolhida = document.getElementById('data_marcacao_real').value;
-                        const horaEscolhida = document.getElementById('hora_marcacao_real').value;
-                        
-                        if (!dataEscolhida || !horaEscolhida) {
-                            alert("Atenção: Por favor escolha uma data e um horário disponível antes de confirmar.");
-                            return;
-                        }
-
-                        const servicosSelecionados = Array.from(document.querySelectorAll('input[name="servico"]:checked'))
-                                                          .map(cb => cb.value)
-                                                          .join(', ');
-
-                        // AQUI ESTÁ A MUDANÇA:
-                        // Se escolheste "Qualquer Médico" (valor 0), enviamos 0, NÃO null!
-                        let vetEscolhido = document.querySelector('input[name="veterinario_selecionado"]:checked')?.value;
-                        let idVetFinal = parseInt(vetEscolhido);
-
-                        // Só enviamos null se o valor for realmente algo inválido (NaN)
-                        if (isNaN(idVetFinal)) {
-                            idVetFinal = null; 
-                        }
-
-                        const dataHoraConsulta = `${dataEscolhida} ${horaEscolhida}:00`; 
-                        const animalEscolhido = document.querySelector('input[name="animal_selecionado"]:checked').value;
-
-                        const dadosParaEnviar = {
-                            id_cliente: parseInt(idClienteLogado),
-                            id_animal: parseInt(animalEscolhido),
-                            id_veterinario: idVetFinal, // Agora envia 0 ou o ID do vet, nunca NULL para consultas
-                            data_hora: dataHoraConsulta,
-                            data_consulta: dataHoraConsulta,
-                            motivo: servicosSelecionados,
-                            estado: "Agendada" 
-                        };
-
-                        btnConfirmar.innerText = "A agendar...";
-                        btnConfirmar.disabled = true;
-
-                        try {
-                            const resposta = await fetch(`http://localhost:8008/api/consultas`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(dadosParaEnviar)
-                            });
-
-                            const resultado = await resposta.json();
-
-                            if (resultado.status === 201 || resultado.status === 200) {
-                                alert('🎉 Marcação efetuada com sucesso!');
-                                window.location.reload(); 
-                            } else {
-                                // Se o servidor rejeitar o 0, ele vai dar este erro aqui:
-                                alert('Erro ao gravar: ' + (resultado.message || 'Verifique a consola'));
-                                btnConfirmar.innerHTML = 'Confirmar Marcação <i class="fa fa-check" style="margin-left: 8px;"></i>';
-                                btnConfirmar.disabled = false;
-                            }
-                        } catch (erro) {
-                            console.error("Erro grave:", erro);
-                            alert("Erro ao ligar ao servidor da clínica.");
-                            btnConfirmar.disabled = false;
-                        }
-                    });
-                }
-    }
-
-    // ==========================================================================
-    // 3. LÓGICA DOS FILTROS INTELIGENTES
-    // ==========================================================================
-    const botoesFiltro = document.querySelectorAll('.filtro-btn');
-
-    function aplicarFiltroAtivo() {
-        const botaoAtivo = document.querySelector('.filtro-btn.ativo');
-        if (!botaoAtivo) return;
-        
-        const filtroEscolhido = botaoAtivo.getAttribute('data-filtro');
-        const cartoesConsulta = document.querySelectorAll('.consulta');
-
-        cartoesConsulta.forEach(cartao => {
-            const statusCartao = cartao.getAttribute('data-status');
-            if (filtroEscolhido === 'todas' || filtroEscolhido === statusCartao) {
-                cartao.style.display = 'flex';
-            } else {
-                cartao.style.display = 'none';
-            }
-        });
-    }
-
-    if (botoesFiltro.length > 0) {
-        botoesFiltro.forEach(botao => {
-            botao.addEventListener('click', function() {
-                botoesFiltro.forEach(b => b.classList.remove('ativo'));
-                this.classList.add('ativo');
-                aplicarFiltroAtivo();
-            });
-        });
-    }
-
-    // ==========================================================================
-    // 4. AÇÕES DOS BOTÕES DAS CONSULTAS GERADAS (VER, REMARCAR, CANCELAR)
-    // ==========================================================================
-    const modalDetalhes = document.getElementById('modal-detalhes-consulta');
-    const detalheNome = document.getElementById('detalhe-nome');
-    const detalheData = document.getElementById('detalhe-data');
-    const detalheMotivo = document.getElementById('detalhe-motivo');
-    let cartaoSendoVistoRef = null;
-
-    if (containerConsultas) {
-        containerConsultas.addEventListener('click', function(e) {
-            const botao = e.target;
-            const cartaoConsulta = botao.closest('.consulta');
-            if (!cartaoConsulta) return;
-
-            const idDaMarcacao = cartaoConsulta.getAttribute('data-id');
-            const tipoDaMarcacao = cartaoConsulta.getAttribute('data-tipo');
-
-            const endpointApagar = tipoDaMarcacao === 'servico' 
-                ? `http://localhost:8008/api/servicos/${idDaMarcacao}` 
-                : `http://localhost:8008/api/consultas/${idDaMarcacao}`;
-
-            // BOTÃO CANCELAR
-            if (botao.classList.contains('btn-cancelar')) {
-                if (confirm("Tem a certeza que deseja cancelar esta marcação?")) {
-                    fetch(endpointApagar, { method: 'DELETE' })
-                    .then(resposta => {
-                        if(resposta.ok) {
-                            cartaoConsulta.style.opacity = '0';
-                            setTimeout(() => { cartaoConsulta.remove(); }, 300);
-                            alert("Marcação cancelada com sucesso!");
-                        } else {
-                            alert("Erro ao cancelar. Verifique a consola.");
-                        }
-                    });
-                }
-            }
-
-            // BOTÃO REMARCAR
-            if (botao.classList.contains('btn-editar')) {
-                if (confirm("Para remarcar, a marcação atual será cancelada. Deseja escolher um novo horário?")) {
-                    fetch(endpointApagar, { method: 'DELETE' })
-                    .then(resposta => {
-                        if(resposta.ok) {
-                            cartaoConsulta.remove(); 
-                            if (modalConsulta) {
-                                modalConsulta.classList.add('ativo');
-                                document.body.classList.add('no-scroll');
-                                carregarAnimaisParaModal();
-                                carregarVeterinariosParaModal();
-                                if(window.resetarPassos) window.resetarPassos();
-                            }
-                        }
-                    });
-                }
-            }
-
-            // BOTÃO VER (DETALHES)
-            if (botao.classList.contains('btn-detalhes')) {
-                cartaoSendoVistoRef = cartaoConsulta; 
-
-                const infoParagrafos = cartaoConsulta.querySelectorAll('.info p');
-                detalheNome.innerText = infoParagrafos[0].innerText.replace('🐾 ', '');
-                detalheData.innerText = infoParagrafos[1].innerText.replace('📅 ', '');
-                detalheMotivo.innerText = infoParagrafos[2].innerText; 
+            // ==========================================================================
+            // NOVO: VALIDAÇÃO SE A DATA ESTÁ NO FUTURO (CASO ESCREVA MANUALMENTE)
+            // ==========================================================================
+            if (nascimentoInput !== '') {
+                const dataEscolhida = new Date(nascimentoInput);
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0); 
                 
-                const nomeMedico = infoParagrafos[3].innerText;
-                const detalheMedico = modalDetalhes.querySelector('.detalhes-info p:nth-child(5)'); 
-                if (detalheMedico) {
-                    detalheMedico.innerHTML = `<strong>Profissional:</strong> ${nomeMedico}`;
+                if (dataEscolhida > hoje) {
+                    alert("A data de nascimento não pode estar no futuro. Tens a certeza que é um viajante do tempo? 🕰️🐾");
+                    return; 
                 }
+            }
+
+            // Apanhar o NIF e forçar a ser NÚMERO
+            const nifDoCliente = parseInt(document.getElementById('input-nif').value.trim()) || 0;
+
+            
+           // 3. Preparar os dados para enviar para o Backend
+           const novoAnimalDados = {
+                id_cliente: parseInt(idClienteAtual),
+                nif: nifDoCliente,                 
+                nif_cliente: nifDoCliente,         
+                nome: nomeInput,
+                especie: especieInput,
+                raca: racaInput !== '' ? racaInput : "Não definida",
+                sexo: sexoInput,
+                data_nascimento: nascimentoInput !== '' ? nascimentoInput : null, 
+                estado: "Domestico" 
+            };
+
+            // 4. Mudar o botão para dar feedback visual de carregamento
+            const textoOriginal = btnGuardarNovo.innerHTML;
+            btnGuardarNovo.innerHTML = '<i class="fa fa-spinner fa-spin"></i> A guardar...';
+            btnGuardarNovo.disabled = true;
+
+            try {
+                // 5. Enviar o POST para a API
+                const resposta = await fetch(urlApiAnimais, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(novoAnimalDados)
+                });
                 
-                if (modalDetalhes) {
-                    modalDetalhes.classList.add('ativo');
-                    document.body.classList.add('no-scroll');
+                const resultado = await resposta.json();
+
+                if (resultado.status === 201 || resultado.status === 200) {
+                    // Magia: Recarrega os cartões instantaneamente!
+                    carregarAnimaisEConsultas(); 
+                    
+                    // Limpar o formulário todo de uma vez
+                    document.getElementById('form-animal').reset();
+                    
+                    // Fechar a janela modal
+                    modalAdd.classList.remove('ativo');
+                    modalAdd.setAttribute("aria-hidden", "true");
+                    document.body.classList.remove('no-scroll');
+                    
+                    // Pequeno delay para a janela fechar antes do alerta
+                    setTimeout(() => alert("🐾 Patudo registado com sucesso!"), 300);
+                } else {
+                    alert("Erro ao criar animal: " + (resultado.message || "Verifique a consola"));
                 }
+            } catch (erro) {
+                console.error("Erro no POST do animal:", erro);
+                alert("Erro grave ao tentar comunicar com o servidor da clínica.");
+            } finally {
+                // Devolver o estado normal ao botão
+                btnGuardarNovo.innerHTML = textoOriginal;
+                btnGuardarNovo.disabled = false;
             }
         });
     }
 
-    // ==========================================================================
-    // 5. AÇÕES DENTRO DO MODAL DE DETALHES
-    // ==========================================================================
-    if (modalDetalhes) {
-        modalDetalhes.querySelector('.fechar-modal-detalhes').addEventListener('click', () => {
-            modalDetalhes.classList.remove('ativo');
-            document.body.classList.remove('no-scroll');
-        });
+    if (listaAnimais) {
+        listaAnimais.addEventListener('click', async function(e) {
+            const btnApagar = e.target.closest('.btn-apagar-animal');
+            
+            if (btnApagar) {
+                const idParaApagar = btnApagar.getAttribute('data-id');
+                const cartao = btnApagar.closest('.animal-card');
+                const nomeAnimal = cartao.querySelector('p').innerText;
 
-        modalDetalhes.addEventListener('click', (e) => { 
-            if (e.target === modalDetalhes) {
-                modalDetalhes.classList.remove('ativo');
-                document.body.classList.remove('no-scroll');
-            }
-        });
-
-        const btnCancelarNoModal = modalDetalhes.querySelector('.btn-cancelar.btn-bloco');
-        const btnRemarcarNoModal = modalDetalhes.querySelector('.btn-editar.btn-bloco');
-
-        if (btnCancelarNoModal) {
-            btnCancelarNoModal.addEventListener('click', () => {
-                if (confirm("Tem a certeza que deseja cancelar esta marcação?") && cartaoSendoVistoRef) {
-                    const idDaMarcacao = cartaoSendoVistoRef.getAttribute('data-id');
-                    const tipoDaMarcacao = cartaoSendoVistoRef.getAttribute('data-tipo');
-
-                    const endpointApagar = tipoDaMarcacao === 'servico' ? `http://localhost:8008/api/servicos/${idDaMarcacao}` : `http://localhost:8008/api/consultas/${idDaMarcacao}`;
-                    
-                    fetch(endpointApagar, { method: 'DELETE' }).then(resposta => {
-                        if(resposta.ok) {
-                            modalDetalhes.classList.remove('ativo');
-                            document.body.classList.remove('no-scroll');
-                            cartaoSendoVistoRef.style.opacity = '0';
-                            setTimeout(() => { cartaoSendoVistoRef.remove(); }, 300);
-                            alert("Marcação cancelada com sucesso!");
-                            cartaoSendoVistoRef = null; 
-                        }
-                    });
-                }
-            });
-        }
-
-        if (btnRemarcarNoModal) {
-            btnRemarcarNoModal.addEventListener('click', () => {
-                if (cartaoSendoVistoRef) {
-                    const idDaMarcacao = cartaoSendoVistoRef.getAttribute('data-id');
-                    const tipoDaMarcacao = cartaoSendoVistoRef.getAttribute('data-tipo');
-                    const endpointApagar = tipoDaMarcacao === 'servico' ? `http://localhost:8008/api/servicos/${idDaMarcacao}` : `http://localhost:8008/api/consultas/${idDaMarcacao}`;
-                    
-                    if (confirm("Para remarcar, a marcação atual será cancelada. Deseja escolher um novo horário?")) {
-                        fetch(endpointApagar, { method: 'DELETE' }).then(resposta => {
-                            if(resposta.ok) {
-                                modalDetalhes.classList.remove('ativo');
-                                cartaoSendoVistoRef.remove();
-                                if (modalConsulta) {
-                                    modalConsulta.classList.add('ativo');
-                                    carregarAnimaisParaModal();
-                                    carregarVeterinariosParaModal();
-                                }
-                                cartaoSendoVistoRef = null;
-                            }
+                if (confirm(`Tem a certeza que deseja remover o(a) ${nomeAnimal}?`)) {
+                    try {
+                        const resposta = await fetch(`${urlApiAnimais}/${idParaApagar}`, {
+                            method: 'DELETE'
                         });
+                        
+                        const resultado = await resposta.json();
+
+                        if (resultado.status === 200) {
+                            carregarAnimaisEConsultas(); // Atualiza a lista!
+                        } else {
+                            alert("Erro ao remover: " + resultado.message);
+                        }
+                    } catch (erro) {
+                        console.error("Erro no DELETE:", erro);
                     }
                 }
+            }
+        });
+    }
+
+  // ==========================================================================
+    // --- 4. UI EXTRAS (Foto de perfil, Botão Editar e Avisos) ---
+    // ==========================================================================
+    const btnEditarPerfilLateral = document.querySelector('.perfil .editar');
+    const inputPrimeiroNome = document.getElementById('input-nome');
+    if (btnEditarPerfilLateral && inputPrimeiroNome) {
+        btnEditarPerfilLateral.addEventListener('click', () => {
+            inputPrimeiroNome.focus();
+        });
+    }
+
+    document.querySelectorAll(".btn-fechar-aviso").forEach((botao) => {
+        botao.addEventListener("click", () => botao.closest(".aviso").remove());
+    });
+
+    // ==========================================================================
+    // MAGIA DA FOTO DE PERFIL (COM MEMÓRIA)
+    // ==========================================================================
+    const inputFoto = document.getElementById('input-foto');
+    const fotoPerfil = document.getElementById('foto-perfil');
+    
+    if (inputFoto && fotoPerfil) {
+        // 1. Carregar foto guardada anteriormente (se existir para este cliente)
+        const fotoGuardada = localStorage.getItem('fotoPerfilCliente_' + idClienteAtual);
+        if (fotoGuardada) {
+            fotoPerfil.src = fotoGuardada;
+        }
+
+        // 2. Ligar o clique do Lápis ao Input de ficheiros escondido
+        // Procura o elemento que está à beira da foto (o lápis)
+        const btnLapis = fotoPerfil.parentElement; 
+        if (btnLapis) {
+            btnLapis.style.cursor = 'pointer'; // Muda o rato para a mãozinha
+            btnLapis.addEventListener('click', (e) => {
+                e.preventDefault(); 
+                inputFoto.click(); // Dá a ordem de abrir a janela do Windows/Mac
             });
         }
-    }
-    
-    const checkConsulta = document.getElementById('check-consulta');
-    const seccaoVeterinario = document.getElementById('seccao-veterinario');
 
-    if(checkConsulta && seccaoVeterinario) {
-        checkConsulta.addEventListener('change', function() {
-            if(this.checked) {
-                seccaoVeterinario.style.display = 'block';
-            } else {
-                seccaoVeterinario.style.display = 'none';
+        // 3. Quando o cliente escolhe a foto nova do computador...
+        inputFoto.addEventListener('change', function(evento) {
+            const ficheiro = evento.target.files[0];
+            if (ficheiro) {
+                const leitor = new FileReader();
+                leitor.onload = function(e) { 
+                    // Muda a imagem no ecrã imediatamente
+                    fotoPerfil.src = e.target.result; 
+                    // Guarda na memória do navegador para sobreviver ao F5!
+                    localStorage.setItem('fotoPerfilCliente_' + idClienteAtual, e.target.result);
+                }
+                leitor.readAsDataURL(ficheiro);
             }
         });
     }
 });
+// 1. A função calculadora
+function formatarTempoAtualizacao(dataGuardada) {
+    if (!dataGuardada) return "Sem atualizações recentes";
 
-// ==========================================================================
-// FUNÇÃO GLOBAL: NAVEGAR NOS PASSOS DO MODAL
-// ==========================================================================
-let passoAtual = 1;
+    const dataAtualizacao = new Date(dataGuardada);
+    const agora = new Date();
+    const diferencaDias = Math.floor((agora - dataAtualizacao) / (1000 * 60 * 60 * 24));
 
-window.resetarPassos = function() {
-    passoAtual = 1;
-    document.querySelectorAll('.conteudo-passo').forEach(el => {
-        el.classList.add('escondido');
-        el.style.display = ''; 
-    });
-    document.querySelectorAll('.passo').forEach(el => el.classList.remove('ativo'));
-    
-    document.getElementById(`passo-1`).classList.remove('escondido');
-    document.getElementById(`indicador-passo-1`).classList.add('ativo');
-    
-    document.getElementById('btn-voltar').classList.add('escondido');
-    document.getElementById('btn-avancar').classList.remove('escondido');
-    document.getElementById('btn-confirmar').classList.add('escondido');
+    if (diferencaDias === 0) return "Atualizado hoje";
+    if (diferencaDias === 1) return "Atualizado ontem";
+    if (diferencaDias < 7) return `Atualizado há ${diferencaDias} dias`;
+    if (diferencaDias < 14) return "Atualizado há 1 semana";
+    return `Atualizado há ${Math.floor(diferencaDias / 7)} semanas`;
 }
 
-window.mudarPasso = function(direcao) {
-    if (direcao === 1) {
-        if (passoAtual === 1) {
-            const animalEscolhido = document.querySelector('input[name="animal_selecionado"]:checked');
-            if (!animalEscolhido) {
-                alert("Por favor, selecione um animal antes de avançar.");
-                return; 
+// 2. Verifica a memória local
+const dataMemoria = localStorage.getItem('ultima_atualizacao_perfil');
+const badge = document.getElementById('badge-atualizacao'); 
+
+if (badge) {
+    badge.innerText = formatarTempoAtualizacao(dataMemoria);
+}
+
+// 3. Atualizar a data
+const btnGuardarPerfil = document.getElementById('btn-guardar-perfil');
+if (btnGuardarPerfil) {
+    btnGuardarPerfil.addEventListener('click', () => {
+        localStorage.setItem('ultima_atualizacao_perfil', new Date().toISOString());
+        if (badge) badge.innerText = "Atualizado hoje";
+    });
+}
+
+// ==========================================================================
+// LÓGICA DO PAINEL DE AVISOS (LEMBRETES DE CONSULTAS E SERVIÇOS)
+// ==========================================================================
+async function carregarLembretesConsultas() {
+    const dadosLoginStr = localStorage.getItem("utilizadorLogado");
+    if (!dadosLoginStr) return;
+    
+    let idClienteLogado;
+    try {
+        idClienteLogado = JSON.parse(dadosLoginStr).id_cliente;
+    } catch (e) { return; }
+
+    const containerAvisos = document.getElementById('container-avisos');
+    const badgeAvisos = document.getElementById('badge-avisos');
+
+    if (!containerAvisos || !badgeAvisos) return;
+
+    try {
+        // Os 3 caminhos da nossa clínica
+        const urlConsultas = `http://localhost:8008/api/consultas/cliente/${idClienteLogado}`;
+        const urlServicos = `http://localhost:8008/api/servicos`;
+        const urlAnimais = `http://localhost:8008/api/animais/cliente/${idClienteLogado}`;
+
+        let todasAsMarcacoes = [];
+        let meusAnimaisIDs = [];
+        let mapaAnimais = {};
+
+        // 1. Descobrir os animais deste cliente
+        try {
+            const resAnimais = await fetch(urlAnimais);
+            if (resAnimais.ok) {
+                const dadosA = await resAnimais.json();
+                if (dadosA.data) {
+                    dadosA.data.forEach(animal => {
+                        meusAnimaisIDs.push(animal.id_animal);
+                        mapaAnimais[animal.id_animal] = animal.nome;
+                    });
+                }
             }
+        } catch (e) { console.warn("Aviso: Falha ao carregar animais para os lembretes."); }
+
+        // 2. Vai buscar as Consultas Médicas
+        try {
+            const resConsultas = await fetch(urlConsultas);
+            if (resConsultas.ok) {
+                const dadosC = await resConsultas.json();
+                if (dadosC.data) {
+                    const consultasFormatadas = dadosC.data.map(c => ({
+                        nome_animal: c.nome_animal || mapaAnimais[c.id_animal] || 'Animal',
+                        data_hora: c.data_hora || c.data_consulta,
+                        motivo: c.motivo || 'Consulta'
+                    }));
+                    todasAsMarcacoes.push(...consultasFormatadas);
+                }
+            }
+        } catch (e) { console.warn("Aviso: Falha ao carregar consultas para os lembretes."); }
+
+        // 3. Vai buscar os Banhos e Tosquias (e filtra só os deste cliente!)
+        try {
+            const resServicos = await fetch(urlServicos);
+            if (resServicos.ok) {
+                const dadosS = await resServicos.json();
+                if (dadosS.data) {
+                    const meusServicos = dadosS.data.filter(s => meusAnimaisIDs.includes(s.id_animal));
+                    const servicosFormatados = meusServicos.map(s => ({
+                        nome_animal: mapaAnimais[s.id_animal] || 'Animal', 
+                        data_hora: s.data_servicos, 
+                        motivo: s.tipo_servico || 'Serviço'
+                    }));
+                    todasAsMarcacoes.push(...servicosFormatados);
+                }
+            }
+        } catch (e) { console.warn("Aviso: Falha ao carregar serviços para os lembretes."); }
+
+        // 4. Lógica de filtrar apenas os que acontecem nos próximos 3 dias
+        const hoje = new Date();
+        const daquiA3Dias = new Date();
+        daquiA3Dias.setDate(hoje.getDate() + 3);
+
+        const avisosFuturos = todasAsMarcacoes.filter(marcacao => {
+            const dataMarcacao = new Date(marcacao.data_hora);
+            return dataMarcacao > hoje && dataMarcacao <= daquiA3Dias;
+        });
+
+        // Ordenar do mais urgente para o menos urgente
+        avisosFuturos.sort((a, b) => new Date(a.data_hora) - new Date(b.data_hora));
+
+        // 5. Atualizar o Ecrã
+        badgeAvisos.innerText = `${avisosFuturos.length} novo${avisosFuturos.length !== 1 ? 's' : ''}`;
+        if(avisosFuturos.length > 0) {
+            badgeAvisos.style.backgroundColor = '#e74c3c'; 
+            badgeAvisos.style.color = '#fff';
         }
 
-        if (passoAtual === 2) {
-            const servicosEscolhidos = document.querySelectorAll('input[name="servico"]:checked');
-            if (servicosEscolhidos.length === 0) {
-                alert("Por favor, selecione pelo menos um serviço (Consulta, Banho ou Tosquia).");
-                return; 
-            }
+        if (avisosFuturos.length === 0) {
+            containerAvisos.innerHTML = `
+                <div class="aviso-vazio" style="padding: 15px; border-left: 4px solid #2ea89c; background: #f8f9fa; margin-bottom: 10px; border-radius: 5px;">
+                    <i class="fa-solid fa-bell" style="color: #2ea89c;"></i> Não tem avisos de momento.
+                </div>`;
+            return;
         }
+
+        containerAvisos.innerHTML = ''; 
+        
+        avisosFuturos.forEach(aviso => {
+            const dataObj = new Date(aviso.data_hora);
+            
+            const dataFormatada = dataObj.toLocaleDateString('pt-PT', { day: '2-digit', month: 'long' });
+            const horaFormatada = dataObj.toLocaleTimeString('pt-PT', { hour: '2-digit', minute:'2-digit' });
+
+            containerAvisos.innerHTML += `
+                <div style="padding: 12px 15px; border-left: 4px solid #f39c12; background: #fffdf7; margin-bottom: 10px; border-radius: 5px;">
+                    <div style="display: flex; gap: 10px; align-items: flex-start;">
+                        <i class="fa-solid fa-circle-exclamation" style="color: #f39c12; margin-top: 3px;"></i>
+                        <div>
+                            <span style="font-weight: 600; color: #2c3e50;">Lembrete: ${aviso.nome_animal}</span>
+                            <p style="margin: 3px 0 0; font-size: 0.85rem; color: #34495e;">
+                                Tem uma marcação para <strong>${aviso.motivo}</strong> a aproximar-se.
+                            </p>
+                            <small style="color: #7f8c8d; font-weight: 600;">
+                                <i class="fa-regular fa-calendar-check"></i> ${dataFormatada} às ${horaFormatada}
+                            </small>
+                        </div>
+                    </div>
+                </div>`;
+        });
+
+    } catch (erro) {
+        console.error("Erro ao carregar avisos:", erro);
+        containerAvisos.innerHTML = `
+            <div class="aviso-vazio" style="padding: 15px; border-left: 4px solid #2ea89c; background: #f8f9fa; margin-bottom: 10px; border-radius: 5px;">
+                <i class="fa-solid fa-bell" style="color: #2ea89c;"></i> Não tem avisos de momento.
+            </div>`;
     }
+}
 
-    const totalPassos = 3;
-
-    document.getElementById(`passo-${passoAtual}`).classList.add('escondido');
-    document.getElementById(`indicador-passo-${passoAtual}`).classList.remove('ativo');
-    
-    passoAtual += direcao;
-    
-    document.getElementById(`passo-${passoAtual}`).classList.remove('escondido');
-    document.getElementById(`indicador-passo-${passoAtual}`).classList.add('ativo');
-
-    const btnVoltar = document.getElementById('btn-voltar');
-    const btnAvancar = document.getElementById('btn-avancar');
-    const btnConfirmar = document.getElementById('btn-confirmar');
-
-    if (passoAtual === 1) {
-        btnVoltar.classList.add('escondido');
-    } else {
-        btnVoltar.classList.remove('escondido');
-    }
-
-    if (passoAtual === totalPassos) {
-        btnAvancar.classList.add('escondido');
-        btnConfirmar.classList.remove('escondido');
-    } else {
-        btnAvancar.classList.remove('escondido');
-        btnConfirmar.classList.add('escondido');
-    }
-};
+document.addEventListener('DOMContentLoaded', () => {
+    carregarLembretesConsultas();
+});

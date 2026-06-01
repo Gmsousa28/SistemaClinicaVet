@@ -1,3 +1,104 @@
-esta pagina vai ser o resg_ado mas sem algumas coisas isto é para ver os animais que estao disponiveis para adocao e o cliente pode escolher um para adotar
- e depois disso ele vai ser redirecionado para uma pagina de confirmacao de adocao onde ele vai preencher alguns dados e depois disso ele vai receber
- um email de confirmacao de adocao com os dados do animal e do cliente
+               <!DOCTYPE html>
+<html lang="pt">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Adoções - Clínica Miacãomigo</title>
+
+        <link rel="stylesheet" href="../../CSS/PaginaSite.css">
+        <link rel="stylesheet" href="../../CSS/css_cliente/cliente.css">
+        <link rel="stylesheet" href="../../CSS/css_cliente/adocao.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    </head>
+
+    <body class="com-sidebar">
+        <header>
+            <div class="header-texto">
+                <h1>Adoções</h1>
+                <p>Animais resgatados disponíveis para uma nova família</p>
+            </div>
+
+            <nav class="header-botoes">
+                <a href="cliente.html" class="button">Voltar ao Dashboard</a>
+            </nav>
+        </header>
+
+        <section class="sidebar">
+            <a href="../../Pag_principal.html" class="logo">
+                <img src="../../img/Logo_vet.png" alt="Logótipo Clínica Miacãomigo">
+            </a>
+
+            <hr>
+
+            <nav class="menu">
+                <a href="dashboard_cliente.html"><i class="fa fa-home"></i> Dashboard</a>
+                <a href="perfil_cliente.html"><i class="fa fa-user"></i> Perfil</a>
+                <a href="consultas_cliente.html"><i class="fa fa-calendar"></i> Consultas</a>
+                <a href="historico_cliente.html"><i class="fa-solid fa-clock"></i> Histórico</a>
+                <a href="adocao_cliente.html" class="active"><i class="fa fa-hand-holding-heart"></i> Adoções</a>
+                <hr>
+            </nav>
+        </section>
+
+        <main class="dashboard-main">
+            <section class="adocoes-topo">
+                <h2 class="titulo-seccao">Animais Para Adoção</h2>
+
+                <div class="filtros-adocao">
+                    <input type="search" id="pesquisa-adocao" placeholder="Pesquisar por nome ou raça">
+                    <select id="filtro-especie-adocao" aria-label="Filtrar por espécie">
+                        <option value="">Todas as espécies</option>
+                        <option value="cao">Cão</option>
+                        <option value="gato">Gato</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="grid-adocoes" id="contentor-cartoes-adocao">
+                 <p class="mensagem-lista-adocoes mensagem-lista-adocoes-carregamento">
+                    <i class="fa fa-spinner fa-spin"></i> A carregar animais disponíveis...
+                </p>
+            </section>
+        </main>
+
+        <div id="modal-pedido-adocao" class="modal-overlay">
+            <div class="modal-content">
+                 <h2 class="titulo-seccao titulo-modal-adocao">
+                    <i class="fa fa-hand-holding-heart"></i> Pedido de Adoção
+                </h2>
+
+                <div id="animal-selecionado-adocao" class="animal-selecionado"></div>
+
+                <form id="form-pedido-adocao" class="formulario-marcacao">
+                    <input type="hidden" id="id-animal-pedido">
+
+                     <div id="grupo-nif-manual" class="grupo-input" hidden>
+                        <label for="nif-cliente-manual">O teu NIF</label>
+                        <input type="text" id="nif-cliente-manual" maxlength="9" inputmode="numeric" placeholder="Introduz os 9 dígitos do NIF">
+                    </div>
+
+                    <div class="grupo-input">
+                        <label for="mensagem-pedido-adocao">Mensagem para a clínica</label>
+                        <textarea id="mensagem-pedido-adocao" rows="4" placeholder="Podes indicar disponibilidade, experiência com animais ou dúvidas."></textarea>
+                    </div>
+
+                    <div id="estado-pedido-adocao" class="estado-pedido-adocao"></div>
+
+                    <div class="acoes-formulario">
+                        <button type="button" class="btn-cancelar" onclick="fecharModalPedidoAdocao()">Cancelar</button>
+                        <button type="submit" class="btn-pedido-adocao" id="btn-enviar-pedido-adocao">
+                            Enviar Pedido <i class="fa fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <footer>
+            <p class="footer-texto-cliente">Área de Cliente - Clínica Miacãomigo © 2026</p>
+        </footer>
+
+        <script src="../../../JS/js_cliente/cliente_adocao.js"></script>
+        <script src="../../../JS/js_logins/auth_logins.js"></script>
+    </body>
+</html>
