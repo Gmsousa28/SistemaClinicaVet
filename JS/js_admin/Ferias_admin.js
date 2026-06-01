@@ -1,13 +1,16 @@
 // =======================================================
 // LISTA DE FÉRIAS / FOLGAS
 // =======================================================
+// Guarda todas as ferias/folgas carregadas da API.
 let listaFerias = [];
 
+// Guarda o ID do registo que esta a ser editado no modal.
 let idFeriasAtual = null;
 
 // =======================================================
 // CARREGAR FÉRIAS
 // =======================================================
+// Vai buscar as ferias/folgas a API e mostra-as na tabela.
 async function carregarFerias() {
 
     try {
@@ -122,6 +125,7 @@ async function carregarFerias() {
 // =======================================================
 // EDITAR FÉRIAS
 // =======================================================
+// Procura o registo escolhido e preenche o modal com os seus dados.
 function editarFerias(id) {
 
     const ferias =
@@ -174,6 +178,7 @@ function editarFerias(id) {
 // =======================================================
 // GUARDAR ALTERAÇÕES
 // =======================================================
+// Envia para a API as alteracoes feitas no modal.
 async function salvarEdicao() {
 
     try {
@@ -253,6 +258,7 @@ async function salvarEdicao() {
 // =======================================================
 // ELIMINAR FÉRIAS
 // =======================================================
+// Elimina um registo de ferias/folgas depois de confirmar com o utilizador.
 async function eliminarFerias(id) {
 
     const confirmar = confirm(
@@ -304,6 +310,7 @@ async function eliminarFerias(id) {
 // =======================================================
 // FECHAR MODAL
 // =======================================================
+// Fecha o modal de edicao e volta a permitir scroll na pagina.
 function fecharModalEdicao() {
 
     const modal =
@@ -324,4 +331,5 @@ function fecharModalEdicao() {
 // =======================================================
 // INICIAR
 // =======================================================
+// Carrega as ferias/folgas quando a pagina abre.
 window.onload = carregarFerias;

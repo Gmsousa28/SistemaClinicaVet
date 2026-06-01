@@ -1,13 +1,16 @@
 // =======================================================
 // LISTA DE MARCAÇÕES
 // =======================================================
+// Guarda todas as marcacoes carregadas da API.
 let listaMarcacoes = [];
 
+// Guarda o ID da marcacao que esta a ser editada no modal.
 let idMarcacaoAtual = null;
 
 // =======================================================
 // CARREGAR MARCAÇÕES
 // =======================================================
+// Vai buscar as marcacoes a API e mostra-as na tabela.
 async function carregarMarcacoes() {
 
     try {
@@ -122,6 +125,7 @@ async function carregarMarcacoes() {
 // =======================================================
 // EDITAR MARCAÇÃO
 // =======================================================
+// Procura a marcacao escolhida e preenche o modal com data e hora.
 function editarMarcacao(id) {
 
     const marcacao =
@@ -194,6 +198,8 @@ function editarMarcacao(id) {
 // =======================================================
 // GUARDAR ALTERAÇÕES
 // =======================================================
+// Guarda a nova data/hora da marcacao.
+// Os restantes dados ficam iguais aos dados originais.
 async function salvarEdicao() {
 
     try {
@@ -298,6 +304,7 @@ async function salvarEdicao() {
 // =======================================================
 // ELIMINAR MARCAÇÃO
 // =======================================================
+// Elimina uma marcacao depois de confirmar com o utilizador.
 async function eliminarMarcacao(id) {
 
     const confirmar = confirm(
@@ -349,6 +356,7 @@ async function eliminarMarcacao(id) {
 // =======================================================
 // FECHAR MODAL
 // =======================================================
+// Fecha o modal de edicao e volta a permitir scroll na pagina.
 function fecharModalEdicao() {
 
     const modal =
@@ -368,6 +376,8 @@ function fecharModalEdicao() {
 // =======================================================
 // CALCULAR HORA FIM
 // =======================================================
+// Calcula a hora de fim com base na hora inicial e nos servicos selecionados.
+// Cada servico selecionado acrescenta 30 minutos.
 function calcularHoraFim() {
 
     const horaInicioInput =
@@ -443,4 +453,5 @@ function calcularHoraFim() {
 // =======================================================
 // INICIAR
 // =======================================================
+// Carrega as marcacoes quando a pagina abre.
 window.onload = carregarMarcacoes;
