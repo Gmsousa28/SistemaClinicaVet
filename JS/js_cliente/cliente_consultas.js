@@ -43,13 +43,9 @@ document.addEventListener('DOMContentLoaded', function() {
             let contadorAnimaisVivos = 0;
 
             animais.forEach(animal => {
-                // ==========================================
-                // NOVIDADE: FILTRO DOS ANIMAIS FALECIDOS!
-                // Verifica se há alguma propriedade que indique que morreu
-                // ==========================================
                 const estado = animal.estado ? animal.estado.toLowerCase() : '';
                 if (estado === 'falecido' || estado === 'morto' || estado === 'inativo' || animal.vivo === false) {
-                    return; // Se estiver morto, sai deste ciclo e vai para o próximo!
+                    return; 
                 }
 
                 contadorAnimaisVivos++;
@@ -71,7 +67,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 gridAnimais.appendChild(label);
             });
 
-            // Se o cliente tinha cães, mas todos faleceram:
             if (contadorAnimaisVivos === 0) {
                 gridAnimais.innerHTML = '<p style="color: #e74c3c; width: 100%; text-align: center;">Não tem animais ativos de momento. Adicione um novo animal no seu perfil.</p>';
             }
@@ -134,7 +129,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const inputHoraReal = document.getElementById('hora_marcacao_real');
 
     if (inputDataVisual && containerSlots) {
-        
         const hoje = new Date();
         const ano = hoje.getFullYear();
         const mes = String(hoje.getMonth() + 1).padStart(2, '0');
@@ -201,33 +195,92 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // ==========================================================================
-    // 1. CARREGAR CONSULTAS DA BASE DE DADOS (API)
+    // 1. CARREGAR CONSULTAS E SERVIÇOS DA BASE DE DADOS (MIX DAS DUAS TABELAS)
     // ==========================================================================
     async function carregarConsultasReais() {
         if (!containerConsultas) return;
 
         try {
-            const resposta = await fetch(urlApiConsultas);
-            
-            if (!resposta.ok) {
-                containerConsultas.innerHTML = '<p style="color: white; padding-left: 20px;">Ainda não tem consultas marcadas ou a API não está ligada.</p>';
-                return;
-            }
+            const urlConsultas = `http://localhost:8008/api/consultas/cliente/${idClienteLogado}`;
+            const urlServicos = `http://localhost:8008/api/servicos`; // <-- A rota geral do teu colega!
+            const urlAnimais = `http://localhost:8008/api/animais/cliente/${idClienteLogado}`;
 
-            const resultado = await resposta.json();
-            const consultas = resultado.data;
+            let todasAsMarcacoes = [];
+            let meusAnimaisIDs = [];
+            let mapaAnimais = {}; // Para sabermos o nome do animal através do ID
 
+            // 1. Descobrir os animais do cliente logado (para filtrar os serviços e saber os nomes)
+            try {
+                const resAnimais = await fetch(urlAnimais);
+                if (resAnimais.ok) {
+                    const dadosA = await resAnimais.json();
+                    if (dadosA.data) {
+                        dadosA.data.forEach(animal => {
+                            meusAnimaisIDs.push(animal.id_animal);
+                            mapaAnimais[animal.id_animal] = animal.nome; // Guarda o nome: ex: { 2: "Rex" }
+                        });
+                    }
+                }
+            } catch (e) { console.warn("Falha ao carregar animais para filtro."); }
+
+            // 2. Vai buscar as Consultas Médicas
+            try {
+                const resConsultas = await fetch(urlConsultas);
+                if (resConsultas.ok) {
+                    const dadosC = await resConsultas.json();
+                    if (dadosC.data) {
+                        const consultasFormatadas = dadosC.data.map(c => ({
+                            id: c.id_consulta,
+                            tipo: 'consulta',
+                            nome_animal: c.nome_animal || mapaAnimais[c.id_animal] || 'Animal',
+                            data_hora: c.data_hora || c.data_consulta,
+                            motivo: c.motivo || 'Consulta',
+                            profissional: c.nome_veterinario || 'Sem médico atribuído',
+                            estado: c.estado
+                        }));
+                        todasAsMarcacoes.push(...consultasFormatadas);
+                    }
+                }
+            } catch (e) { console.warn("Falha ao carregar consultas médicas."); }
+
+            // 3. Vai buscar os Serviços (Banhos/Tosquias) e FILTRA!
+            try {
+                const resServicos = await fetch(urlServicos);
+                if (resServicos.ok) {
+                    const dadosS = await resServicos.json();
+                    if (dadosS.data) {
+                        // O SEGREDO: Só guarda os serviços cujo id_animal pertença a este cliente
+                        const meusServicos = dadosS.data.filter(s => meusAnimaisIDs.includes(s.id_animal));
+
+                        const servicosFormatados = meusServicos.map(s => ({
+                            id: s.id_servicos || s.id_servico,
+                            tipo: 'servico',
+                            nome_animal: mapaAnimais[s.id_animal] || 'Animal', 
+                            data_hora: s.data_servicos, 
+                            motivo: s.tipo_servico || 'Serviço',
+                            profissional: 'Equipa da Clínica', // Banhos geralmente não têm um vet específico
+                            estado: s.estado_servico || s.estado || 'Agendado'
+                        }));
+                        todasAsMarcacoes.push(...servicosFormatados);
+                    }
+                }
+            } catch (e) { console.warn("Falha ao carregar serviços."); }
+
+            // 4. Se não houver nada nas duas tabelas, avisa o utilizador
             containerConsultas.innerHTML = ''; 
-
-            if (!consultas || consultas.length === 0) {
-                containerConsultas.innerHTML = '<p style="color: white; padding-left: 20px;">Não tem consultas marcadas.</p>';
+            if (todasAsMarcacoes.length === 0) {
+                containerConsultas.innerHTML = '<p style="color: white; padding-left: 20px;">Não tem consultas nem serviços marcados de momento.</p>';
                 return;
             }
+
+            // 5. Organizar tudo por ordem cronológica (da data mais antiga para a mais recente)
+            todasAsMarcacoes.sort((a, b) => new Date(a.data_hora) - new Date(b.data_hora));
 
             const dataAtual = new Date();
 
-            consultas.forEach(consulta => {
-                const dataConsulta = new Date(consulta.data_hora); 
+            // 6. Desenhar os cartões no ecrã misturando tudo!
+            todasAsMarcacoes.forEach(marcacao => {
+                const dataMarcacao = new Date(marcacao.data_hora); 
                 
                 let status = "futura";
                 let botoesAcao = `
@@ -236,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <button class="btn btn-cancelar">Cancelar</button>
                 `;
 
-                if (dataConsulta < dataAtual) {
+                if (dataMarcacao < dataAtual) {
                     status = "passada";
                     botoesAcao = `
                         <button class="btn btn-detalhes">Ver</button>
@@ -244,19 +297,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
                 }
 
-                const diaMes = dataConsulta.toLocaleDateString('pt-PT', { day: 'numeric', month: 'long' });
-                const hora = dataConsulta.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+                const diaMes = dataMarcacao.toLocaleDateString('pt-PT', { day: 'numeric', month: 'long' });
+                const hora = dataMarcacao.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+
+                // Mudar o ícone: 🛁 para Banhos/Tosquias, 💉 para Consultas Médicas
+                const icone = marcacao.tipo === 'servico' ? '🛁' : '💉';
 
                 const section = document.createElement('section');
                 section.className = 'consulta';
                 section.setAttribute('data-status', status);
-                section.setAttribute('data-id', consulta.id_consulta);
+                section.setAttribute('data-id', marcacao.id);
+                section.setAttribute('data-tipo', marcacao.tipo); 
                 section.innerHTML = `
                     <div class="info">
-                        <p class="nome">🐾 ${consulta.nome_animal}</p>
+                        <p class="nome">🐾 ${marcacao.nome_animal}</p>
                         <p>📅 ${diaMes} - ${hora}</p>
-                        <p>💉 ${consulta.motivo}</p>
-                        <p class="medico-escondido" style="display:none;">${consulta.nome_veterinario}</p> 
+                        <p>${icone} ${marcacao.motivo}</p>
+                        <p class="medico-escondido" style="display:none;">${marcacao.profissional}</p> 
                     </div>
                     <div class="acoes">
                         ${botoesAcao}
@@ -269,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
             aplicarFiltroAtivo();
 
         } catch (erro) {
-            console.error("Erro ao carregar consultas:", erro);
+            console.error("Erro geral ao carregar marcações:", erro);
             containerConsultas.innerHTML = '<p style="color: #e74c3c; padding-left: 20px;">Erro ao ligar ao servidor.</p>';
         }
     }
@@ -318,16 +375,27 @@ document.addEventListener('DOMContentLoaded', function() {
                                                   .join(', ');
 
                 let vetEscolhido = document.querySelector('input[name="veterinario_selecionado"]:checked')?.value;
-                if (!vetEscolhido) vetEscolhido = 0;
+                
+                // ==============================================================
+                // O SEGREDO ESTÁ AQUI: Substituir o 0 por null se for só banho!
+                // ==============================================================
+                let idVetFinal = parseInt(vetEscolhido);
+                if (idVetFinal === 0 || isNaN(idVetFinal)) {
+                    idVetFinal = null; 
+                }
 
                 const dataHoraConsulta = `${dataEscolhida} ${horaEscolhida}:00`; 
                 const animalEscolhido = document.querySelector('input[name="animal_selecionado"]:checked').value;
 
+                // Pacote à prova de bala para a Base de Dados
                 const dadosParaEnviar = {
-                    id_animal: animalEscolhido,
-                    id_veterinario: vetEscolhido, 
+                    id_cliente: parseInt(idClienteLogado),
+                    id_animal: parseInt(animalEscolhido),
+                    id_veterinario: idVetFinal, 
+                    data_hora: dataHoraConsulta,
                     data_consulta: dataHoraConsulta,
-                    motivo: servicosSelecionados 
+                    motivo: servicosSelecionados,
+                    estado: "Agendada" 
                 };
 
                 btnConfirmar.innerText = "A agendar...";
@@ -392,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ==========================================================================
+   // ==========================================================================
     // 4. AÇÕES DOS BOTÕES DAS CONSULTAS GERADAS
     // ==========================================================================
     const modalDetalhes = document.getElementById('modal-detalhes-consulta');
@@ -407,20 +475,24 @@ document.addEventListener('DOMContentLoaded', function() {
             const cartaoConsulta = botao.closest('.consulta');
             if (!cartaoConsulta) return;
 
-            const idConsulta = cartaoConsulta.getAttribute('data-id');
+            const idDaMarcacao = cartaoConsulta.getAttribute('data-id');
+            const tipoDaMarcacao = cartaoConsulta.getAttribute('data-tipo'); // Lê se é 'consulta' ou 'servico'
+
+            // O TRUQUE ESTÁ AQUI: Escolhe o caminho certo para a API!
+            const endpointApagar = tipoDaMarcacao === 'servico' 
+                ? `http://localhost:8008/api/servicos/${idDaMarcacao}` 
+                : `http://localhost:8008/api/consultas/${idDaMarcacao}`;
 
             // 1. BOTÃO CANCELAR
             if (botao.classList.contains('btn-cancelar')) {
-                const confirmacao = confirm("Tem a certeza que deseja cancelar esta consulta?");
+                const confirmacao = confirm("Tem a certeza que deseja cancelar esta marcação?");
                 if (confirmacao) {
-                    fetch(`http://localhost:8008/api/consultas/${idConsulta}`, {
-                        method: 'DELETE'
-                    })
+                    fetch(endpointApagar, { method: 'DELETE' })
                     .then(resposta => {
                         if(resposta.ok) {
                             cartaoConsulta.style.opacity = '0';
                             setTimeout(() => { cartaoConsulta.remove(); }, 300);
-                            alert("Consulta cancelada com sucesso!");
+                            alert("Marcação cancelada com sucesso!");
                         } else {
                             alert("Erro ao cancelar. Verifique a consola.");
                         }
@@ -431,9 +503,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 2. BOTÃO REMARCAR
             if (botao.classList.contains('btn-editar')) {
-                const confirmacao = confirm("Para remarcar, a consulta atual será cancelada. Deseja escolher um novo horário?");
+                const confirmacao = confirm("Para remarcar, a marcação atual será cancelada. Deseja escolher um novo horário?");
                 if (confirmacao) {
-                    fetch(`http://localhost:8008/api/consultas/${idConsulta}`, { method: 'DELETE' })
+                    fetch(endpointApagar, { method: 'DELETE' })
                     .then(resposta => {
                         if(resposta.ok) {
                             cartaoConsulta.remove(); 
@@ -457,12 +529,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 const infoParagrafos = cartaoConsulta.querySelectorAll('.info p');
                 detalheNome.innerText = infoParagrafos[0].innerText.replace('🐾 ', '');
                 detalheData.innerText = infoParagrafos[1].innerText.replace('📅 ', '');
-                detalheMotivo.innerText = infoParagrafos[2].innerText.replace('💉 ', '');
+                detalheMotivo.innerText = infoParagrafos[2].innerText; // Tiramos o replace para preservar o ícone dinâmico
                 
                 const nomeMedico = infoParagrafos[3].innerText;
                 const detalheMedico = modalDetalhes.querySelector('.detalhes-info p:nth-child(5)'); 
                 if (detalheMedico) {
-                    detalheMedico.innerHTML = `<strong>Médico(a) Veterinário(a):</strong> ${nomeMedico}`;
+                    detalheMedico.innerHTML = `<strong>Profissional:</strong> ${nomeMedico}`;
                 }
                 
                 if (modalDetalhes) {
@@ -494,11 +566,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (btnCancelarNoModal) {
             btnCancelarNoModal.addEventListener('click', () => {
-                const confirmacao = confirm("Tem a certeza que deseja cancelar esta consulta?");
+                const confirmacao = confirm("Tem a certeza que deseja cancelar esta marcação?");
                 if (confirmacao && cartaoSendoVistoRef) {
-                    const idConsulta = cartaoSendoVistoRef.getAttribute('data-id');
+                    const idDaMarcacao = cartaoSendoVistoRef.getAttribute('data-id');
+                    const tipoDaMarcacao = cartaoSendoVistoRef.getAttribute('data-tipo');
+
+                    const endpointApagar = tipoDaMarcacao === 'servico' 
+                        ? `http://localhost:8008/api/servicos/${idDaMarcacao}` 
+                        : `http://localhost:8008/api/consultas/${idDaMarcacao}`;
                     
-                    fetch(`http://localhost:8008/api/consultas/${idConsulta}`, { method: 'DELETE' })
+                    fetch(endpointApagar, { method: 'DELETE' })
                     .then(resposta => {
                         if(resposta.ok) {
                             modalDetalhes.classList.remove('ativo');
@@ -507,7 +584,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             cartaoSendoVistoRef.style.opacity = '0';
                             setTimeout(() => { cartaoSendoVistoRef.remove(); }, 300);
 
-                            alert("Consulta cancelada com sucesso!");
+                            alert("Marcação cancelada com sucesso!");
                             cartaoSendoVistoRef = null; 
                         }
                     });
@@ -518,11 +595,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if (btnRemarcarNoModal) {
             btnRemarcarNoModal.addEventListener('click', () => {
                 if (cartaoSendoVistoRef) {
-                    const idConsulta = cartaoSendoVistoRef.getAttribute('data-id');
+                    const idDaMarcacao = cartaoSendoVistoRef.getAttribute('data-id');
+                    const tipoDaMarcacao = cartaoSendoVistoRef.getAttribute('data-tipo');
+
+                    const endpointApagar = tipoDaMarcacao === 'servico' 
+                        ? `http://localhost:8008/api/servicos/${idDaMarcacao}` 
+                        : `http://localhost:8008/api/consultas/${idDaMarcacao}`;
                     
-                    const confirmacao = confirm("Para remarcar, a consulta atual será cancelada. Deseja escolher um novo horário?");
+                    const confirmacao = confirm("Para remarcar, a marcação atual será cancelada. Deseja escolher um novo horário?");
                     if (confirmacao) {
-                        fetch(`http://localhost:8008/api/consultas/${idConsulta}`, { method: 'DELETE' })
+                        fetch(endpointApagar, { method: 'DELETE' })
                         .then(resposta => {
                             if(resposta.ok) {
                                 modalDetalhes.classList.remove('ativo');
@@ -541,7 +623,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
-    
+        
     const checkConsulta = document.getElementById('check-consulta');
     const seccaoVeterinario = document.getElementById('seccao-veterinario');
 
