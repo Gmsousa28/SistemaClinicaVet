@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // 2. Expulsa quem não tem login (ou se não houver um id_cliente válido)!
     if (!idClienteAtual) {
         alert("Acesso negado! Por favor, faça login para ver o seu perfil.");
-        window.location.href = "../../Pag/Logins_Sessões/login.html"; // Verifica se este caminho está certo no teu projeto
-        return; // Pára o script imediatamente
+        window.location.href = "../../Pag/Logins_Sessões/login.html"; 
+        return; 
     }
 
     const urlApiClientes = `http://localhost:8008/api/clientes`; 
@@ -134,48 +134,76 @@ document.addEventListener('DOMContentLoaded', function() {
             const resultadoAnimais = await respostaAnimais.json();
 
             if (resultadoAnimais.status === 200 && Array.isArray(resultadoAnimais.data)) {
-                const meusAnimais = resultadoAnimais.data.filter(a => a.id_cliente == idClienteAtual);
                 
-                // Guardar apenas os números de ID dos animais para usarmos nas consultas!
-                meusAnimaisIDs = meusAnimais.map(a => a.id_animal);
+                // Vai buscar TODOS os animais deste cliente
+                const todosMeusAnimais = resultadoAnimais.data.filter(a => a.id_cliente == idClienteAtual);
                 
-                const statsAnimais = document.querySelector('.perfil-stats span:first-child strong');
-                const badgeAnimais = document.querySelector('.meus-animais .badge');
-                if (statsAnimais) statsAnimais.innerText = meusAnimais.length;
-                if (badgeAnimais) badgeAnimais.innerText = `${meusAnimais.length} ativos`;
+                // Variável para guardar apenas os IDs dos que estão vivos!
+                let animaisAtivosIDs = [];
 
-                listaAnimais.innerHTML = '';
-                meusAnimais.forEach(animal => {
+                listaAnimais.innerHTML = ''; // Limpa a lista antes de desenhar
+
+                todosMeusAnimais.forEach(animal => {
+                    // Verificar o estado do animal
+                    const estadoTexto = animal.estado ? animal.estado.toLowerCase() : '';
+                    const isMorto = (estadoTexto === 'falecido' || estadoTexto === 'morto' || estadoTexto === 'inativo' || animal.vivo === false);
+
+                    // Se estiver vivo, adiciona à lista de ativos
+                    if (!isMorto) {
+                        animaisAtivosIDs.push(animal.id_animal);
+                    }
+
+                    // Foto default (cão ou gato)
                     let fotoSrc = animal.especie.toLowerCase() === 'gato' 
                         ? 'https://images.unsplash.com/photo-1573865526739-10659fec78a5?auto=format&fit=crop&w=240&q=80' 
                         : 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=240&q=80';
                     
+                    // ==========================================
+                    // MAGIA DO DESIGN: Se estiver morto, fica a cinzento!
+                    // ==========================================
+                    const estiloImagem = isMorto ? 'filter: grayscale(100%); opacity: 0.6;' : '';
+                    const estiloTexto = isMorto ? 'color: #95a5a6;' : '';
+                    const tagFalecido = isMorto ? '<span style="display:block; color:#7f8c8d; font-size:11px; font-weight:bold; margin-top:2px;">Falecido 🕊️</span>' : '';
+                    
+                    // Se estiver morto, tiramos o botão de Editar, deixamos só o de apagar
+                    const botaoEditar = !isMorto ? `<button class="btn-editar-animal" type="button" aria-label="Editar ${animal.nome}"><i class="fa fa-pen"></i></button>` : '';
+
                     const cartao = document.createElement('div');
                     cartao.className = 'animal-card';
+                    if (isMorto) cartao.style.opacity = '0.8';
+
                     cartao.innerHTML = `
                         <div class="foto-animal-wrapper">
-                            <img src="${fotoSrc}" alt="${animal.nome}">
+                            <img src="${fotoSrc}" alt="${animal.nome}" style="${estiloImagem}">
                             <div class="acoes-animal">
-                                <button class="btn-editar-animal" type="button" aria-label="Editar ${animal.nome}"><i class="fa fa-pen"></i></button>
+                                ${botaoEditar}
                                 <button class="btn-apagar-animal" data-id="${animal.id_animal}" type="button" aria-label="Apagar ${animal.nome}"><i class="fa fa-trash"></i></button>
                             </div>
                         </div>
-                        <p>${animal.nome}</p>
-                        <small>${animal.especie}</small>
+                        <p style="${estiloTexto}">${animal.nome}</p>
+                        <small style="${estiloTexto}">${animal.especie}</small>
+                        ${tagFalecido}
                     `;
                     listaAnimais.appendChild(cartao);
                 });
 
+                // Atualizar o array global com os vivos para as consultas
+                meusAnimaisIDs = animaisAtivosIDs;
+
+                // Atualizar Contadores (apenas para os VIVOS)
+                const statsAnimais = document.querySelector('.perfil-stats span:first-child strong');
+                const badgeAnimais = document.querySelector('.meus-animais .badge');
+                if (statsAnimais) statsAnimais.innerText = animaisAtivosIDs.length;
+                if (badgeAnimais) badgeAnimais.innerText = `${animaisAtivosIDs.length} ativos`;
+
+                // Colocar o botão de "Adicionar" no fim da lista
                 listaAnimais.insertAdjacentHTML('beforeend', htmlBotaoAdicionar);
                 ligarBotaoAdicionar();
             }
 
-            // --- B) Buscar as Consultas (agora que sabemos os IDs dos animais) ---
+            // --- B) Buscar as Consultas (só para os animais vivos!) ---
             const respostaConsultas = await fetch(urlApiConsultas);
-            if (!respostaConsultas.ok) {
-                console.warn("API de Consultas não devolveu resposta OK.");
-                return;
-            }
+            if (!respostaConsultas.ok) return;
 
             const resultadoConsultas = await respostaConsultas.json();
 
@@ -196,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error("Erro ao carregar dados dinâmicos (Animais/Consultas):", erro);
         }
     }
-
+    
     carregarAnimaisEConsultas();
 
     function ligarBotaoAdicionar() {
@@ -213,7 +241,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // Fechar o modal quando clica no X, no Cancelar, ou fora da caixa preta
     document.querySelectorAll(".fechar-modal-javascript, .modal-overlay").forEach((elemento) => {
         elemento.addEventListener("click", (evento) => {
-            // Se clicou no fundo escuro (fora da caixa) ou num dos botões
             if (evento.target !== elemento && !elemento.classList.contains("fechar-modal-javascript")) return;
             
             const modalAdd = document.getElementById('modal-animal');
@@ -329,7 +356,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-// 1. A função calculadora que te dei há bocado
+
+// 1. A função calculadora
 function formatarTempoAtualizacao(dataGuardada) {
     if (!dataGuardada) return "Sem atualizações recentes";
 
@@ -344,30 +372,27 @@ function formatarTempoAtualizacao(dataGuardada) {
     return `Atualizado há ${Math.floor(diferencaDias / 7)} semanas`;
 }
 
-// 2. Quando a página carrega, vai ver se há alguma data guardada na memória do navegador
+// 2. Verifica a memória local
 const dataMemoria = localStorage.getItem('ultima_atualizacao_perfil');
-const badge = document.getElementById('badge-atualizacao'); // Lembra-te de pôr este ID no HTML!
+const badge = document.getElementById('badge-atualizacao'); 
 
 if (badge) {
     badge.innerText = formatarTempoAtualizacao(dataMemoria);
 }
 
-// 3. Quando o cliente clica no botão de Guardar, gravamos a data de HOJE na memória
+// 3. Atualizar a data
 const btnGuardarPerfil = document.getElementById('btn-guardar-perfil');
 if (btnGuardarPerfil) {
     btnGuardarPerfil.addEventListener('click', () => {
-        // Guarda o momento exato do clique
         localStorage.setItem('ultima_atualizacao_perfil', new Date().toISOString());
-        
-        // Atualiza a etiqueta logo à frente dos olhos do cliente
         if (badge) badge.innerText = "Atualizado hoje";
     });
 }
+
 // ==========================================================================
 // LÓGICA DO PAINEL DE AVISOS (LEMBRETES DE CONSULTAS)
 // ==========================================================================
 async function carregarLembretesConsultas() {
-    // 1. Encontrar quem é o cliente logado
     const dadosLoginStr = localStorage.getItem("utilizadorLogado");
     if (!dadosLoginStr) return;
     
@@ -382,14 +407,12 @@ async function carregarLembretesConsultas() {
     if (!containerAvisos || !badgeAvisos) return;
 
     try {
-        // 2. Pedir as consultas à API
         const resposta = await fetch(`http://localhost:8008/api/consultas/cliente/${idClienteLogado}`);
         if (!resposta.ok) throw new Error("Sem consultas para este cliente");
         
         const resultado = await resposta.json();
         const consultas = resultado.data || [];
 
-        // 3. Filtrar as consultas que acontecem nos próximos 3 dias
         const hoje = new Date();
         const daquiA3Dias = new Date();
         daquiA3Dias.setDate(hoje.getDate() + 3);
@@ -399,14 +422,12 @@ async function carregarLembretesConsultas() {
             return dataConsulta > hoje && dataConsulta <= daquiA3Dias;
         });
 
-        // 4. Atualizar o Número Vermelho (Badge)
         badgeAvisos.innerText = `${avisosFuturos.length} novo${avisosFuturos.length !== 1 ? 's' : ''}`;
         if(avisosFuturos.length > 0) {
-            badgeAvisos.style.backgroundColor = '#e74c3c'; // Fica vermelho se houver avisos!
+            badgeAvisos.style.backgroundColor = '#e74c3c'; 
             badgeAvisos.style.color = '#fff';
         }
 
-        // 5. Mostrar a Mensagem "Vazio" ou Construir os Avisos
         if (avisosFuturos.length === 0) {
             containerAvisos.innerHTML = `
                 <div class="aviso-vazio" style="padding: 15px; border-left: 4px solid #2ea89c; background: #f8f9fa; margin-bottom: 10px; border-radius: 5px;">
@@ -415,13 +436,11 @@ async function carregarLembretesConsultas() {
             return;
         }
 
-        // Limpa a caixa e desenha os avisos novos
         containerAvisos.innerHTML = ''; 
         
         avisosFuturos.forEach(aviso => {
             const dataObj = new Date(aviso.data_hora);
             
-            // Criar uma frase tipo "Amanhã" ou "Quinta-feira" se der jeito, ou a data normal
             const dataFormatada = dataObj.toLocaleDateString('pt-PT', { day: '2-digit', month: 'long' });
             const horaFormatada = dataObj.toLocaleTimeString('pt-PT', { hour: '2-digit', minute:'2-digit' });
 
@@ -444,7 +463,6 @@ async function carregarLembretesConsultas() {
 
     } catch (erro) {
         console.error("Erro ao carregar avisos:", erro);
-        // Em caso de erro com o servidor, mostra o aviso vazio normal
         containerAvisos.innerHTML = `
             <div class="aviso-vazio" style="padding: 15px; border-left: 4px solid #2ea89c; background: #f8f9fa; margin-bottom: 10px; border-radius: 5px;">
                 <i class="fa-solid fa-bell" style="color: #2ea89c;"></i> Não tem avisos de momento.
@@ -452,7 +470,6 @@ async function carregarLembretesConsultas() {
     }
 }
 
-// Quando a página acabar de carregar, dispara o pedido à API!
 document.addEventListener('DOMContentLoaded', () => {
     carregarLembretesConsultas();
 });

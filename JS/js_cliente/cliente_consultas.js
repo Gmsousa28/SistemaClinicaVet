@@ -40,7 +40,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
+            let contadorAnimaisVivos = 0;
+
             animais.forEach(animal => {
+                // ==========================================
+                // NOVIDADE: FILTRO DOS ANIMAIS FALECIDOS!
+                // Verifica se há alguma propriedade que indique que morreu
+                // ==========================================
+                const estado = animal.estado ? animal.estado.toLowerCase() : '';
+                if (estado === 'falecido' || estado === 'morto' || estado === 'inativo' || animal.vivo === false) {
+                    return; // Se estiver morto, sai deste ciclo e vai para o próximo!
+                }
+
+                contadorAnimaisVivos++;
+
                 const label = document.createElement('label');
                 label.className = 'cartao-opcao-radio';
                 label.style.cursor = 'pointer'; 
@@ -57,6 +70,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 gridAnimais.appendChild(label);
             });
+
+            // Se o cliente tinha cães, mas todos faleceram:
+            if (contadorAnimaisVivos === 0) {
+                gridAnimais.innerHTML = '<p style="color: #e74c3c; width: 100%; text-align: center;">Não tem animais ativos de momento. Adicione um novo animal no seu perfil.</p>';
+            }
 
         } catch (erro) {
             console.error("Erro ao carregar animais no modal:", erro);
@@ -266,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ==========================================================================
     const modalConsulta = document.getElementById('modal-nova-consulta');
     const btnAbrirModal = document.getElementById('btn-abrir-modal-consulta');
-    const btnConfirmar = document.getElementById('btn-confirmar'); // Alterado para o ID correto do botão
+    const btnConfirmar = document.getElementById('btn-confirmar'); 
 
     if (modalConsulta && btnAbrirModal) {
         btnAbrirModal.addEventListener('click', () => {
@@ -276,7 +294,6 @@ document.addEventListener('DOMContentLoaded', function() {
             carregarAnimaisParaModal();
             carregarVeterinariosParaModal();
             
-            // Repor o modal no passo 1
             if(window.resetarPassos) window.resetarPassos();
         });
 
@@ -285,11 +302,9 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.classList.remove('no-scroll');
         });
 
-        // GRAVAR A MARCAÇÃO NA BD (Validação Final + POST)
         if (btnConfirmar) {
             btnConfirmar.addEventListener('click', async () => {
                 
-                // Validação Final: Garantir que o cliente não esqueceu da data ou hora
                 const dataEscolhida = document.getElementById('data_marcacao_real').value;
                 const horaEscolhida = document.getElementById('hora_marcacao_real').value;
                 
@@ -298,20 +313,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
-                // Agrupar os serviços (motivo)
                 const servicosSelecionados = Array.from(document.querySelectorAll('input[name="servico"]:checked'))
                                                   .map(cb => cb.value)
                                                   .join(', ');
 
-                // Apanhar o Veterinário (Se for "Qualquer médico", o valor é 0)
                 let vetEscolhido = document.querySelector('input[name="veterinario_selecionado"]:checked')?.value;
                 if (!vetEscolhido) vetEscolhido = 0;
 
-                // Formatar a data para o Backend (YYYY-MM-DD HH:MM:00)
                 const dataHoraConsulta = `${dataEscolhida} ${horaEscolhida}:00`; 
                 const animalEscolhido = document.querySelector('input[name="animal_selecionado"]:checked').value;
 
-                // Construir o Pacote de Dados
                 const dadosParaEnviar = {
                     id_animal: animalEscolhido,
                     id_veterinario: vetEscolhido, 
@@ -319,7 +330,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     motivo: servicosSelecionados 
                 };
 
-                // Desativar o botão para não clicarem duas vezes
                 btnConfirmar.innerText = "A agendar...";
                 btnConfirmar.disabled = true;
 
@@ -332,11 +342,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     const resultado = await resposta.json();
 
-                    if (resultado.status === 201) {
+                    if (resultado.status === 201 || resultado.status === 200) {
                         alert('🎉 Marcação efetuada com sucesso!');
-                        window.location.reload(); // Recarrega para mostrar o novo cartão!
+                        window.location.reload(); 
                     } else {
-                        alert('Erro ao gravar: ' + resultado.message);
+                        alert('Erro ao gravar: ' + (resultado.message || 'Verifique a consola'));
                         btnConfirmar.innerHTML = 'Confirmar Marcação <i class="fa fa-check" style="margin-left: 8px;"></i>';
                         btnConfirmar.disabled = false;
                     }
@@ -397,16 +407,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const cartaoConsulta = botao.closest('.consulta');
             if (!cartaoConsulta) return;
 
-            // Apanhamos o ID que escondemos no Passo 1!
             const idConsulta = cartaoConsulta.getAttribute('data-id');
 
-            // ==========================================
             // 1. BOTÃO CANCELAR
-            // ==========================================
             if (botao.classList.contains('btn-cancelar')) {
                 const confirmacao = confirm("Tem a certeza que deseja cancelar esta consulta?");
                 if (confirmacao) {
-                    // Manda a ordem para a API apagar
                     fetch(`http://localhost:8008/api/consultas/${idConsulta}`, {
                         method: 'DELETE'
                     })
@@ -423,19 +429,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // ==========================================
             // 2. BOTÃO REMARCAR
-            // ==========================================
             if (botao.classList.contains('btn-editar')) {
                 const confirmacao = confirm("Para remarcar, a consulta atual será cancelada. Deseja escolher um novo horário?");
                 if (confirmacao) {
-                    // Primeiro apaga a consulta antiga...
                     fetch(`http://localhost:8008/api/consultas/${idConsulta}`, { method: 'DELETE' })
                     .then(resposta => {
                         if(resposta.ok) {
-                            cartaoConsulta.remove(); // Tira do ecrã
+                            cartaoConsulta.remove(); 
                             
-                            // ...Depois abre o menu para marcar a nova!
                             if (modalConsulta) {
                                 modalConsulta.classList.add('ativo');
                                 document.body.classList.add('no-scroll');
@@ -448,13 +450,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // ==========================================
             // 3. BOTÃO VER (DETALHES)
-            // ==========================================
             if (botao.classList.contains('btn-detalhes')) {
                 cartaoSendoVistoRef = cartaoConsulta; 
 
-                // Lê os textos do cartão para preencher a janela
                 const infoParagrafos = cartaoConsulta.querySelectorAll('.info p');
                 detalheNome.innerText = infoParagrafos[0].innerText.replace('🐾 ', '');
                 detalheData.innerText = infoParagrafos[1].innerText.replace('📅 ', '');
@@ -497,14 +496,21 @@ document.addEventListener('DOMContentLoaded', function() {
             btnCancelarNoModal.addEventListener('click', () => {
                 const confirmacao = confirm("Tem a certeza que deseja cancelar esta consulta?");
                 if (confirmacao && cartaoSendoVistoRef) {
-                    modalDetalhes.classList.remove('ativo');
-                    document.body.classList.remove('no-scroll');
+                    const idConsulta = cartaoSendoVistoRef.getAttribute('data-id');
+                    
+                    fetch(`http://localhost:8008/api/consultas/${idConsulta}`, { method: 'DELETE' })
+                    .then(resposta => {
+                        if(resposta.ok) {
+                            modalDetalhes.classList.remove('ativo');
+                            document.body.classList.remove('no-scroll');
 
-                    cartaoSendoVistoRef.style.opacity = '0';
-                    setTimeout(() => { cartaoSendoVistoRef.remove(); }, 300);
+                            cartaoSendoVistoRef.style.opacity = '0';
+                            setTimeout(() => { cartaoSendoVistoRef.remove(); }, 300);
 
-                    alert("Consulta cancelada com sucesso!");
-                    cartaoSendoVistoRef = null; 
+                            alert("Consulta cancelada com sucesso!");
+                            cartaoSendoVistoRef = null; 
+                        }
+                    });
                 }
             });
         }
@@ -512,19 +518,30 @@ document.addEventListener('DOMContentLoaded', function() {
         if (btnRemarcarNoModal) {
             btnRemarcarNoModal.addEventListener('click', () => {
                 if (cartaoSendoVistoRef) {
-                    modalDetalhes.classList.remove('ativo');
-                    if (modalConsulta) {
-                        modalConsulta.classList.add('ativo');
-                        carregarAnimaisParaModal();
-                        carregarVeterinariosParaModal();
+                    const idConsulta = cartaoSendoVistoRef.getAttribute('data-id');
+                    
+                    const confirmacao = confirm("Para remarcar, a consulta atual será cancelada. Deseja escolher um novo horário?");
+                    if (confirmacao) {
+                        fetch(`http://localhost:8008/api/consultas/${idConsulta}`, { method: 'DELETE' })
+                        .then(resposta => {
+                            if(resposta.ok) {
+                                modalDetalhes.classList.remove('ativo');
+                                cartaoSendoVistoRef.remove();
+                                
+                                if (modalConsulta) {
+                                    modalConsulta.classList.add('ativo');
+                                    carregarAnimaisParaModal();
+                                    carregarVeterinariosParaModal();
+                                }
+                                cartaoSendoVistoRef = null;
+                            }
+                        });
                     }
-                    cartaoSendoVistoRef = null;
                 }
             });
         }
     }
     
-    // Mostra/Esconde opções de Vets
     const checkConsulta = document.getElementById('check-consulta');
     const seccaoVeterinario = document.getElementById('seccao-veterinario');
 
@@ -544,18 +561,20 @@ document.addEventListener('DOMContentLoaded', function() {
 // ==========================================================================
 let passoAtual = 1;
 
-// Função para repor o modal no início (quando fechamos e abrimos de novo)
 window.resetarPassos = function() {
     passoAtual = 1;
-    document.querySelectorAll('.conteudo-passo').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.conteudo-passo').forEach(el => {
+        el.classList.add('escondido');
+        el.style.display = ''; 
+    });
     document.querySelectorAll('.passo').forEach(el => el.classList.remove('ativo'));
     
-    document.getElementById(`passo-1`).style.display = 'block';
+    document.getElementById(`passo-1`).classList.remove('escondido');
     document.getElementById(`indicador-passo-1`).classList.add('ativo');
     
-    document.getElementById('btn-voltar').style.display = 'none';
-    document.getElementById('btn-avancar').style.display = 'inline-block';
-    document.getElementById('btn-confirmar').style.display = 'none';
+    document.getElementById('btn-voltar').classList.add('escondido');
+    document.getElementById('btn-avancar').classList.remove('escondido');
+    document.getElementById('btn-confirmar').classList.add('escondido');
 }
 
 window.mudarPasso = function(direcao) {
@@ -579,26 +598,29 @@ window.mudarPasso = function(direcao) {
 
     const totalPassos = 3;
 
-    document.getElementById(`passo-${passoAtual}`).style.display = 'none';
+    document.getElementById(`passo-${passoAtual}`).classList.add('escondido');
     document.getElementById(`indicador-passo-${passoAtual}`).classList.remove('ativo');
     
     passoAtual += direcao;
     
-    document.getElementById(`passo-${passoAtual}`).style.display = 'block';
+    document.getElementById(`passo-${passoAtual}`).classList.remove('escondido');
     document.getElementById(`indicador-passo-${passoAtual}`).classList.add('ativo');
 
     const btnVoltar = document.getElementById('btn-voltar');
     const btnAvancar = document.getElementById('btn-avancar');
     const btnConfirmar = document.getElementById('btn-confirmar');
 
-    if (passoAtual === 1) btnVoltar.style.display = 'none';
-    else btnVoltar.style.display = 'inline-block';
+    if (passoAtual === 1) {
+        btnVoltar.classList.add('escondido');
+    } else {
+        btnVoltar.classList.remove('escondido');
+    }
 
     if (passoAtual === totalPassos) {
-        btnAvancar.style.display = 'none';
-        btnConfirmar.style.display = 'inline-block';
+        btnAvancar.classList.add('escondido');
+        btnConfirmar.classList.remove('escondido');
     } else {
-        btnAvancar.style.display = 'inline-block';
-        btnConfirmar.style.display = 'none';
+        btnAvancar.classList.remove('escondido');
+        btnConfirmar.classList.add('escondido');
     }
 };

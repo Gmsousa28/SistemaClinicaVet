@@ -11,7 +11,7 @@
         <link rel="stylesheet" href="../../CSS/css_cliente/header_cliente.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-     <script>
+        <script>
             const tipoUtilizador = localStorage.getItem('tipoUtilizador');
             if (!tipoUtilizador || tipoUtilizador !== 'cliente') {
                 alert('Acesso negado! Área exclusiva a Clientes.');
@@ -20,16 +20,17 @@
         </script>
     </head>
 
-    <header>
+    <body class="com-sidebar">
+        
+        <header>
             <div class="header-texto">
                 <h1>Painel</h1> 
                 <p>Painel do Dashboard</p>
             </div>
-    </header>
+        </header>
 
-    <body class="com-sidebar">
         <section class="sidebar">
-            <a href="../../Pag_principal.html" class="logo">
+            <a href="/frontend/Pag_principal.html" class="logo">
                 <img src="../../img/Logo_vet.png" alt="Logótipo Clínica Miacãomigo">
             </a>
             <hr>
@@ -105,7 +106,7 @@
                             Sem consultas marcadas para os próximos dias.
                         </div>
 
-                        </div>
+                    </div>
                 </div>
 
             </div>
