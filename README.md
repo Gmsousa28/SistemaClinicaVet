@@ -1,4 +1,4 @@
-# Clínica Miacãomigo (SistemaClinicaVet)
+# Clínica Miacãomigo 
 
 ## Resumo do Projeto
 Este projeto consistiu no desenvolvimento de um sistema web full-stack para a gestão de uma clínica veterinária, a Clínica Miacãomigo. O objetivo foi criar uma plataforma para centralizar o atendimento na receção, a gestão de pacientes e o registo de consultas. 
