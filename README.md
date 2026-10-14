@@ -3,13 +3,13 @@
 ## Resumo do Projeto
 Este projeto consistiu no desenvolvimento de um sistema web full-stack para a gestão de uma clínica veterinária, a Clínica Miacãomigo. O objetivo foi criar uma plataforma para centralizar o atendimento na receção, a gestão de pacientes e o registo de consultas. 
 
-O sistema foi construído assente numa arquitetura cliente-servidor. No lado do servidor (backend), foi desenvolvida uma API RESTful utilizando Node.js e Express para gerir as regras de negócio e a comunicação com a base de dados. A persistência de dados foi garantida através de uma base de dados relacional em PostgreSQL, com recurso intensivo a PL/pgSQL para a criação de stored procedures e triggers que asseguram a integridade e automação de certas operações. No lado do cliente (frontend), a interface foi construída utilizando HTML, CSS e JavaScript puro para consumir a API e apresentar os dados de forma dinâmica aos utilizadores.
+O sistema foi construído assente numa arquitetura cliente-servidor. No lado do servidor (backend), foi desenvolvida uma API RESTful utilizando Node.js e Express para gerir as regras de negócio e a comunicação com a base de dados. A persistência de dados foi garantida através de uma base de dados relacional em PostgreSQL em que desenvolvemos tudo documentado incluindo o diagrama ER e todos os diagramas e estruturas associadas ao desenvolvimento de um software, com recurso intensivo a PL/pgSQL para a criação de stored procedures e triggers que asseguram a integridade e automação de certas operações. No lado do cliente (frontend), a interface foi construída utilizando HTML, CSS e JavaScript puro para consumir a API e apresentar os dados de forma dinâmica aos utilizadores.
 
 ## Tecnologias Utilizadas
 
-*   Frontend: HTML5 (25.7%), CSS3 (11%) e JavaScript (52.1%)
+*   Frontend: HTML5, CSS3 e JavaScript 
 *   Backend: Node.js (com Express)
-*   Base de Dados: PostgreSQL e PL/pgSQL (11.2%)
+*   Base de Dados: PostgreSQL e PL/pgSQL 
 
 ## Estrutura do Projeto
 
@@ -40,10 +40,7 @@ npm install
 \`\`\`
 
 3. Configurar as variáveis de ambiente
-Copie o ficheiro .env.example para um novo ficheiro chamado .env e preencha as credenciais e ligações da sua base de dados PostgreSQL.
-\`\`\`bash
-cp .env.example .env
-\`\`\`
+Crie um novo ficheiro chamado .env e preencha as credenciais e ligações da base de dados PostgreSQL.
 
 4. Configurar a Base de Dados
 Execute os scripts SQL disponíveis na pasta /SQL no seu servidor PostgreSQL para criar a estrutura da base de dados, as funções em PL/pgSQL e inserir quaisquer dados iniciais.
